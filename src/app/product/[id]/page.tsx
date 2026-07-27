@@ -1,0 +1,21 @@
+import React from 'react';
+import { getProductById } from '@/lib/db';
+import { notFound } from 'next/navigation';
+import ProductDetailsClient from './ProductDetailsClient';
+
+export const revalidate = 0; // Ensure inventory stock and custom updates reflect immediately
+
+interface PageProps {
+  params: Promise<{ id: string }>;
+}
+
+export default async function ProductPage({ params }: PageProps) {
+  const { id } = await params;
+  const product = await getProductById(id);
+
+  if (!product) {
+    notFound();
+  }
+
+  return <ProductDetailsClient product={product} />;
+}

@@ -1,0 +1,158 @@
+{
+  "products": [
+    {
+      "id": "puma-smashic-comfort-casual-sneakers-5d13",
+      "name": "Puma Smashic Comfort Casual Sneakers",
+      "brand": "Puma",
+      "category": "Running",
+      "description": "Buy PUMA Smashic Comfort Casual Sneakers Black Matte Silver 9UK from Sneakers at . 30 days free exchange or return",
+      "price": 2000,
+      "originalPrice": 2500,
+      "discountPrice": 2000,
+      "discountPercentage": 20,
+      "availableSizes": [
+        7,
+        8,
+        9,
+        10,
+        11
+      ],
+      "availableColors": [
+        {
+          "name": "Royal Blue",
+          "hex": "#0a58ca",
+          "threeColor": "#0a58ca"
+        },
+        {
+          "name": "Silver Shadow",
+          "hex": "#c0c0c0",
+          "threeColor": "#c0c0c0"
+        },
+        {
+          "name": "Carbon Black",
+          "hex": "#111827",
+          "threeColor": "#111827"
+        }
+      ],
+      "material": "Engineered Synthetic Blend & Responsive Sole",
+      "gender": "Unisex",
+      "stock": 20,
+      "sku": "TR-IMP-970-PUM",
+      "rating": 4.8,
+      "reviews": [
+        {
+          "name": "Aryan Shah",
+          "rating": 5,
+          "comment": "Imported product verification: Elite build quality and responsive sole profile.",
+          "date": "2026-07-27"
+        }
+      ],
+      "tags": [
+        "Imported",
+        "Puma",
+        "Running"
+      ],
+      "images": [
+        "https://m.media-amazon.com/images/I/41NtbP4mYoL._SL1200_.jpg"
+      ],
+      "mainImage": "https://m.media-amazon.com/images/I/41NtbP4mYoL._SL1200_.jpg",
+      "isNewArrival": true,
+      "isBestSeller": false,
+      "isSale": true
+    },
+    {
+      "id": "puma-smashic-comfort-casual-sneakers-kj8a",
+      "name": "Puma Smashic Comfort Casual Sneakers",
+      "brand": "Puma",
+      "category": "Casual",
+      "description": "Buy Puma Smashic Comfort Casual Sneakers White Matte Silver 10UK from Sneakers at . 30 days free exchange or return",
+      "price": 2000,
+      "originalPrice": 2500,
+      "discountPrice": 2000,
+      "discountPercentage": 20,
+      "availableSizes": [
+        7,
+        8,
+        9,
+        10,
+        11
+      ],
+      "availableColors": [
+        {
+          "name": "Royal Blue",
+          "hex": "#0a58ca",
+          "threeColor": "#0a58ca"
+        },
+        {
+          "name": "Silver Shadow",
+          "hex": "#c0c0c0",
+          "threeColor": "#c0c0c0"
+        },
+        {
+          "name": "Carbon Black",
+          "hex": "#111827",
+          "threeColor": "#111827"
+        }
+      ],
+      "material": "Engineered Synthetic Blend & Responsive Sole",
+      "gender": "Unisex",
+      "stock": 20,
+      "sku": "TR-IMP-262-PUM",
+      "rating": 4.8,
+      "reviews": [
+        {
+          "name": "Aryan Shah",
+          "rating": 5,
+          "comment": "Imported product verification: Elite build quality and responsive sole profile.",
+          "date": "2026-07-27"
+        }
+      ],
+      "tags": [
+        "Imported",
+        "Puma",
+        "Casual"
+      ],
+      "images": [
+        "https://m.media-amazon.com/images/I/41396Lbx3lL._SL1200_.jpg"
+      ],
+      "mainImage": "https://m.media-amazon.com/images/I/41396Lbx3lL._SL1200_.jpg",
+      "isNewArrival": true,
+      "isBestSeller": false,
+      "isSale": true
+    }
+  ],
+  "orders": [],
+  "customers": [
+    {
+      "name": "Aryan Shah",
+      "email": "aryan@thereal.com",
+      "phone": "+919999999999",
+      "address": {
+        "flat": "Penthouse A",
+        "street": "Premium Skyline Heights",
+        "city": "Mumbai",
+        "state": "Maharashtra",
+        "zip": "400001",
+        "country": "India"
+      },
+      "totalOrders": 0,
+      "totalSpending": 0,
+      "registrationDate": "2026-07-27"
+    }
+  ],
+  "websiteContent": {
+    "heroTitle": "THE REAL",
+    "heroSubtitle": "Step Into Your Reality",
+    "heroTagline": "Experience footwear engineered with premium 3D aesthetics, responsive cushioning, and modern layouts.",
+    "aboutText": "THE REAL was founded in 2026 by Aryan Shah to disrupt the sneaker space. We believe in providing premium design, extreme structural comfort, and a digital visual experience that brings the shoes to you. Our focus is quality, technology, and style.",
+    "contactEmail": "aryan@thereal.com",
+    "contactPhone": "+919876543210",
+    "contactAddress": "Skyline Premium Tower, Level 15, BKC, Mumbai, MH, India",
+    "policies": {
+      "shipping": "We offer free premium shipping on all orders over ₹10,000 nationwide. Otherwise, a standard delivery fee of ₹299 applies. Orders are dispatched within 24-48 hours and typically arrive within 3-5 business days. Express shipping options are available at checkout.",
+      "returns": "If you are not completely satisfied with your purchase, you may return the unworn shoes in their original packaging within 30 days of receipt for a full refund or exchange.",
+      "privacy": "Your privacy is paramount. We encrypt all payment details, protect personal shipping info, and never share customer data with third parties.",
+      "terms": "By purchasing from THE REAL, you agree to our terms of service, which include using our sizing guides, confirming address details before ordering, and agreeing to our return conditions."
+    }
+  }
+}
