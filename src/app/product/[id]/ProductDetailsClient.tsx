@@ -198,16 +198,16 @@ export default function ProductDetailsClient({ product }: ProductDetailsClientPr
               <h4 className="text-[10px] font-bold uppercase tracking-widest text-slate-400">Select Colorway</h4>
               <span className="text-xs font-bold text-white uppercase">{selectedColor.name}</span>
             </div>
-            <div className="flex gap-4">
+            <div className="flex gap-4 flex-wrap">
               {product.availableColors.map((colorway) => (
                 <button
                   key={colorway.name}
                   onClick={() => setSelectedColor(colorway)}
-                  className={`group relative flex h-9 w-9 items-center justify-center rounded-full border transition-all ${
+                  className={`group relative flex h-11 w-11 items-center justify-center rounded-full border transition-all ${
                     selectedColor.name === colorway.name ? 'border-royal-blue scale-110 shadow-lg shadow-royal-blue/30' : 'border-white/10 hover:border-white/20'
                   }`}
                 >
-                  <span className="h-6 w-6 rounded-full" style={{ backgroundColor: colorway.hex }} />
+                  <span className="h-7 w-7 rounded-full" style={{ backgroundColor: colorway.hex }} />
                 </button>
               ))}
             </div>
@@ -224,7 +224,7 @@ export default function ProductDetailsClient({ product }: ProductDetailsClientPr
                 <button
                   key={size}
                   onClick={() => setSelectedSize(size)}
-                  className={`rounded-lg border py-2.5 text-xs font-semibold transition-all ${
+                  className={`rounded-xl border py-3 text-xs font-bold transition-all min-h-[44px] flex items-center justify-center ${
                     selectedSize === size
                       ? 'border-royal-blue bg-royal-blue text-white shadow-md shadow-royal-blue/25'
                       : 'border-white/10 bg-white/5 text-slate-400 hover:border-white/20 hover:text-white'

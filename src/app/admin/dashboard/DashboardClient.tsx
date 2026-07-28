@@ -395,17 +395,26 @@ export default function DashboardClient({ initialDb }: DashboardClientProps) {
 
   return (
     <div className="flex-grow flex flex-col md:flex-row h-full min-h-screen text-slate-300">
-      {/* SIDEBAR */}
-      <div className="w-full md:w-64 border-r border-white/10 bg-premium-black flex flex-col justify-between py-6">
-        <div className="space-y-6">
+      {/* SIDEBAR (Desktop: Vertical Sidebar / Mobile: Horizontal Swipeable Tabs) */}
+      <div className="w-full md:w-64 border-b md:border-b-0 md:border-r border-white/10 bg-premium-black flex flex-col justify-between py-4 md:py-6 shrink-0">
+        <div className="space-y-4 md:space-y-6">
           {/* Logo segment */}
-          <div className="px-6 pb-4 border-b border-white/5">
-            <span className="text-lg font-black tracking-widest text-white uppercase block">THE REAL HQ</span>
-            <span className="text-[10px] text-slate-500 font-light uppercase tracking-wider block mt-1">Control Console</span>
+          <div className="px-4 md:px-6 pb-2 md:pb-4 border-b border-white/5 flex items-center justify-between">
+            <div>
+              <span className="text-base md:text-lg font-black tracking-widest text-white uppercase block">THE REAL HQ</span>
+              <span className="text-[10px] text-slate-500 font-light uppercase tracking-wider block">Control Console</span>
+            </div>
+            <button
+              onClick={handleLogout}
+              className="md:hidden flex items-center gap-1.5 rounded-lg border border-red-500/20 bg-red-500/10 px-3 py-1.5 text-[10px] font-bold text-red-400"
+            >
+              <LogOut className="h-3.5 w-3.5" />
+              Logout
+            </button>
           </div>
 
-          {/* Nav links list */}
-          <nav className="space-y-1 px-4">
+          {/* Desktop Nav Links */}
+          <nav className="hidden md:block space-y-1 px-4">
             {[
               { id: 'overview', name: 'Overview', icon: BarChart2 },
               { id: 'products', name: 'Products', icon: Package },
@@ -441,10 +450,46 @@ export default function DashboardClient({ initialDb }: DashboardClientProps) {
               );
             })}
           </nav>
+
+          {/* Mobile Horizontal Pill Menu */}
+          <nav className="flex md:hidden overflow-x-auto gap-2 px-4 pb-2">
+            {[
+              { id: 'overview', name: 'Overview', icon: BarChart2 },
+              { id: 'products', name: 'Products', icon: Package },
+              { id: 'orders', name: 'Orders', icon: ShoppingBag, count: stats.pendingOrders },
+              { id: 'customers', name: 'Customers', icon: Users },
+              { id: 'inventory', name: 'Inventory', icon: Layers, count: stats.lowStockCount },
+              { id: 'cms', name: 'CMS', icon: Settings }
+            ].map((tab) => {
+              const Icon = tab.icon;
+              const active = activeTab === tab.id;
+              return (
+                <button
+                  key={tab.id}
+                  onClick={() => {
+                    setActiveTab(tab.id as any);
+                    setEditingProduct(null);
+                    setViewingOrder(null);
+                  }}
+                  className={`flex items-center gap-2 shrink-0 rounded-xl px-3 py-2 text-[11px] font-bold uppercase tracking-wider transition-all ${
+                    active ? 'bg-royal-blue text-white shadow-md' : 'border border-white/10 bg-white/5 text-slate-400'
+                  }`}
+                >
+                  <Icon className="h-3.5 w-3.5" />
+                  {tab.name}
+                  {tab.count !== undefined && tab.count > 0 && (
+                    <span className={`rounded-full px-1.5 py-0.2 text-[8px] font-bold ${active ? 'bg-white text-royal-blue' : 'bg-royal-blue text-white'}`}>
+                      {tab.count}
+                    </span>
+                  )}
+                </button>
+              );
+            })}
+          </nav>
         </div>
 
-        {/* Bottom controls */}
-        <div className="px-4 pt-6 border-t border-white/5 space-y-4">
+        {/* Desktop Bottom controls */}
+        <div className="hidden md:block px-4 pt-6 border-t border-white/5 space-y-4">
           <div className="px-4 text-[10px] text-slate-500">
             <span>Signed: <strong className="text-slate-300 font-semibold">Aryan</strong></span>
           </div>
