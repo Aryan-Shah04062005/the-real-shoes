@@ -76,6 +76,44 @@ export default function DashboardClient({ initialDb }: DashboardClientProps) {
   const [importMessage, setImportMessage] = useState('');
   const [imageUploading, setImageUploading] = useState(false);
 
+  // Color manager state
+  const [newColorName, setNewColorName] = useState('');
+  const [newColorHex, setNewColorHex] = useState('#0a58ca');
+
+  const handleAddColor = () => {
+    if (!editingProduct || !newColorName.trim()) {
+      triggerStatus('error', 'Please enter a color name.');
+      return;
+    }
+    const colorObj = {
+      name: newColorName.trim(),
+      hex: newColorHex,
+      threeColor: newColorHex,
+    };
+    const currentColors = editingProduct.availableColors || [];
+    setEditingProduct({
+      ...editingProduct,
+      availableColors: [...currentColors, colorObj]
+    });
+    setNewColorName('');
+    setNewColorHex('#0a58ca');
+    triggerStatus('success', `Added color "${colorObj.name}"`);
+  };
+
+  const handleRemoveColor = (indexToRemove: number) => {
+    if (!editingProduct) return;
+    const currentColors = editingProduct.availableColors || [];
+    if (currentColors.length <= 1) {
+      triggerStatus('error', 'A product must have at least one colorway.');
+      return;
+    }
+    const updated = currentColors.filter((_, idx) => idx !== indexToRemove);
+    setEditingProduct({
+      ...editingProduct,
+      availableColors: updated
+    });
+  };
+
   // File upload handler
   const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -709,6 +747,79 @@ export default function DashboardClient({ initialDb }: DashboardClientProps) {
                           {imageUploading ? 'Uploading...' : 'Upload File'}
                         </label>
                       </div>
+                    </div>
+                  </div>
+
+                  {/* Colorways Management */}
+                  <div>
+                    <label className="text-[9px] font-bold uppercase tracking-widest text-slate-500 block mb-2">
+                      Available Colors ({editingProduct.availableColors?.length || 0})
+                    </label>
+
+                    {/* Active Colors List */}
+                    <div className="flex flex-wrap gap-2 mb-3">
+                      {editingProduct.availableColors && editingProduct.availableColors.map((color, idx) => (
+                        <div
+                          key={idx}
+                          className="flex items-center gap-2 rounded-xl border border-white/10 bg-white/5 px-3 py-1.5 text-xs text-white"
+                        >
+                          <span
+                            className="h-3.5 w-3.5 rounded-full border border-white/20 shadow-sm shrink-0"
+                            style={{ backgroundColor: color.hex }}
+                          />
+                          <span className="font-semibold">{color.name}</span>
+                          <span className="text-[10px] text-slate-400 font-mono">({color.hex})</span>
+                          <button
+                            type="button"
+                            onClick={() => handleRemoveColor(idx)}
+                            className="ml-1 text-slate-400 hover:text-red-400 transition-colors"
+                            title="Remove Color"
+                          >
+                            <XCircle className="h-3.5 w-3.5" />
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+
+                    {/* Add Color Form */}
+                    <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 bg-white/5 p-3 rounded-xl border border-white/10">
+                      <div className="flex items-center gap-2">
+                        <input
+                          type="color"
+                          value={newColorHex}
+                          onChange={(e) => setNewColorHex(e.target.value)}
+                          className="h-8 w-8 cursor-pointer rounded-lg border-0 bg-transparent p-0"
+                          title="Pick Color"
+                        />
+                        <input
+                          type="text"
+                          placeholder="#0a58ca"
+                          value={newColorHex}
+                          onChange={(e) => setNewColorHex(e.target.value)}
+                          className="w-24 rounded-lg border border-white/10 bg-slate-900 px-2.5 py-1.5 text-xs text-white font-mono"
+                        />
+                      </div>
+                      <input
+                        type="text"
+                        placeholder="Color Name (e.g. Royal Blue, Crimson Red)"
+                        value={newColorName}
+                        onChange={(e) => setNewColorName(e.target.value)}
+                        onKeyDown={(e) => {
+                          if (e.key === 'Enter') {
+                            e.preventDefault();
+                            handleAddColor();
+                          }
+                        }}
+                        className="flex-grow rounded-lg border border-white/10 bg-slate-900 px-3 py-1.5 text-xs text-white"
+                      />
+                      <button
+                        type="button"
+                        onClick={handleAddColor}
+                        className="inline-flex items-center justify-center gap-1.5 rounded-lg bg-royal-blue hover:bg-royal-blue-hover px-4 py-1.5 text-xs font-bold text-white transition-all shrink-0"
+                      >
+                        <Plus className="h-3.5 w-3.5" />
+                        Add Color
+                      </button>
                     </div>
                   </div>
 
