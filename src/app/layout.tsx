@@ -18,14 +18,25 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://the-real-shoes.vercel.app"),
-  title: "THE REAL | Premium 3D Sneakers",
-  description: "Step Into Your Reality. The ultimate 3D shoe shopping platform founded and owned by Aryan Shah.",
-  keywords: ["Sneakers", "3D Shoe Store", "Premium Footwear", "Aryan Shah", "THE REAL", "Shoes"],
+  title: "The Real Shoes | Premium 3D Sneakers by Aryan Shah",
+  description: "Official store for The Real Shoes. Step Into Your Reality with the ultimate 3D shoe shopping platform founded and owned by Aryan Shah.",
+  keywords: [
+    "The Real Shoes",
+    "the real shoes",
+    "The Real Shoes website",
+    "The Real Shoes store",
+    "The Real Shoes 3D",
+    "the-real-shoes",
+    "THE REAL",
+    "Aryan Shah",
+    "3D Sneakers",
+    "Premium Footwear"
+  ],
   openGraph: {
-    title: "THE REAL | Premium 3D Sneakers",
-    description: "Step Into Your Reality. The ultimate 3D shoe shopping platform founded and owned by Aryan Shah.",
+    title: "The Real Shoes | Premium 3D Sneakers by Aryan Shah",
+    description: "Official store for The Real Shoes. Step Into Your Reality with the ultimate 3D shoe shopping platform founded and owned by Aryan Shah.",
     url: "https://the-real-shoes.vercel.app",
-    siteName: "THE REAL",
+    siteName: "The Real Shoes",
     locale: "en_US",
     type: "website",
   },
@@ -42,6 +53,30 @@ export const metadata: Metadata = {
   },
 };
 
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "WebSite",
+      "@id": "https://the-real-shoes.vercel.app/#website",
+      "url": "https://the-real-shoes.vercel.app",
+      "name": "The Real Shoes",
+      "alternateName": ["the real shoes", "The Real Shoes Store", "The Real Shoes Website", "the-real-shoes"],
+      "description": "Step Into Your Reality. Premium 3D Sneakers Store founded by Aryan Shah."
+    },
+    {
+      "@type": "Organization",
+      "@id": "https://the-real-shoes.vercel.app/#organization",
+      "name": "The Real Shoes",
+      "url": "https://the-real-shoes.vercel.app",
+      "founder": {
+        "@type": "Person",
+        "name": "Aryan Shah"
+      }
+    }
+  ]
+};
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -52,6 +87,12 @@ export default function RootLayout({
       lang="en"
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased dark`}
     >
+      <head>
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        />
+      </head>
       <body className="min-h-full flex flex-col bg-premium-black text-premium-light font-sans selection:bg-royal-blue selection:text-white">
         <CartProvider>
           <Navbar />

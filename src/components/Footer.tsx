@@ -10,10 +10,10 @@ export default function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-12">
           {/* Brand Info */}
           <div className="space-y-4">
-            <h3 className="text-xl font-black tracking-widest text-white">THE REAL</h3>
+            <h3 className="text-xl font-black tracking-widest text-white">THE REAL SHOES</h3>
             <p className="text-xs italic text-slate-300">"Step Into Your Reality"</p>
             <p className="text-xs font-light leading-relaxed max-w-xs">
-              Experience the pinnacle of footwear engineering. Form, comfort, and premium 3D design converge to define your walk.
+              Experience the pinnacle of footwear engineering. The Real Shoes offers premium 3D design and comfort founded by Aryan Shah.
             </p>
           </div>
 
@@ -79,7 +79,7 @@ export default function Footer() {
         {/* Bottom copyright segment */}
         <div className="border-t border-white/5 pt-8 flex flex-col sm:flex-row items-center justify-between text-center gap-4 text-[11px] font-light">
           <p>
-            &copy; 2026 THE REAL. All Rights Reserved.
+            &copy; 2026 THE REAL SHOES. All Rights Reserved.
           </p>
           <p className="text-slate-300 font-normal">
             Founded and owned by <span className="text-royal-blue font-bold">Aryan Shah</span>.
