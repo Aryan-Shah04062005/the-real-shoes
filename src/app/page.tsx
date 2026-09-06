@@ -1,29 +1,72 @@
 import React from 'react';
 import Link from 'next/link';
 import { getFullDb } from '@/lib/db';
-import ContactForm from '@/components/ContactForm';
-import { ArrowRight, Star, Heart, TrendingUp, Sparkles, Shield, Compass, Mail, Phone, MapPin } from 'lucide-react';
+import ProductCard from '@/components/ProductCard';
+import QuickViewModal from '@/components/QuickViewModal';
+import SizeGuideModal from '@/components/SizeGuideModal';
+import { 
+  ArrowRight, 
+  Sparkles, 
+  Truck, 
+  ShieldCheck, 
+  RotateCcw, 
+  CheckCircle2, 
+  Star, 
+  Palette, 
+  Camera, 
+  Send 
+} from 'lucide-react';
 
-export const revalidate = 0; // Disable static cache to reflect admin content updates instantly
+export const revalidate = 0;
 
 export default async function HomePage() {
   const db = await getFullDb();
   const { websiteContent, products } = db;
 
-  const newArrivals = products.filter((p) => p.isNewArrival);
-  const bestSellers = products.filter((p) => p.isBestSeller);
+  const newArrivals = products.filter((p) => p.isNewArrival).slice(0, 3);
+  const bestSellers = products.filter((p) => p.isBestSeller).slice(0, 3);
+  const trending = products.slice(0, 3);
+
+  const trustIndicators = [
+    { icon: Truck, label: 'Free Shipping', desc: 'On orders over ₹3,000 across India' },
+    { icon: ShieldCheck, label: 'Secure Payments', desc: 'UPI, Cards & Encrypted COD' },
+    { icon: RotateCcw, label: 'Easy Returns', desc: '30-day hassle-free exchanges' },
+    { icon: CheckCircle2, label: 'Quality Checked', desc: '100% Aryan Shah Inspected' },
+  ];
+
+  const whyFeatures = [
+    { title: 'Premium Comfort', desc: '3D-engineered grids that absorb impact and offer active energy return with every step.' },
+    { title: 'Modern Design', desc: 'Futuristic silhouettes crafted with minimalist glassmorphism aesthetics and bold accents.' },
+    { title: 'Quality Materials', desc: 'Full-grain leather, high-tensile recycled flyknit grids, and durable gum outsoles.' },
+    { title: 'Easy Returns', desc: 'Doorstep pickup and instant exchange guarantees within 30 days of delivery.' },
+  ];
+
+  const customerReviews = [
+    { name: 'Rohan Sharma', rating: 5, comment: 'The 3D customizer was so fun to use! Received my custom Genesis 3D sneakers in 3 days. Super comfortable.', product: 'THE REAL Genesis 3D' },
+    { name: 'Priya Patel', rating: 5, comment: 'Incredible cushioning and design. Quality feels way above big commercial brands.', product: 'Puma Smashic Comfort Casual' },
+    { name: 'Ananya Verma', rating: 5, comment: 'Fit is perfect according to the size guide. 10/10 recommendation for daily style!', product: 'THE REAL Genesis 3D' },
+  ];
+
+  const socialGrid = [
+    '/images/shoes/genesis_blue.png',
+    '/images/shoes/genesis_silver.png',
+    '/images/shoes/genesis_black.png',
+    '/images/brand/logo.jpg',
+  ];
 
   return (
     <div className="relative w-full overflow-hidden">
+      <QuickViewModal />
+      <SizeGuideModal />
+
       {/* BACKGROUND GLOWS */}
       <div className="glow-blue top-[10%] left-[-100px]" />
       <div className="glow-silver top-[40%] right-[-100px]" />
       <div className="glow-blue bottom-[10%] left-[20%]" />
 
       {/* 1. HERO SECTION */}
-      <section className="relative mx-auto max-w-7xl px-4 pt-10 pb-20 sm:px-6 lg:px-8 lg:pt-20">
+      <section className="relative mx-auto max-w-7xl px-4 pt-10 pb-16 sm:px-6 lg:px-8 lg:pt-20">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-          {/* Hero Left Column (Copy content) */}
           <div className="space-y-6 text-left z-10">
             <div className="inline-flex items-center gap-2 rounded-full border border-royal-blue/30 bg-royal-blue/10 px-3.5 py-1.5 text-xs font-semibold tracking-wider text-royal-blue">
               <Sparkles className="h-3.5 w-3.5" />
@@ -31,38 +74,36 @@ export default async function HomePage() {
             </div>
             
             <h1 className="text-5xl sm:text-6xl lg:text-7xl font-black tracking-tighter text-white leading-none">
-              {websiteContent.heroTitle}
+              THE REAL
             </h1>
-            
-            <p className="text-xl sm:text-2xl font-bold tracking-wide text-slate-300 italic">
-              "{websiteContent.heroSubtitle}"
-            </p>
+
+            <h2 className="text-2xl sm:text-3xl font-bold tracking-wide text-slate-200">
+              Premium Sneakers. Real Style.
+            </h2>
             
             <p className="text-sm sm:text-base text-slate-400 font-light leading-relaxed max-w-lg">
-              {websiteContent.heroTagline}
+              "Discover premium sneakers designed for comfort, performance and everyday style."
             </p>
 
-            <div className="flex flex-wrap gap-4 pt-4">
+            <div className="flex flex-wrap gap-4 pt-2">
               <Link
                 href="/shop"
                 className="flex items-center justify-center gap-2 rounded-full bg-royal-blue hover:bg-royal-blue-hover px-8 py-4 text-xs font-bold uppercase tracking-widest text-white transition-all shadow-lg shadow-royal-blue/20 hover:scale-105"
               >
-                Shop Now
+                SHOP NOW
                 <ArrowRight className="h-4 w-4" />
               </Link>
               <Link
-                href="#about"
+                href="/product/genesis-3d"
                 className="flex items-center justify-center gap-2 rounded-full border border-white/10 hover:border-white/20 bg-white/5 px-8 py-4 text-xs font-bold uppercase tracking-widest text-slate-300 hover:text-white transition-all hover:scale-105"
               >
-                Explore Collection
+                CUSTOMIZE YOUR SHOE
               </Link>
             </div>
           </div>
 
-          {/* Hero Right Column (Brand Presentation Logo) */}
           <div className="w-full z-10 flex items-center justify-center">
             <div className="relative overflow-hidden rounded-3xl border border-white/10 bg-slate-950 p-2 shadow-2xl shadow-royal-blue/10 max-w-lg w-full aspect-[1.8/1] flex items-center justify-center group">
-              {/* Backglow relative to the blue branding */}
               <div className="absolute -inset-2 bg-royal-blue/10 opacity-40 blur-xl rounded-full" />
               <img
                 src="/images/brand/logo.jpg"
@@ -74,293 +115,188 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {/* 2. FEATURES GRID (THE REAL TECH) */}
-      <section className="relative border-y border-white/10 bg-premium-dark/30 py-16">
+      {/* TRUST INDICATORS BAR */}
+      <section className="border-y border-white/10 bg-slate-950/60 py-8">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
-            <div className="flex flex-col items-center text-center p-4 space-y-3">
-              <div className="rounded-full bg-royal-blue/10 border border-royal-blue/20 p-4 text-royal-blue">
-                <Compass className="h-6 w-6" />
-              </div>
-              <h3 className="text-sm font-bold tracking-wider text-white uppercase">3D Customizer</h3>
-              <p className="text-xs text-slate-400 leading-relaxed font-light">
-                Inspect sneakers in a real-time, interactive 3D studio. Spin, zoom, and select colorways before ordering.
-              </p>
-            </div>
-
-            <div className="flex flex-col items-center text-center p-4 space-y-3">
-              <div className="rounded-full bg-royal-blue/10 border border-royal-blue/20 p-4 text-royal-blue">
-                <Sparkles className="h-6 w-6" />
-              </div>
-              <h3 className="text-sm font-bold tracking-wider text-white uppercase">Adaptive Sole</h3>
-              <p className="text-xs text-slate-400 leading-relaxed font-light">
-                Bouncy 3D-engineered grids that cushion impact, absorb stress, and provide continuous bounce feedback.
-              </p>
-            </div>
-
-            <div className="flex flex-col items-center text-center p-4 space-y-3">
-              <div className="rounded-full bg-royal-blue/10 border border-royal-blue/20 p-4 text-royal-blue">
-                <Shield className="h-6 w-6" />
-              </div>
-              <h3 className="text-sm font-bold tracking-wider text-white uppercase">Premium Materials</h3>
-              <p className="text-xs text-slate-400 leading-relaxed font-light">
-                Handcrafted from full-grain leather, high-tensile recycled flyknit grids, and durable traction gum.
-              </p>
-            </div>
-
-            <div className="flex flex-col items-center text-center p-4 space-y-3">
-              <div className="rounded-full bg-royal-blue/10 border border-royal-blue/20 p-4 text-royal-blue">
-                <TrendingUp className="h-6 w-6" />
-              </div>
-              <h3 className="text-sm font-bold tracking-wider text-white uppercase">Aryan Shah's Guarantee</h3>
-              <p className="text-xs text-slate-400 leading-relaxed font-light">
-                Every sneaker undergoes absolute quality testing, ensuring structural durability and responsive wear.
-              </p>
-            </div>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+            {trustIndicators.map((item) => {
+              const IconComp = item.icon;
+              return (
+                <div key={item.label} className="flex items-center gap-3">
+                  <div className="rounded-xl bg-royal-blue/10 border border-royal-blue/20 p-2.5 text-royal-blue flex-shrink-0">
+                    <IconComp className="h-5 w-5" />
+                  </div>
+                  <div>
+                    <h4 className="text-xs font-bold text-white uppercase tracking-wider">{item.label}</h4>
+                    <p className="text-[11px] text-slate-400 font-light">{item.desc}</p>
+                  </div>
+                </div>
+              );
+            })}
           </div>
         </div>
       </section>
 
-      {/* 3. SHOWCASE - NEW ARRIVALS */}
-      {newArrivals.length > 0 && (
-        <section className="mx-auto max-w-7xl px-4 py-20 sm:px-6 lg:px-8">
-          <div className="flex flex-col sm:flex-row items-baseline justify-between mb-10 gap-2">
+      {/* 2. NEW ARRIVALS */}
+      <section className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8">
+        <div className="flex flex-col sm:flex-row items-baseline justify-between mb-8 gap-2">
+          <div>
+            <span className="text-xs font-bold uppercase tracking-widest text-royal-blue">FRESH DROPS</span>
+            <h2 className="text-3xl font-black tracking-tight text-white mt-1 uppercase">NEW ARRIVALS</h2>
+          </div>
+          <Link href="/shop?filter=new" className="flex items-center gap-1.5 text-xs font-bold text-slate-400 hover:text-white uppercase transition-colors">
+            View All Arrivals <ArrowRight className="h-3.5 w-3.5" />
+          </Link>
+        </div>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+          {newArrivals.map((product) => (
+            <ProductCard key={product.id} product={product} />
+          ))}
+        </div>
+      </section>
+
+      {/* 3. BEST SELLERS */}
+      <section className="border-t border-white/10 bg-slate-950/40 py-16">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <div className="flex flex-col sm:flex-row items-baseline justify-between mb-8 gap-2">
             <div>
-              <span className="text-xs font-bold uppercase tracking-widest text-royal-blue">FRESHLY DROP</span>
-              <h2 className="text-3xl font-extrabold tracking-tight text-white mt-1">NEW ARRIVALS</h2>
+              <span className="text-xs font-bold uppercase tracking-widest text-royal-blue">TOP RATED</span>
+              <h2 className="text-3xl font-black tracking-tight text-white mt-1 uppercase">BEST SELLERS</h2>
             </div>
-            <Link href="/shop?filter=new" className="flex items-center gap-1.5 text-xs font-semibold text-slate-400 hover:text-white uppercase transition-colors">
-              View All Arrivals
-              <ArrowRight className="h-3.5 w-3.5" />
+            <Link href="/shop?filter=best" className="flex items-center gap-1.5 text-xs font-bold text-slate-400 hover:text-white uppercase transition-colors">
+              View All Best Sellers <ArrowRight className="h-3.5 w-3.5" />
             </Link>
           </div>
-
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-            {newArrivals.slice(0, 3).map((product) => (
+            {bestSellers.map((product) => (
               <ProductCard key={product.id} product={product} />
             ))}
           </div>
-        </section>
-      )}
-
-      {/* 4. SHOWCASE - BEST SELLERS */}
-      {bestSellers.length > 0 && (
-        <section className="border-t border-white/5 py-20 bg-gradient-to-b from-transparent to-premium-dark/20">
-          <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-            <div className="flex flex-col sm:flex-row items-baseline justify-between mb-10 gap-2">
-              <div>
-                <span className="text-xs font-bold uppercase tracking-widest text-royal-blue">POPULAR CHOICES</span>
-                <h2 className="text-3xl font-extrabold tracking-tight text-white mt-1">BEST SELLERS</h2>
-              </div>
-              <Link href="/shop?filter=best" className="flex items-center gap-1.5 text-xs font-semibold text-slate-400 hover:text-white uppercase transition-colors">
-                View All Bestsellers
-                <ArrowRight className="h-3.5 w-3.5" />
-              </Link>
-            </div>
-
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-              {bestSellers.slice(0, 3).map((product) => (
-                <ProductCard key={product.id} product={product} />
-              ))}
-            </div>
-          </div>
-        </section>
-      )}
-
-      {/* 5. ABOUT US SECTION */}
-      <section id="about" className="border-t border-white/10 py-20">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-            {/* Visual Panel */}
-            <div className="relative h-[300px] sm:h-[400px] rounded-2xl border border-white/10 bg-slate-900 overflow-hidden flex flex-col justify-center items-center p-8 text-center">
-              <div className="absolute inset-0 opacity-20 bg-[radial-gradient(#0a58ca_1px,transparent_1px)] [background-size:16px_16px]" />
-              <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent" />
-              
-              <div className="z-10 max-w-md space-y-4">
-                <span className="text-[10px] font-bold uppercase tracking-widest text-royal-blue">Our Mission</span>
-                <h3 className="text-2xl sm:text-3xl font-black text-white leading-tight uppercase">STEP INTO YOUR REALITY</h3>
-                <p className="text-xs text-slate-400 leading-relaxed font-light">
-                  Bridging the physical boundaries of comfort and quality with a premium virtual presentation environment.
-                </p>
-                <div className="pt-2">
-                  <span className="text-xs font-semibold text-slate-300">Founded by Aryan Shah</span>
-                </div>
-              </div>
-            </div>
-
-            {/* Content Panel */}
-            <div className="space-y-6 z-10 text-left">
-              <span className="text-xs font-bold uppercase tracking-widest text-royal-blue">ABOUT THE REAL</span>
-              <h2 className="text-3xl sm:text-4xl font-extrabold tracking-tight text-white leading-none">
-                THE REAL EXPERIENCE
-              </h2>
-              <p className="text-sm text-slate-400 font-light leading-relaxed">
-                {websiteContent.aboutText}
-              </p>
-              <div className="pt-4 grid grid-cols-2 gap-6 border-t border-white/10">
-                <div>
-                  <span className="block text-2xl font-black text-white">2026</span>
-                  <span className="text-[10px] font-bold uppercase tracking-wider text-slate-500">Established</span>
-                </div>
-                <div>
-                  <span className="block text-2xl font-black text-royal-blue">100%</span>
-                  <span className="text-[10px] font-bold uppercase tracking-wider text-slate-500">Aryan Shah Inspected</span>
-                </div>
-              </div>
-            </div>
-          </div>
         </div>
       </section>
 
-      {/* 6. CONTACT SECTION */}
-      <section id="contact" className="border-t border-white/10 py-20 bg-gradient-to-b from-transparent to-premium-black">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
-            {/* Contact details */}
-            <div className="space-y-6 text-left">
-              <span className="text-xs font-bold uppercase tracking-widest text-royal-blue">GET IN TOUCH</span>
-              <h2 className="text-3xl sm:text-4xl font-extrabold tracking-tight text-white">
-                WE ARE HERE TO HELP
-              </h2>
-              <p className="text-sm text-slate-400 font-light leading-relaxed max-w-md">
-                Have questions about sizing, customization, or shipments? Drop us a message or chat with us. Aryan Shah and the support team are dedicated to getting back to you.
-              </p>
-              
-              <div className="pt-6 space-y-4">
-                <div className="flex items-center gap-4">
-                  <div className="rounded-xl bg-white/5 border border-white/15 p-3 text-royal-blue">
-                    <Mail className="h-5 w-5" />
-                  </div>
-                  <div>
-                    <span className="block text-[10px] font-bold uppercase tracking-wider text-slate-500">Email Us</span>
-                    <a href={`mailto:${websiteContent.contactEmail}`} className="text-sm font-semibold text-white hover:text-royal-blue transition-colors">
-                      {websiteContent.contactEmail}
-                    </a>
-                  </div>
-                </div>
-
-                <div className="flex items-center gap-4">
-                  <div className="rounded-xl bg-white/5 border border-white/15 p-3 text-royal-blue">
-                    <Phone className="h-5 w-5" />
-                  </div>
-                  <div>
-                    <span className="block text-[10px] font-bold uppercase tracking-wider text-slate-500">Call Us</span>
-                    <a href={`tel:${websiteContent.contactPhone}`} className="text-sm font-semibold text-white hover:text-royal-blue transition-colors">
-                      {websiteContent.contactPhone}
-                    </a>
-                  </div>
-                </div>
-
-                <div className="flex items-center gap-4">
-                  <div className="rounded-xl bg-white/5 border border-white/15 p-3 text-royal-blue">
-                    <MapPin className="h-5 w-5" />
-                  </div>
-                  <div>
-                    <span className="block text-[10px] font-bold uppercase tracking-wider text-slate-500">HQ Office</span>
-                    <span className="text-xs font-light text-slate-300">
-                      {websiteContent.contactAddress}
-                    </span>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* Interactive Contact Form */}
-            <div>
-              <ContactForm />
-            </div>
+      {/* 4. TRENDING NOW */}
+      <section className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8">
+        <div className="flex flex-col sm:flex-row items-baseline justify-between mb-8 gap-2">
+          <div>
+            <span className="text-xs font-bold uppercase tracking-widest text-royal-blue">HOT THIS WEEK</span>
+            <h2 className="text-3xl font-black tracking-tight text-white mt-1 uppercase">TRENDING NOW</h2>
           </div>
-        </div>
-      </section>
-    </div>
-  );
-}
-
-// ProductCard Inner Component
-function ProductCard({ product }: { product: any }) {
-  const hasDiscount = product.discountPercentage > 0;
-  
-  return (
-    <div className="glass-card flex flex-col justify-between rounded-2xl overflow-hidden p-4 relative group">
-      {/* Badges container */}
-      <div className="absolute top-4 left-4 z-10 flex flex-col gap-1.5">
-        {product.isNewArrival && (
-          <span className="rounded bg-royal-blue px-2 py-0.5 text-[9px] font-bold uppercase tracking-widest text-white">
-            NEW ARRIVAL
-          </span>
-        )}
-        {product.isBestSeller && (
-          <span className="rounded bg-amber-500 px-2 py-0.5 text-[9px] font-bold uppercase tracking-widest text-white">
-            BEST SELLER
-          </span>
-        )}
-        {product.isSale && (
-          <span className="rounded bg-red-500 px-2 py-0.5 text-[9px] font-bold uppercase tracking-widest text-white">
-            SALE {product.discountPercentage}%
-          </span>
-        )}
-      </div>
-
-      {/* Image Preview Area */}
-      <div className="relative h-64 w-full rounded-xl bg-gradient-to-br from-slate-900 to-slate-950/80 flex items-center justify-center overflow-hidden border border-white/5 group-hover:border-white/15 transition-all">
-        {/* Draw subtle color accents relative to the main colors */}
-        <div
-          className="absolute inset-0 opacity-10 transition-all group-hover:opacity-20"
-          style={{ backgroundColor: product.availableColors[0].hex }}
-        />
-        <div
-          className="h-24 w-24 rounded-full blur-2xl opacity-40 group-hover:opacity-60 transition-all group-hover:scale-125"
-          style={{ backgroundColor: product.availableColors[0].hex }}
-        />
-        {/* Interactive 3D Visualizer Indicator */}
-        <div className="absolute bottom-3 right-3 text-[9px] font-semibold text-slate-500 tracking-wider flex items-center gap-1 z-20">
-          <Compass className="h-3 w-3 animate-spin" style={{ animationDuration: '6s' }} />
-          3D MODEL READY
-        </div>
-        {product.mainImage?.startsWith('http') ? (
-          <img
-            src={product.mainImage}
-            alt={product.name}
-            className="z-10 h-full w-full object-contain p-4 group-hover:scale-105 transition-transform duration-500"
-          />
-        ) : (
-          <span className="z-10 text-xs font-bold text-white uppercase text-center px-4 tracking-wide group-hover:scale-105 transition-transform duration-300">
-            {product.name}
-          </span>
-        )}
-      </div>
-
-      {/* Details Area */}
-      <div className="mt-4 flex flex-col justify-between flex-grow">
-        <div>
-          <div className="flex items-center justify-between">
-            <span className="text-[10px] font-bold uppercase tracking-wider text-slate-500">{product.brand}</span>
-            <div className="flex items-center gap-0.5 text-amber-400">
-              <Star className="h-3 w-3 fill-current" />
-              <span className="text-[11px] font-bold">{product.rating}</span>
-            </div>
-          </div>
-          <h3 className="text-base font-bold text-white mt-1 group-hover:text-royal-blue transition-colors line-clamp-1">{product.name}</h3>
-          <p className="text-xs text-slate-400 mt-1 line-clamp-2 font-light">{product.description}</p>
-        </div>
-
-        <div className="mt-4 flex items-center justify-between pt-4 border-t border-white/5">
-          <div className="flex items-baseline gap-2">
-            <span className="text-lg font-bold text-white">₹{product.price}</span>
-            {hasDiscount && (
-              <span className="text-xs text-slate-500 line-through">₹{product.originalPrice}</span>
-            )}
-          </div>
-
-          <Link
-            href={`/product/${product.id}`}
-            className="rounded-xl bg-white/5 border border-white/10 group-hover:bg-royal-blue group-hover:border-royal-blue px-4 py-2 text-xs font-bold uppercase tracking-wider text-slate-200 group-hover:text-white transition-all flex items-center gap-1 hover:scale-105"
-          >
-            Customize
-            <ArrowRight className="h-3 w-3" />
+          <Link href="/shop?filter=trending" className="flex items-center gap-1.5 text-xs font-bold text-slate-400 hover:text-white uppercase transition-colors">
+            Explore Trending <ArrowRight className="h-3.5 w-3.5" />
           </Link>
         </div>
-      </div>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+          {trending.map((product) => (
+            <ProductCard key={product.id} product={product} />
+          ))}
+        </div>
+      </section>
+
+      {/* 5. WHY THE REAL? */}
+      <section className="border-y border-white/10 bg-gradient-to-b from-slate-950 to-premium-black py-20">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <div className="text-center max-w-2xl mx-auto mb-12">
+            <span className="text-xs font-bold uppercase tracking-widest text-royal-blue">ENGINEERED EXCELLENCE</span>
+            <h2 className="text-3xl sm:text-4xl font-black text-white uppercase mt-1">WHY THE REAL?</h2>
+            <p className="text-xs text-slate-400 font-light mt-2">
+              Combining luxury footwear craftsmanship with real-time 3D presentation technology.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+            {whyFeatures.map((feat) => (
+              <div key={feat.title} className="glass-card rounded-2xl p-6 border border-white/10 space-y-3 hover:border-royal-blue/30 transition-all">
+                <div className="h-2 w-10 bg-royal-blue rounded-full" />
+                <h3 className="text-base font-bold text-white uppercase tracking-wider">{feat.title}</h3>
+                <p className="text-xs text-slate-400 font-light leading-relaxed">{feat.desc}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* 6. CUSTOM 3D SHOES PROMO */}
+      <section className="mx-auto max-w-7xl px-4 py-20 sm:px-6 lg:px-8">
+        <div className="rounded-3xl border border-white/10 bg-slate-950 p-8 md:p-12 relative overflow-hidden flex flex-col lg:flex-row items-center justify-between gap-8">
+          <div className="space-y-4 max-w-xl text-left z-10">
+            <div className="inline-flex items-center gap-2 rounded-full border border-royal-blue/30 bg-royal-blue/10 px-3.5 py-1.5 text-xs font-bold text-royal-blue uppercase">
+              <Palette className="h-4 w-4" /> 3D CUSTOMIZER STUDIO
+            </div>
+            <h2 className="text-3xl sm:text-5xl font-black text-white uppercase tracking-tight leading-tight">
+              DESIGN YOUR OWN CUSTOM 3D SHOE
+            </h2>
+            <p className="text-xs sm:text-sm text-slate-300 font-light leading-relaxed">
+              Choose custom colorways for Upper, Sole, Laces, and Logo. Preview changes in full 3D and generate a unique Customization ID with your order.
+            </p>
+            <div className="pt-2">
+              <Link
+                href="/product/genesis-3d"
+                className="inline-flex items-center gap-2 rounded-full bg-royal-blue hover:bg-royal-blue-hover px-8 py-4 text-xs font-bold uppercase tracking-widest text-white transition-all shadow-lg shadow-royal-blue/20 hover:scale-105"
+              >
+                OPEN 3D STUDIO <ArrowRight className="h-4 w-4" />
+              </Link>
+            </div>
+          </div>
+
+          <div className="relative w-full lg:w-1/2 aspect-video rounded-2xl overflow-hidden border border-white/10 bg-black flex items-center justify-center">
+            <img
+              src="/images/shoes/genesis_blue.png"
+              alt="CUSTOM 3D SHOES - THE REAL"
+              className="h-full w-full object-contain p-6 hover:scale-105 transition-transform duration-500"
+            />
+          </div>
+        </div>
+      </section>
+
+      {/* 7. CUSTOMER REVIEWS */}
+      <section className="border-t border-white/10 bg-slate-950/50 py-20">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <div className="text-center max-w-2xl mx-auto mb-12">
+            <span className="text-xs font-bold uppercase tracking-widest text-royal-blue">VERIFIED FEEDBACK</span>
+            <h2 className="text-3xl font-black text-white uppercase mt-1">WHAT OUR CUSTOMERS SAY</h2>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            {customerReviews.map((rev) => (
+              <div key={rev.name} className="glass-card rounded-2xl p-6 border border-white/10 space-y-4">
+                <div className="flex items-center gap-1 text-amber-400">
+                  {[...Array(rev.rating)].map((_, i) => (
+                    <Star key={i} className="h-4 w-4 fill-current" />
+                  ))}
+                </div>
+                <p className="text-xs text-slate-300 font-light italic leading-relaxed">"{rev.comment}"</p>
+                <div className="pt-2 border-t border-white/5 flex justify-between items-center text-[11px]">
+                  <span className="font-bold text-white">{rev.name}</span>
+                  <span className="text-slate-500 font-semibold">{rev.product}</span>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* 8. #STEPINTOYOURREALITY INSTAGRAM SHOWCASE */}
+      <section className="mx-auto max-w-7xl px-4 py-20 sm:px-6 lg:px-8 text-center">
+        <div className="mb-8">
+          <span className="text-xs font-bold uppercase tracking-widest text-royal-blue flex items-center justify-center gap-1.5">
+            <Camera className="h-4 w-4" /> FOLLOW US ON INSTAGRAM
+          </span>
+          <h2 className="text-3xl font-black text-white uppercase mt-1">#STEPINTOYOURREALITY</h2>
+          <p className="text-xs text-slate-400 font-light mt-1">Tag @the_real_shoes to be featured on our official gallery.</p>
+        </div>
+
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+          {socialGrid.map((img, idx) => (
+            <div key={idx} className="relative aspect-square rounded-2xl overflow-hidden border border-white/10 bg-slate-900 group">
+              <img src={img} alt="#STEPINTOYOURREALITY" className="h-full w-full object-contain p-4 group-hover:scale-110 transition-transform duration-500" />
+              <div className="absolute inset-0 bg-royal-blue/30 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                <Camera className="h-8 w-8 text-white" />
+              </div>
+            </div>
+          ))}
+        </div>
+      </section>
     </div>
   );
 }

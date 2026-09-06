@@ -64,8 +64,12 @@ export async function placeOrderAction(customerData: {
   country: string;
   landmark?: string;
   notes?: string;
+  paymentMethod?: string;
+  couponCode?: string;
+  discountAmount?: number;
 }, items: {
   productId: string;
+  customizationId?: string;
   size: number;
   color: string;
   quantity: number;
@@ -86,7 +90,7 @@ export async function placeOrderAction(customerData: {
         return { success: false, error: `Insufficient stock for ${product.name}. Only ${product.stock} left.` };
       }
       
-      const selectedColorway = product.availableColors.find(c => c.name === item.color);
+      const selectedColorway = product.availableColors?.find(c => c.name === item.color);
       const colorHex = selectedColorway ? selectedColorway.hex : '#ffffff';
       
       // Update stock
@@ -98,6 +102,7 @@ export async function placeOrderAction(customerData: {
       
       orderItems.push({
         productId: product.id,
+        customizationId: item.customizationId,
         name: product.name,
         brand: product.brand,
         size: item.size,
@@ -109,10 +114,12 @@ export async function placeOrderAction(customerData: {
     }
     
     // Pricing details
-    const deliveryCharges = subtotal > 10000 ? 0 : 299;
-    const total = subtotal + deliveryCharges;
+    const discount = customerData.discountAmount || 0;
+    const deliveryCharges = subtotal > 3000 || subtotal === 0 ? 0 : 99;
+    const total = Math.max(0, subtotal - discount + deliveryCharges);
     
-    const orderId = 'TR-ORD-' + Math.random().toString(36).substring(2, 11).toUpperCase();
+    const randomNum = Math.floor(10000 + Math.random() * 90000);
+    const orderId = `TR-2026-${randomNum}`;
     
     const newOrder: Order = {
       id: orderId,
@@ -131,11 +138,14 @@ export async function placeOrderAction(customerData: {
       notes: customerData.notes,
       items: orderItems,
       subtotal: subtotal,
-      discount: 0, // In future, discount can be handled with coupon codes
+      discount: discount,
+      couponCode: customerData.couponCode,
       deliveryCharges: deliveryCharges,
       total: total,
-      status: 'Pending',
-      date: new Date().toISOString()
+      paymentMethod: (customerData.paymentMethod as any) || 'COD',
+      paymentStatus: customerData.paymentMethod === 'COD' ? 'Pending' : 'Paid',
+      status: 'Confirmed',
+      date: new Date().toISOString().split('T')[0]
     };
     
     await saveOrder(newOrder);
@@ -636,5 +646,100 @@ export async function uploadProductImageAction(base64Data: string, filename: str
     return { success: false, error: error.message || 'Failed to upload image.' };
   }
 }
+
+// 10. Coupon Server Actions
+export async function validateCouponAction(code: string, subtotal: number) {
+  const { validateCoupon } = await import('@/lib/db');
+  return await validateCoupon(code, subtotal);
+}
+
+export async function getCouponsAction() {
+  const { getCouponsList } = await import('@/lib/db');
+  return await getCouponsList();
+}
+
+export async function saveCouponAction(couponData: any) {
+  await requireAdmin();
+  const { saveCoupon } = await import('@/lib/db');
+  await saveCoupon(couponData);
+  revalidatePath('/', 'layout');
+  return { success: true };
+}
+
+export async function deleteCouponAction(code: string) {
+  await requireAdmin();
+  const { deleteCoupon } = await import('@/lib/db');
+  const success = await deleteCoupon(code);
+  revalidatePath('/', 'layout');
+  return { success };
+}
+
+// 11. Order Tracking & Order Status Actions
+export async function trackOrderAction(orderId: string, emailOrPhone: string) {
+  const { getOrdersList } = await import('@/lib/db');
+  const orders = await getOrdersList();
+  const query = emailOrPhone.trim().toLowerCase();
+  
+  const found = orders.find(o => 
+    o.id.toLowerCase() === orderId.trim().toLowerCase() && 
+    (o.email.toLowerCase() === query || o.phone.toLowerCase() === query)
+  );
+
+  if (!found) {
+    return { success: false, error: 'Order not found. Please check your Order ID and Email/Phone number.' };
+  }
+  return { success: true, order: found };
+}
+
+// 12. Review Submission Action
+export async function submitReviewAction(productId: string, reviewData: { name: string; rating: number; comment: string }) {
+  if (!reviewData.name || !reviewData.comment || !reviewData.rating) {
+    return { success: false, error: 'Please provide your name, rating, and comment.' };
+  }
+
+  const { addReviewToProduct } = await import('@/lib/db');
+  const review = {
+    id: 'rev-' + Date.now(),
+    name: reviewData.name.trim(),
+    rating: Number(reviewData.rating),
+    comment: reviewData.comment.trim(),
+    date: new Date().toISOString().split('T')[0],
+    verifiedPurchase: true
+  };
+
+  const updatedProduct = await addReviewToProduct(productId, review);
+  if (!updatedProduct) {
+    return { success: false, error: 'Product not found.' };
+  }
+
+  revalidatePath('/product/' + productId);
+  revalidatePath('/shop');
+  return { success: true, product: updatedProduct };
+}
+
+// 13. Custom 3D Shoe Action
+export async function saveCustomShoeAction(customData: {
+  upperColor: string;
+  soleColor: string;
+  laceColor: string;
+  logoColor: string;
+  calculatedPrice: number;
+}) {
+  const { saveCustomShoe } = await import('@/lib/db');
+  const customizationId = 'CUSTOM-REAL-' + Math.floor(10000 + Math.random() * 90000);
+  const record = {
+    customizationId,
+    upperColor: customData.upperColor,
+    soleColor: customData.soleColor,
+    laceColor: customData.laceColor,
+    logoColor: customData.logoColor,
+    calculatedPrice: customData.calculatedPrice,
+    createdAt: new Date().toISOString()
+  };
+
+  await saveCustomShoe(record);
+  return { success: true, customizationId, record };
+}
+
 
 

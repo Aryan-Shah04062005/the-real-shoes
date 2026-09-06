@@ -1,14 +1,17 @@
 import fs from 'fs';
 import path from 'path';
 import { connectToDatabase } from './mongodb';
-import { ProductModel, OrderModel, CustomerModel, WebsiteContentModel } from './models';
+import { ProductModel, OrderModel, CustomerModel, WebsiteContentModel, CouponModel, CustomShoeModel } from './models';
 
 // Define DB Types
 export interface Review {
+  id?: string;
   name: string;
   rating: number;
   comment: string;
   date: string;
+  verifiedPurchase?: boolean;
+  image?: string;
 }
 
 export interface Colorway {
@@ -38,6 +41,7 @@ export interface Product {
   tags: string[];
   isNewArrival: boolean;
   isBestSeller: boolean;
+  isTrending?: boolean;
   isSale: boolean;
   images: string[];
   mainImage: string;
@@ -45,6 +49,7 @@ export interface Product {
 
 export interface OrderItem {
   productId: string;
+  customizationId?: string;
   name: string;
   brand: string;
   size: number;
@@ -74,20 +79,47 @@ export interface Order {
   items: OrderItem[];
   subtotal: number;
   discount: number;
+  couponCode?: string;
   deliveryCharges: number;
   total: number;
-  status: 'Pending' | 'Confirmed' | 'Processing' | 'Shipped' | 'Out for Delivery' | 'Delivered' | 'Cancelled';
+  paymentMethod?: 'COD' | 'UPI' | 'CARD' | 'NETBANKING';
+  paymentStatus?: 'Pending' | 'Paid';
+  status: 'Pending' | 'Confirmed' | 'Processing' | 'Packed' | 'Shipped' | 'Out for Delivery' | 'Delivered' | 'Cancelled' | 'Returned';
   date: string;
 }
 
 export interface Customer {
+  id?: string;
   name: string;
   email: string;
+  password?: string;
   phone: string;
   address: Address;
+  savedAddresses?: Address[];
+  wishlist?: string[];
   totalOrders: number;
   totalSpending: number;
   registrationDate: string;
+}
+
+export interface Coupon {
+  code: string;
+  discountType: 'percentage' | 'fixed';
+  discountValue: number;
+  minOrderValue: number;
+  maxDiscountAmount?: number;
+  expiryDate?: string;
+  isActive: boolean;
+}
+
+export interface CustomShoe {
+  customizationId: string;
+  upperColor: string;
+  soleColor: string;
+  laceColor: string;
+  logoColor: string;
+  calculatedPrice: number;
+  createdAt: string;
 }
 
 export interface WebsiteContent {
@@ -110,6 +142,8 @@ export interface DatabaseSchema {
   products: Product[];
   orders: Order[];
   customers: Customer[];
+  coupons?: Coupon[];
+  customShoes?: CustomShoe[];
   websiteContent: WebsiteContent;
 }
 
@@ -553,5 +587,147 @@ export async function saveWebsiteContent(cmsData: WebsiteContent): Promise<void>
     const db = readDB();
     db.websiteContent = cmsData;
     writeDB(db);
+  }
+}
+
+// 6. Coupon operations
+const DEFAULT_COUPONS: Coupon[] = [
+  {
+    code: 'REAL10',
+    discountType: 'percentage',
+    discountValue: 10,
+    minOrderValue: 1000,
+    isActive: true
+  },
+  {
+    code: 'WELCOME100',
+    discountType: 'fixed',
+    discountValue: 500,
+    minOrderValue: 2000,
+    isActive: true
+  }
+];
+
+export async function getCouponsList(): Promise<Coupon[]> {
+  const isMongo = await isMongoDBConnected();
+  if (isMongo) {
+    const list = await CouponModel.find({}).lean() as unknown as Coupon[];
+    if (list && list.length > 0) return list;
+    await CouponModel.insertMany(DEFAULT_COUPONS);
+    return DEFAULT_COUPONS;
+  } else {
+    const db = readDB();
+    if (!db.coupons || db.coupons.length === 0) {
+      db.coupons = DEFAULT_COUPONS;
+      writeDB(db);
+    }
+    return db.coupons;
+  }
+}
+
+export async function validateCoupon(code: string, subtotal: number): Promise<{ valid: boolean; coupon?: Coupon; error?: string; discountAmount?: number }> {
+  const coupons = await getCouponsList();
+  const found = coupons.find(c => c.code.toUpperCase() === code.trim().toUpperCase() && c.isActive);
+  if (!found) {
+    return { valid: false, error: 'Invalid coupon code.' };
+  }
+  if (subtotal < found.minOrderValue) {
+    return { valid: false, error: `Minimum order amount of ₹${found.minOrderValue} required for coupon ${found.code}.` };
+  }
+  let discountAmount = 0;
+  if (found.discountType === 'percentage') {
+    discountAmount = Math.round((subtotal * found.discountValue) / 100);
+    if (found.maxDiscountAmount && discountAmount > found.maxDiscountAmount) {
+      discountAmount = found.maxDiscountAmount;
+    }
+  } else {
+    discountAmount = found.discountValue;
+  }
+  return { valid: true, coupon: found, discountAmount };
+}
+
+export async function saveCoupon(couponData: Coupon): Promise<void> {
+  const isMongo = await isMongoDBConnected();
+  if (isMongo) {
+    await CouponModel.updateOne({ code: couponData.code.toUpperCase() }, couponData, { upsert: true });
+  } else {
+    const db = readDB();
+    if (!db.coupons) db.coupons = [];
+    const idx = db.coupons.findIndex(c => c.code.toUpperCase() === couponData.code.toUpperCase());
+    if (idx !== -1) {
+      db.coupons[idx] = couponData;
+    } else {
+      db.coupons.push(couponData);
+    }
+    writeDB(db);
+  }
+}
+
+export async function deleteCoupon(code: string): Promise<boolean> {
+  const isMongo = await isMongoDBConnected();
+  if (isMongo) {
+    const res = await CouponModel.deleteOne({ code: code.toUpperCase() });
+    return res.deletedCount > 0;
+  } else {
+    const db = readDB();
+    if (!db.coupons) return false;
+    const idx = db.coupons.findIndex(c => c.code.toUpperCase() === code.toUpperCase());
+    if (idx === -1) return false;
+    db.coupons.splice(idx, 1);
+    writeDB(db);
+    return true;
+  }
+}
+
+// 7. Custom Shoe operations
+export async function saveCustomShoe(customShoe: CustomShoe): Promise<void> {
+  const isMongo = await isMongoDBConnected();
+  if (isMongo) {
+    await CustomShoeModel.create(customShoe);
+  } else {
+    const db = readDB();
+    if (!db.customShoes) db.customShoes = [];
+    db.customShoes.push(customShoe);
+    writeDB(db);
+  }
+}
+
+export async function getCustomShoe(customizationId: string): Promise<CustomShoe | null> {
+  const isMongo = await isMongoDBConnected();
+  if (isMongo) {
+    const shoe = await CustomShoeModel.findOne({ customizationId }).lean();
+    return shoe as unknown as CustomShoe | null;
+  } else {
+    const db = readDB();
+    return db.customShoes?.find(s => s.customizationId === customizationId) || null;
+  }
+}
+
+// 8. Product Review operations
+export async function addReviewToProduct(productId: string, review: Review): Promise<Product | null> {
+  const product = await getProductById(productId);
+  if (!product) return null;
+  product.reviews = product.reviews || [];
+  product.reviews.unshift(review);
+  // Recalculate average rating
+  const totalStars = product.reviews.reduce((sum, r) => sum + r.rating, 0);
+  product.rating = Number((totalStars / product.reviews.length).toFixed(1));
+  await saveProduct(product);
+  return product;
+}
+
+// 9. Order Status operations
+export async function updateOrderStatus(orderId: string, status: Order['status']): Promise<Order | null> {
+  const isMongo = await isMongoDBConnected();
+  if (isMongo) {
+    const updated = await OrderModel.findOneAndUpdate({ id: orderId }, { status }, { new: true }).lean();
+    return updated as unknown as Order | null;
+  } else {
+    const db = readDB();
+    const order = db.orders.find(o => o.id === orderId);
+    if (!order) return null;
+    order.status = status;
+    writeDB(db);
+    return order;
   }
 }

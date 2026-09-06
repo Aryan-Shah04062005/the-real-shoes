@@ -3,8 +3,8 @@
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useCart } from '@/context/CartContext';
-import { ShoppingBag, Heart, Search, User, Menu, X, ShieldAlert, LogOut, Info } from 'lucide-react';
-import { usePathname } from 'next/navigation';
+import { ShoppingBag, Heart, Search, User, Menu, X, ShieldAlert, Package, Sparkles } from 'lucide-react';
+import { usePathname, useRouter } from 'next/navigation';
 
 export default function Navbar() {
   const { cart, wishlist, setCartOpen } = useCart();
@@ -13,17 +13,14 @@ export default function Navbar() {
   const [searchQuery, setSearchQuery] = useState('');
   const [isAdmin, setIsAdmin] = useState(false);
   const pathname = usePathname();
+  const router = useRouter();
 
-  // Check admin session locally just for showing Admin indicators
   useEffect(() => {
-    // Read from cookies/localStorage to display logout button in header if logged in
     const checkAdmin = () => {
       const match = document.cookie.match(new RegExp('(^| )admin_session=([^;]+)'));
       setIsAdmin(!!(match && match[2] === 'true'));
     };
     checkAdmin();
-    
-    // Listen for custom event or navigation
     window.addEventListener('admin-login-changed', checkAdmin);
     return () => window.removeEventListener('admin-login-changed', checkAdmin);
   }, [pathname]);
@@ -33,9 +30,17 @@ export default function Navbar() {
     { name: 'Shop', href: '/shop' },
     { name: 'New Arrivals', href: '/shop?filter=new' },
     { name: 'Best Sellers', href: '/shop?filter=best' },
+    { name: 'Track Order', href: '/track-order' },
     { name: 'About Us', href: '/#about' },
-    { name: 'Contact', href: '/#contact' },
   ];
+
+  const handleSearchSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (searchQuery.trim()) {
+      setSearchOpen(false);
+      router.push(`/shop?search=${encodeURIComponent(searchQuery.trim())}`);
+    }
+  };
 
   return (
     <>
@@ -45,7 +50,7 @@ export default function Navbar() {
             {/* Logo */}
             <div className="flex-shrink-0">
               <Link href="/" className="flex items-center gap-2 group">
-                <span className="bg-gradient-to-r from-white via-slate-400 to-royal-blue bg-clip-text text-2xl font-black tracking-widest text-transparent group-hover:glow-text transition-all">
+                <span className="bg-gradient-to-r from-white via-slate-300 to-royal-blue bg-clip-text text-2xl font-black tracking-widest text-transparent group-hover:glow-text transition-all">
                   THE REAL
                 </span>
               </Link>
@@ -67,7 +72,7 @@ export default function Navbar() {
             </div>
 
             {/* Right Action Icons */}
-            <div className="flex items-center space-x-4">
+            <div className="flex items-center space-x-3 sm:space-x-4">
               {/* Search Trigger */}
               <button
                 onClick={() => setSearchOpen(true)}
@@ -105,22 +110,22 @@ export default function Navbar() {
                 )}
               </button>
 
-              {/* Admin Portal / Indicator */}
-              {isAdmin ? (
+              {/* Customer Account / Admin Portal */}
+              <Link
+                href="/account"
+                className="rounded-lg p-2 text-slate-400 hover:bg-white/5 hover:text-white transition-all"
+                title="My Account"
+              >
+                <User className="h-5 w-5" />
+              </Link>
+
+              {isAdmin && (
                 <Link
                   href="/admin/dashboard"
                   className="hidden sm:flex items-center gap-1.5 rounded-lg border border-red-500/30 bg-red-500/10 px-3 py-1.5 text-xs font-semibold text-red-400 hover:bg-red-500/20 transition-all"
                 >
                   <ShieldAlert className="h-3.5 w-3.5" />
-                  DASHBOARD
-                </Link>
-              ) : (
-                <Link
-                  href="/admin/login"
-                  className="rounded-lg p-2 text-slate-400 hover:bg-white/5 hover:text-white transition-all"
-                  title="Admin Portal"
-                >
-                  <User className="h-5 w-5" />
+                  ADMIN
                 </Link>
               )}
 
@@ -135,7 +140,7 @@ export default function Navbar() {
           </div>
         </div>
 
-        {/* Mobile Navigation Panel */}
+        {/* Mobile Navigation Drawer */}
         {isMobileMenuOpen && (
           <div className="border-t border-white/10 bg-premium-black md:hidden">
             <div className="space-y-1 px-4 py-4">
@@ -149,8 +154,13 @@ export default function Navbar() {
                   {link.name}
                 </Link>
               ))}
-              
-              {/* Admin Dashboard on mobile */}
+              <Link
+                href="/account"
+                onClick={() => setMobileMenuOpen(false)}
+                className="block rounded-lg px-3 py-3 text-sm font-semibold tracking-wider text-slate-300 hover:bg-white/5 hover:text-royal-blue uppercase transition-all"
+              >
+                My Account
+              </Link>
               {isAdmin ? (
                 <Link
                   href="/admin/dashboard"
@@ -167,7 +177,7 @@ export default function Navbar() {
                   className="flex items-center gap-2 rounded-lg px-3 py-3 text-sm font-semibold text-slate-300 hover:bg-white/5 uppercase transition-all"
                 >
                   <User className="h-4 w-4" />
-                  Admin Login
+                  Admin Portal
                 </Link>
               )}
             </div>
@@ -177,47 +187,44 @@ export default function Navbar() {
 
       {/* Global Search Modal */}
       {isSearchOpen && (
-        <div className="fixed inset-0 z-50 flex items-start justify-center bg-black/80 p-4 pt-24 backdrop-blur-sm">
-          <div className="w-full max-w-lg rounded-2xl border border-white/10 bg-premium-black p-6 shadow-2xl">
-            <div className="flex items-center justify-between border-b border-white/10 pb-4">
-              <span className="text-sm font-bold tracking-wider text-slate-400">SEARCH PRODUCTS</span>
-              <button
-                onClick={() => setSearchOpen(false)}
-                className="rounded-lg p-1 text-slate-400 hover:bg-white/5 hover:text-white transition-all"
-              >
-                <X className="h-5 w-5" />
-              </button>
-            </div>
-            
-            <form
-              onSubmit={(e) => {
-                e.preventDefault();
-                if (searchQuery.trim()) {
-                  setSearchOpen(false);
-                  window.location.href = `/shop?q=${encodeURIComponent(searchQuery)}`;
-                }
-              }}
-              className="mt-6"
+        <div className="fixed inset-0 z-50 flex items-start justify-center bg-black/80 p-4 pt-24 backdrop-blur-md">
+          <div className="relative w-full max-w-xl rounded-2xl border border-white/10 bg-slate-950 p-6 shadow-2xl">
+            <button
+              onClick={() => setSearchOpen(false)}
+              className="absolute top-4 right-4 text-slate-400 hover:text-white"
             >
-              <div className="relative">
+              <X className="h-5 w-5" />
+            </button>
+            <form onSubmit={handleSearchSubmit}>
+              <h3 className="text-xs font-bold uppercase tracking-widest text-royal-blue mb-2">Search THE REAL</h3>
+              <div className="relative flex items-center">
+                <Search className="absolute left-4 h-5 w-5 text-slate-400" />
                 <input
                   type="text"
-                  placeholder="Search by shoe name, brand, SKU..."
+                  autoFocus
+                  placeholder="Search sneakers, e.g. Black, Running, Genesis..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  autoFocus
-                  className="w-full rounded-xl border border-white/10 bg-white/5 py-4 pl-12 pr-4 text-sm text-white placeholder-slate-500 focus:border-royal-blue focus:outline-none focus:ring-1 focus:ring-royal-blue transition-all"
+                  className="w-full rounded-xl border border-white/10 bg-white/5 pl-12 pr-4 py-3 text-sm text-white focus:border-royal-blue focus:outline-none"
                 />
-                <Search className="absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-slate-500" />
               </div>
-              
-              <div className="mt-4 flex justify-end">
-                <button
-                  type="submit"
-                  className="rounded-xl bg-royal-blue hover:bg-royal-blue-hover px-6 py-2 text-xs font-bold uppercase tracking-wider text-white transition-all"
-                >
-                  Search
-                </button>
+              {/* Quick suggestions */}
+              <div className="mt-4 flex flex-wrap gap-2 text-xs">
+                <span className="text-slate-500 font-semibold">Popular Searches:</span>
+                {['Running', 'Genesis', 'Puma', 'Black', 'Lifestyle'].map((term) => (
+                  <button
+                    key={term}
+                    type="button"
+                    onClick={() => {
+                      setSearchQuery(term);
+                      setSearchOpen(false);
+                      router.push(`/shop?search=${encodeURIComponent(term)}`);
+                    }}
+                    className="rounded-full bg-white/5 border border-white/10 hover:border-royal-blue px-3 py-1 text-slate-300 hover:text-white transition-all"
+                  >
+                    {term}
+                  </button>
+                ))}
               </div>
             </form>
           </div>
