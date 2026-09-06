@@ -3,10 +3,9 @@
 import React, { useState } from 'react';
 import { Product } from '@/lib/db';
 import { useCart } from '@/context/CartContext';
-import SneakerCanvas from '@/components/SneakerCanvas';
 import SizeGuideModal from '@/components/SizeGuideModal';
-import { submitReviewAction, saveCustomShoeAction } from '@/app/actions';
-import { Star, Heart, ShoppingBag, Truck, RotateCcw, ShieldCheck, Plus, Minus, Send, Check, Ruler, Palette, RotateCcw as ResetIcon } from 'lucide-react';
+import { submitReviewAction } from '@/app/actions';
+import { Star, Heart, ShoppingBag, Truck, RotateCcw, ShieldCheck, Plus, Minus, Send, Check, Ruler } from 'lucide-react';
 import Link from 'next/link';
 
 interface ProductDetailsClientProps {
@@ -16,51 +15,18 @@ interface ProductDetailsClientProps {
 export default function ProductDetailsClient({ product }: ProductDetailsClientProps) {
   const { addToCart, wishlist, addToWishlist, removeFromWishlist, setSizeGuideOpen } = useCart();
 
+  // Product Gallery Images
+  const galleryImages = (product.images && product.images.length > 0)
+    ? product.images
+    : [product.mainImage || '/images/shoes/genesis_blue.png'];
+
+  const [activeImageIndex, setActiveImageIndex] = useState<number>(0);
+
   // Active configurations
   const [selectedSize, setSelectedSize] = useState<number>(product.availableSizes[0] || 8);
   const [selectedColor, setSelectedColor] = useState(product.availableColors[0] || { name: 'Royal Blue', hex: '#0a58ca', threeColor: '#0a58ca' });
   const [quantity, setQuantity] = useState<number>(1);
   const [activeTab, setActiveTab] = useState<'desc' | 'specs' | 'reviews' | 'policies'>('desc');
-  const [viewMode, setViewMode] = useState<'3d' | 'image'>(product.mainImage?.startsWith('http') ? 'image' : '3d');
-
-  // 3D Customizer states
-  const [isCustomizing, setIsCustomizing] = useState<boolean>(false);
-  const [upperColor, setUpperColor] = useState<string>('#0a58ca'); // Blue
-  const [soleColor, setSoleColor] = useState<string>('#111827'); // Black
-  const [laceColor, setLaceColor] = useState<string>('#ffffff'); // White
-  const [logoColor, setLogoColor] = useState<string>('#ffffff'); // White
-
-  // Customization color palettes
-  const upperOptions = [
-    { label: 'Black', hex: '#111827' },
-    { label: 'White', hex: '#ffffff' },
-    { label: 'Red', hex: '#ef4444' },
-    { label: 'Blue', hex: '#0a58ca' },
-    { label: 'Grey', hex: '#64748b' }
-  ];
-
-  const soleOptions = [
-    { label: 'Black', hex: '#111827' },
-    { label: 'White', hex: '#ffffff' },
-    { label: 'Grey', hex: '#64748b' }
-  ];
-
-  const laceOptions = [
-    { label: 'Black', hex: '#111827' },
-    { label: 'White', hex: '#ffffff' },
-    { label: 'Red', hex: '#ef4444' },
-    { label: 'Blue', hex: '#0a58ca' }
-  ];
-
-  const logoOptions = [
-    { label: 'Black', hex: '#111827' },
-    { label: 'White', hex: '#ffffff' },
-    { label: 'Silver', hex: '#cbd5e1' }
-  ];
-
-  // Dynamic price calculation
-  const customSurcharge = isCustomizing ? 1500 : 0;
-  const finalPrice = product.price + customSurcharge;
 
   // Review Form state
   const [reviewName, setReviewName] = useState('');
@@ -78,36 +44,9 @@ export default function ProductDetailsClient({ product }: ProductDetailsClientPr
     }
   };
 
-  const resetCustomizer = () => {
-    setUpperColor('#0a58ca');
-    setSoleColor('#111827');
-    setLaceColor('#ffffff');
-    setLogoColor('#ffffff');
-    setIsCustomizing(false);
-  };
-
   const handleAddToCart = async () => {
     if (product.stock === 0) return;
-
-    let customizationId: string | undefined = undefined;
-    let customDetails = undefined;
-
-    if (isCustomizing) {
-      const customRes = await saveCustomShoeAction({
-        upperColor,
-        soleColor,
-        laceColor,
-        logoColor,
-        calculatedPrice: finalPrice
-      });
-      if (customRes.success) {
-        customizationId = customRes.customizationId;
-        customDetails = { upperColor, soleColor, laceColor, logoColor };
-      }
-    }
-
-    const customProduct = { ...product, price: finalPrice };
-    addToCart(customProduct, selectedSize, selectedColor.name, quantity, customizationId, customDetails);
+    addToCart(product, selectedSize, selectedColor.name, quantity);
   };
 
   const handleBuyNow = async () => {
@@ -155,161 +94,32 @@ export default function ProductDetailsClient({ product }: ProductDetailsClientPr
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-start">
-        {/* LEFT COLUMN: 3D Visualizer Studio & Image Gallery */}
-        <div className="lg:col-span-7 flex flex-col gap-6">
-          <div className="h-[420px] sm:h-[500px] w-full relative rounded-3xl overflow-hidden border border-white/10 bg-slate-950 p-4 shadow-2xl">
-            {/* View Mode Toggle */}
-            <div className="absolute top-4 left-4 z-20 flex gap-2">
-              {product.mainImage?.startsWith('http') && (
-                <button
-                  onClick={() => setViewMode('image')}
-                  className={`rounded-lg border px-3 py-1.5 text-[10px] font-black uppercase tracking-wider transition-all ${
-                    viewMode === 'image'
-                      ? 'border-royal-blue bg-royal-blue text-white shadow-md'
-                      : 'border-white/10 bg-black/40 text-slate-300 hover:text-white'
-                  }`}
-                >
-                  Photo View
-                </button>
-              )}
-              <button
-                onClick={() => setViewMode('3d')}
-                className={`rounded-lg border px-3 py-1.5 text-[10px] font-black uppercase tracking-wider transition-all flex items-center gap-1.5 ${
-                  viewMode === '3d'
-                    ? 'border-royal-blue bg-royal-blue text-white shadow-md'
-                    : 'border-white/10 bg-black/40 text-slate-300 hover:text-white'
-                }`}
-              >
-                <Palette className="h-3 w-3" /> 3D Studio
-              </button>
-            </div>
-
-            {/* Customizer Toggle Badge */}
-            <button
-              onClick={() => {
-                setIsCustomizing(!isCustomizing);
-                setViewMode('3d');
-              }}
-              className={`absolute top-4 right-4 z-20 rounded-full border px-4 py-1.5 text-xs font-bold uppercase tracking-wider transition-all flex items-center gap-1.5 ${
-                isCustomizing
-                  ? 'border-green-500 bg-green-500/20 text-green-400'
-                  : 'border-royal-blue bg-royal-blue/20 text-royal-blue hover:bg-royal-blue hover:text-white'
-              }`}
-            >
-              <Palette className="h-3.5 w-3.5" />
-              {isCustomizing ? 'Customizing 3D Shoe' : 'Customize Colorways (+₹1,500)'}
-            </button>
-
-            {/* 3D Canvas OR Photo */}
-            {viewMode === '3d' ? (
-              <SneakerCanvas
-                color={isCustomizing ? upperColor : selectedColor.threeColor}
-                upperColor={isCustomizing ? upperColor : undefined}
-                soleColor={isCustomizing ? soleColor : undefined}
-                laceColor={isCustomizing ? laceColor : undefined}
-                logoColor={isCustomizing ? logoColor : undefined}
-                size={selectedSize}
-              />
-            ) : (
-              <div className="h-full w-full flex items-center justify-center">
-                <img
-                  src={product.mainImage || product.images?.[0]}
-                  alt={product.name}
-                  className="h-full w-full object-contain p-6"
-                />
-              </div>
-            )}
+        {/* LEFT COLUMN: Clean 2D Product Gallery */}
+        <div className="lg:col-span-7 flex flex-col gap-4">
+          <div className="h-[420px] sm:h-[500px] w-full relative rounded-3xl overflow-hidden border border-white/10 bg-slate-950 p-6 shadow-2xl flex items-center justify-center group">
+            <img
+              src={galleryImages[activeImageIndex] || galleryImages[0]}
+              alt={product.name}
+              className="h-full w-full object-contain transition-transform duration-500 group-hover:scale-105"
+            />
           </div>
 
-          {/* 3D COLORWAY CUSTOMIZER CONTROLS */}
-          {isCustomizing && (
-            <div className="glass-card rounded-2xl p-6 border border-royal-blue/30 space-y-4 animate-fadeIn">
-              <div className="flex items-center justify-between border-b border-white/10 pb-3">
-                <div className="flex items-center gap-2">
-                  <Palette className="h-5 w-5 text-royal-blue" />
-                  <h3 className="text-sm font-bold text-white uppercase tracking-wider">YOUR CUSTOM SHOE COLORWAYS</h3>
-                </div>
+          {/* Thumbnail Selector Gallery */}
+          {galleryImages.length > 1 && (
+            <div className="flex items-center gap-3 overflow-x-auto no-scrollbar py-2">
+              {galleryImages.map((img, idx) => (
                 <button
-                  onClick={resetCustomizer}
-                  className="flex items-center gap-1 text-xs text-slate-400 hover:text-white transition-colors"
+                  key={idx}
+                  onClick={() => setActiveImageIndex(idx)}
+                  className={`relative h-20 w-20 flex-shrink-0 rounded-xl overflow-hidden border transition-all bg-slate-900 p-2 ${
+                    activeImageIndex === idx
+                      ? 'border-royal-blue ring-2 ring-royal-blue/40 scale-105'
+                      : 'border-white/10 opacity-70 hover:opacity-100 hover:border-white/30'
+                  }`}
                 >
-                  <ResetIcon className="h-3.5 w-3.5" /> Reset Default
+                  <img src={img} alt={`${product.name} thumbnail ${idx + 1}`} className="h-full w-full object-contain" />
                 </button>
-              </div>
-
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
-                {/* UPPER */}
-                <div>
-                  <span className="font-bold uppercase tracking-wider text-slate-300 block mb-1.5">UPPER</span>
-                  <div className="flex gap-2">
-                    {upperOptions.map((opt) => (
-                      <button
-                        key={opt.label}
-                        onClick={() => setUpperColor(opt.hex)}
-                        title={opt.label}
-                        style={{ backgroundColor: opt.hex }}
-                        className={`h-7 w-7 rounded-full border-2 transition-all ${
-                          upperColor === opt.hex ? 'border-royal-blue scale-110 shadow-md' : 'border-transparent opacity-70 hover:opacity-100'
-                        }`}
-                      />
-                    ))}
-                  </div>
-                </div>
-
-                {/* SOLE */}
-                <div>
-                  <span className="font-bold uppercase tracking-wider text-slate-300 block mb-1.5">SOLE</span>
-                  <div className="flex gap-2">
-                    {soleOptions.map((opt) => (
-                      <button
-                        key={opt.label}
-                        onClick={() => setSoleColor(opt.hex)}
-                        title={opt.label}
-                        style={{ backgroundColor: opt.hex }}
-                        className={`h-7 w-7 rounded-full border-2 transition-all ${
-                          soleColor === opt.hex ? 'border-royal-blue scale-110 shadow-md' : 'border-transparent opacity-70 hover:opacity-100'
-                        }`}
-                      />
-                    ))}
-                  </div>
-                </div>
-
-                {/* LACES */}
-                <div>
-                  <span className="font-bold uppercase tracking-wider text-slate-300 block mb-1.5">LACES</span>
-                  <div className="flex gap-2">
-                    {laceOptions.map((opt) => (
-                      <button
-                        key={opt.label}
-                        onClick={() => setLaceColor(opt.hex)}
-                        title={opt.label}
-                        style={{ backgroundColor: opt.hex }}
-                        className={`h-7 w-7 rounded-full border-2 transition-all ${
-                          laceColor === opt.hex ? 'border-royal-blue scale-110 shadow-md' : 'border-transparent opacity-70 hover:opacity-100'
-                        }`}
-                      />
-                    ))}
-                  </div>
-                </div>
-
-                {/* LOGO */}
-                <div>
-                  <span className="font-bold uppercase tracking-wider text-slate-300 block mb-1.5">LOGO ACCENT</span>
-                  <div className="flex gap-2">
-                    {logoOptions.map((opt) => (
-                      <button
-                        key={opt.label}
-                        onClick={() => setLogoColor(opt.hex)}
-                        title={opt.label}
-                        style={{ backgroundColor: opt.hex }}
-                        className={`h-7 w-7 rounded-full border-2 transition-all ${
-                          logoColor === opt.hex ? 'border-royal-blue scale-110 shadow-md' : 'border-transparent opacity-70 hover:opacity-100'
-                        }`}
-                      />
-                    ))}
-                  </div>
-                </div>
-              </div>
+              ))}
             </div>
           )}
         </div>
@@ -337,10 +147,10 @@ export default function ProductDetailsClient({ product }: ProductDetailsClientPr
 
           {/* Pricing */}
           <div className="flex items-baseline gap-4 border-y border-white/10 py-4">
-            <span className="text-3xl font-black text-white">₹{finalPrice.toLocaleString('en-IN')}</span>
+            <span className="text-3xl font-black text-white">₹{product.price.toLocaleString('en-IN')}</span>
             {product.originalPrice > product.price && (
               <span className="text-base text-slate-500 line-through">
-                ₹{(product.originalPrice + customSurcharge).toLocaleString('en-IN')}
+                ₹{product.originalPrice.toLocaleString('en-IN')}
               </span>
             )}
             {product.discountPercentage > 0 && (

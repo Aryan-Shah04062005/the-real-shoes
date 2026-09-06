@@ -33,7 +33,7 @@ export default function AccountPage() {
       date: '2026-08-15',
       total: 14999,
       status: 'Delivered',
-      items: [{ name: 'THE REAL Genesis 3D', size: 9, qty: 1 }],
+      items: [{ name: 'THE REAL Genesis', size: 9, qty: 1 }],
     },
   ];
 

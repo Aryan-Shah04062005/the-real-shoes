@@ -18,23 +18,22 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://the-real-shoes.vercel.app"),
-  title: "The Real Shoes | Premium 3D Sneakers by Aryan Shah",
-  description: "Official store for The Real Shoes. Step Into Your Reality with the ultimate 3D shoe shopping platform founded and owned by Aryan Shah.",
+  title: "The Real Shoes | Premium Sneakers by Aryan Shah",
+  description: "Official store for The Real Shoes. Step Into Your Reality with the ultimate luxury shoe shopping platform founded and owned by Aryan Shah.",
   keywords: [
     "The Real Shoes",
     "the real shoes",
     "The Real Shoes website",
     "The Real Shoes store",
-    "The Real Shoes 3D",
     "the-real-shoes",
     "THE REAL",
     "Aryan Shah",
-    "3D Sneakers",
+    "Premium Sneakers",
     "Premium Footwear"
   ],
   openGraph: {
-    title: "The Real Shoes | Premium 3D Sneakers by Aryan Shah",
-    description: "Official store for The Real Shoes. Step Into Your Reality with the ultimate 3D shoe shopping platform founded and owned by Aryan Shah.",
+    title: "The Real Shoes | Premium Sneakers by Aryan Shah",
+    description: "Official store for The Real Shoes. Step Into Your Reality with the ultimate luxury shoe shopping platform founded and owned by Aryan Shah.",
     url: "https://the-real-shoes.vercel.app",
     siteName: "The Real Shoes",
     locale: "en_US",
@@ -65,7 +64,7 @@ const jsonLd = {
       "url": "https://the-real-shoes.vercel.app",
       "name": "The Real Shoes",
       "alternateName": ["the real shoes", "The Real Shoes Store", "The Real Shoes Website", "the-real-shoes"],
-      "description": "Step Into Your Reality. Premium 3D Sneakers Store founded by Aryan Shah."
+      "description": "Step Into Your Reality. Premium Sneakers Store founded by Aryan Shah."
     },
     {
       "@type": "Organization",

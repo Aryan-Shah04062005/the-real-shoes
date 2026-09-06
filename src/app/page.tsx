@@ -35,16 +35,16 @@ export default async function HomePage() {
   ];
 
   const whyFeatures = [
-    { title: 'Premium Comfort', desc: '3D-engineered grids that absorb impact and offer active energy return with every step.' },
+    { title: 'Premium Comfort', desc: 'Engineered soles that absorb impact and offer active energy return with every step.' },
     { title: 'Modern Design', desc: 'Futuristic silhouettes crafted with minimalist glassmorphism aesthetics and bold accents.' },
     { title: 'Quality Materials', desc: 'Full-grain leather, high-tensile recycled flyknit grids, and durable gum outsoles.' },
     { title: 'Easy Returns', desc: 'Doorstep pickup and instant exchange guarantees within 30 days of delivery.' },
   ];
 
   const customerReviews = [
-    { name: 'Rohan Sharma', rating: 5, comment: 'The 3D customizer was so fun to use! Received my custom Genesis 3D sneakers in 3 days. Super comfortable.', product: 'THE REAL Genesis 3D' },
+    { name: 'Rohan Sharma', rating: 5, comment: 'The online store was so easy to order from! Received my Genesis sneakers in 3 days. Super comfortable.', product: 'THE REAL Genesis' },
     { name: 'Priya Patel', rating: 5, comment: 'Incredible cushioning and design. Quality feels way above big commercial brands.', product: 'Puma Smashic Comfort Casual' },
-    { name: 'Ananya Verma', rating: 5, comment: 'Fit is perfect according to the size guide. 10/10 recommendation for daily style!', product: 'THE REAL Genesis 3D' },
+    { name: 'Ananya Verma', rating: 5, comment: 'Fit is perfect according to the size guide. 10/10 recommendation for daily style!', product: 'THE REAL Genesis' },
   ];
 
   const socialGrid = [
@@ -70,7 +70,7 @@ export default async function HomePage() {
           <div className="space-y-6 text-left z-10">
             <div className="inline-flex items-center gap-2 rounded-full border border-royal-blue/30 bg-royal-blue/10 px-3.5 py-1.5 text-xs font-semibold tracking-wider text-royal-blue">
               <Sparkles className="h-3.5 w-3.5" />
-              SNEAKER TECH MEETS 3D ENGINE
+              PREMIUM FOOTWEAR COLLECTION
             </div>
             
             <h1 className="text-5xl sm:text-6xl lg:text-7xl font-black tracking-tighter text-white leading-none">
@@ -94,10 +94,10 @@ export default async function HomePage() {
                 <ArrowRight className="h-4 w-4" />
               </Link>
               <Link
-                href="/product/genesis-3d"
+                href="/shop"
                 className="flex items-center justify-center gap-2 rounded-full border border-white/10 hover:border-white/20 bg-white/5 px-8 py-4 text-xs font-bold uppercase tracking-widest text-slate-300 hover:text-white transition-all hover:scale-105"
               >
-                CUSTOMIZE YOUR SHOE
+                BROWSE ALL SNEAKERS
               </Link>
             </div>
           </div>
@@ -200,7 +200,7 @@ export default async function HomePage() {
             <span className="text-xs font-bold uppercase tracking-widest text-royal-blue">ENGINEERED EXCELLENCE</span>
             <h2 className="text-3xl sm:text-4xl font-black text-white uppercase mt-1">WHY THE REAL?</h2>
             <p className="text-xs text-slate-400 font-light mt-2">
-              Combining luxury footwear craftsmanship with real-time 3D presentation technology.
+              Combining luxury footwear craftsmanship with responsive cushioning and modern style.
             </p>
           </div>
 
@@ -216,25 +216,25 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {/* 6. CUSTOM 3D SHOES PROMO */}
+      {/* 6. FEATURED COLLECTION SHOWCASE */}
       <section className="mx-auto max-w-7xl px-4 py-20 sm:px-6 lg:px-8">
         <div className="rounded-3xl border border-white/10 bg-slate-950 p-8 md:p-12 relative overflow-hidden flex flex-col lg:flex-row items-center justify-between gap-8">
           <div className="space-y-4 max-w-xl text-left z-10">
             <div className="inline-flex items-center gap-2 rounded-full border border-royal-blue/30 bg-royal-blue/10 px-3.5 py-1.5 text-xs font-bold text-royal-blue uppercase">
-              <Palette className="h-4 w-4" /> 3D CUSTOMIZER STUDIO
+              <Sparkles className="h-4 w-4" /> SIGNATURE SHOWCASE
             </div>
             <h2 className="text-3xl sm:text-5xl font-black text-white uppercase tracking-tight leading-tight">
-              DESIGN YOUR OWN CUSTOM 3D SHOE
+              THE REAL SNEAKER COLLECTION
             </h2>
             <p className="text-xs sm:text-sm text-slate-300 font-light leading-relaxed">
-              Choose custom colorways for Upper, Sole, Laces, and Logo. Preview changes in full 3D and generate a unique Customization ID with your order.
+              Discover high-performance luxury footwear crafted with precision materials, ergonomic support, and bold aesthetic silhouettes.
             </p>
             <div className="pt-2">
               <Link
-                href="/product/genesis-3d"
+                href="/shop"
                 className="inline-flex items-center gap-2 rounded-full bg-royal-blue hover:bg-royal-blue-hover px-8 py-4 text-xs font-bold uppercase tracking-widest text-white transition-all shadow-lg shadow-royal-blue/20 hover:scale-105"
               >
-                OPEN 3D STUDIO <ArrowRight className="h-4 w-4" />
+                EXPLORE COLLECTION <ArrowRight className="h-4 w-4" />
               </Link>
             </div>
           </div>
@@ -242,7 +242,7 @@ export default async function HomePage() {
           <div className="relative w-full lg:w-1/2 aspect-video rounded-2xl overflow-hidden border border-white/10 bg-black flex items-center justify-center">
             <img
               src="/images/shoes/genesis_blue.png"
-              alt="CUSTOM 3D SHOES - THE REAL"
+              alt="THE REAL SNEAKER COLLECTION"
               className="h-full w-full object-contain p-6 hover:scale-105 transition-transform duration-500"
             />
           </div>

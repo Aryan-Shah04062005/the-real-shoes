@@ -31,7 +31,7 @@ export default function Footer() {
               Get 10% OFF your first order.
             </h3>
             <p className="text-xs text-slate-300 font-light mt-1">
-              Subscribe to THE REAL newsletter for early drop access and exclusive 3D customizer releases.
+              Subscribe to THE REAL newsletter for early drop access and exclusive colorway releases.
             </p>
           </div>
 
@@ -68,7 +68,7 @@ export default function Footer() {
             <h3 className="text-xl font-black tracking-widest text-white">THE REAL SHOES</h3>
             <p className="text-xs italic text-slate-300">"Step Into Your Reality"</p>
             <p className="text-xs font-light leading-relaxed">
-              Experience the pinnacle of footwear engineering. The Real Shoes offers premium 3D design and comfort founded by Aryan Shah.
+              Experience the pinnacle of footwear engineering. The Real Shoes offers premium sneaker design and comfort founded by Aryan Shah.
             </p>
           </div>
 
@@ -154,7 +154,7 @@ export default function Footer() {
 
             <div className="text-xs space-y-1 pt-2">
               <p><strong className="text-slate-200">Owner:</strong> Aryan Shah</p>
-              <p><strong class="text-slate-200">Email:</strong> aryan@thereal.com</p>
+              <p><strong className="text-slate-200">Email:</strong> aryan@thereal.com</p>
               <p><strong className="text-slate-200">Location:</strong> Mumbai, MH, India</p>
             </div>
           </div>

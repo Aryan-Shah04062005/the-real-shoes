@@ -155,10 +155,10 @@ const getInitialData = (): DatabaseSchema => {
     products: [
       {
         id: 'genesis-3d',
-        name: 'THE REAL Genesis 3D',
+        name: 'THE REAL Genesis',
         brand: 'THE REAL',
         category: 'Running',
-        description: 'Step into your reality with our flagship 3D-engineered running shoe. Genesis 3D blends cutting-edge comfort with futuristic design, featuring our signature responsive sole and aerodynamic knit upper.',
+        description: 'Step into your reality with our flagship running shoe. Genesis blends cutting-edge comfort with futuristic design, featuring our signature responsive sole and aerodynamic knit upper.',
         price: 14999,
         originalPrice: 17999,
         discountPrice: 14999,
@@ -175,10 +175,10 @@ const getInitialData = (): DatabaseSchema => {
         sku: 'TR-GEN-001',
         rating: 4.8,
         reviews: [
-          { name: 'John Doe', rating: 5, comment: 'Absolutely incredible comfort. The 3D sole makes a massive difference in bounce!', date: '2026-07-20' },
+          { name: 'John Doe', rating: 5, comment: 'Absolutely incredible comfort. The responsive sole makes a massive difference in bounce!', date: '2026-07-20' },
           { name: 'Sarah K.', rating: 4, comment: 'Extremely stylish and lightweight. Perfect for daily wear.', date: '2026-07-24' }
         ],
-        tags: ['Premium', '3D', 'Running', 'Responsive'],
+        tags: ['Premium', 'Running', 'Responsive'],
         images: ['/images/shoes/genesis_blue.png', '/images/shoes/genesis_silver.png', '/images/shoes/genesis_black.png'],
         mainImage: '/images/shoes/genesis_blue.png',
         isNewArrival: true,
@@ -328,7 +328,7 @@ const getInitialData = (): DatabaseSchema => {
     websiteContent: {
       heroTitle: 'THE REAL',
       heroSubtitle: 'Step Into Your Reality',
-      heroTagline: 'Experience footwear engineered with premium 3D aesthetics, responsive cushioning, and modern layouts.',
+      heroTagline: 'Experience footwear engineered with premium aesthetics, responsive cushioning, and modern layouts.',
       aboutText: 'THE REAL was founded in 2026 by Aryan Shah to disrupt the sneaker space. We believe in providing premium design, extreme structural comfort, and a digital visual experience that brings the shoes to you. Our focus is quality, technology, and style.',
       contactEmail: 'aryan@thereal.com',
       contactPhone: '+919876543210',

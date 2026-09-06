@@ -130,7 +130,7 @@ export default function CartDrawer() {
 
                           {item.customizationId && (
                             <span className="inline-block mt-1 rounded bg-royal-blue/20 text-royal-blue border border-royal-blue/30 px-2 py-0.5 text-[9px] font-bold">
-                              Custom 3D: #{item.customizationId}
+                              Custom Colorway: #{item.customizationId}
                             </span>
                           )}
 
