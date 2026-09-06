@@ -17,9 +17,29 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL("https://the-real-shoes.vercel.app"),
   title: "THE REAL | Premium 3D Sneakers",
   description: "Step Into Your Reality. The ultimate 3D shoe shopping platform founded and owned by Aryan Shah.",
-  keywords: ["Sneakers", "3D Shoe Store", "Premium Footwear", "Aryan Shah", "THE REAL"],
+  keywords: ["Sneakers", "3D Shoe Store", "Premium Footwear", "Aryan Shah", "THE REAL", "Shoes"],
+  openGraph: {
+    title: "THE REAL | Premium 3D Sneakers",
+    description: "Step Into Your Reality. The ultimate 3D shoe shopping platform founded and owned by Aryan Shah.",
+    url: "https://the-real-shoes.vercel.app",
+    siteName: "THE REAL",
+    locale: "en_US",
+    type: "website",
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      'max-video-preview': -1,
+      'max-image-preview': 'large',
+      'max-snippet': -1,
+    },
+  },
 };
 
 export default function RootLayout({
