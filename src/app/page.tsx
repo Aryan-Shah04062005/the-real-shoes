@@ -279,21 +279,43 @@ export default async function HomePage() {
       {/* 8. #STEPINTOYOURREALITY INSTAGRAM SHOWCASE */}
       <section className="mx-auto max-w-7xl px-4 py-20 sm:px-6 lg:px-8 text-center">
         <div className="mb-8">
-          <span className="text-xs font-bold uppercase tracking-widest text-royal-blue flex items-center justify-center gap-1.5">
+          <a
+            href="https://www.instagram.com/therealaryanshah_shoes"
+            target="_blank"
+            rel="noreferrer"
+            className="inline-flex items-center justify-center gap-1.5 text-xs font-bold uppercase tracking-widest text-royal-blue hover:underline"
+          >
             <Camera className="h-4 w-4" /> FOLLOW US ON INSTAGRAM
-          </span>
+          </a>
           <h2 className="text-3xl font-black text-white uppercase mt-1">#STEPINTOYOURREALITY</h2>
-          <p className="text-xs text-slate-400 font-light mt-1">Tag @the_real_shoes to be featured on our official gallery.</p>
+          <p className="text-xs text-slate-400 font-light mt-1">
+            Tag{' '}
+            <a
+              href="https://www.instagram.com/therealaryanshah_shoes"
+              target="_blank"
+              rel="noreferrer"
+              className="text-royal-blue font-semibold hover:underline"
+            >
+              @therealaryanshah_shoes
+            </a>{' '}
+            to be featured on our official gallery.
+          </p>
         </div>
 
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
           {socialGrid.map((img, idx) => (
-            <div key={idx} className="relative aspect-square rounded-2xl overflow-hidden border border-white/10 bg-slate-900 group">
+            <a
+              key={idx}
+              href="https://www.instagram.com/therealaryanshah_shoes"
+              target="_blank"
+              rel="noreferrer"
+              className="relative aspect-square rounded-2xl overflow-hidden border border-white/10 bg-slate-900 group block"
+            >
               <img src={img} alt="#STEPINTOYOURREALITY" className="h-full w-full object-contain p-4 group-hover:scale-110 transition-transform duration-500" />
               <div className="absolute inset-0 bg-royal-blue/30 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
                 <Camera className="h-8 w-8 text-white" />
               </div>
-            </div>
+            </a>
           ))}
         </div>
       </section>

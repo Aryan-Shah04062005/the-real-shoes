@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import { useCart } from '@/context/CartContext';
-import { Send, CheckCircle2, Camera, Video, Share2 } from 'lucide-react';
+import { Send, CheckCircle2, Camera } from 'lucide-react';
 
 export default function Footer() {
   const { setSizeGuideOpen } = useCart();
@@ -141,14 +141,15 @@ export default function Footer() {
           <div className="space-y-4">
             <h4 className="text-xs font-bold uppercase tracking-widest text-white">FOLLOW US</h4>
             <div className="flex items-center gap-3">
-              <a href="https://instagram.com" target="_blank" rel="noreferrer" className="rounded-lg p-2 bg-white/5 border border-white/10 hover:border-royal-blue hover:text-white transition-all" title="Instagram">
-                <Camera className="h-4 w-4" />
-              </a>
-              <a href="https://youtube.com" target="_blank" rel="noreferrer" className="rounded-lg p-2 bg-white/5 border border-white/10 hover:border-royal-blue hover:text-white transition-all" title="YouTube">
-                <Video className="h-4 w-4" />
-              </a>
-              <a href="https://facebook.com" target="_blank" rel="noreferrer" className="rounded-lg p-2 bg-white/5 border border-white/10 hover:border-royal-blue hover:text-white transition-all" title="Facebook">
-                <Share2 className="h-4 w-4" />
+              <a
+                href="https://www.instagram.com/therealaryanshah_shoes"
+                target="_blank"
+                rel="noreferrer"
+                className="rounded-lg p-2 bg-white/5 border border-white/10 hover:border-royal-blue hover:text-white transition-all flex items-center gap-2 text-xs"
+                title="@therealaryanshah_shoes on Instagram"
+              >
+                <Camera className="h-4 w-4 text-royal-blue" />
+                <span className="font-semibold text-slate-300 hover:text-white">@therealaryanshah_shoes</span>
               </a>
             </div>
 
