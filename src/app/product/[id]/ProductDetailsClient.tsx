@@ -435,6 +435,20 @@ export default function ProductDetailsClient({ product }: ProductDetailsClientPr
           )}
         </div>
       </div>
+
+      {/* Mobile Sticky Floating CTA Bar (Only visible on screens < 640px) */}
+      <div className="fixed bottom-0 left-0 right-0 z-40 bg-slate-950/95 border-t border-white/10 p-3 sm:hidden backdrop-blur-md flex items-center justify-between gap-3 shadow-2xl">
+        <div className="flex flex-col">
+          <span className="text-[10px] font-bold uppercase text-slate-400 line-clamp-1">{product.name}</span>
+          <span className="text-sm font-black text-white">₹{product.price.toLocaleString('en-IN')}</span>
+        </div>
+        <button
+          onClick={handleAddToCart}
+          className="flex items-center gap-1.5 rounded-xl bg-royal-blue hover:bg-royal-blue-hover px-5 py-2.5 text-xs font-bold uppercase tracking-wider text-white shadow-lg shadow-royal-blue/30 active:scale-95 flex-shrink-0"
+        >
+          <ShoppingBag className="h-4 w-4" /> ADD TO CART
+        </button>
+      </div>
     </div>
   );
 }

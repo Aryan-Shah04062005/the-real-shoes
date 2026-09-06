@@ -23,12 +23,35 @@ body {
   color: #f8fafc;
   overflow-x: hidden;
   font-family: var(--font-sans);
+  -webkit-tap-highlight-color: transparent;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Touch usability & button tap optimization */
+button, a, input, select, textarea {
+  touch-action: manipulation;
+}
+
+/* Visible focus outline for accessibility on Windows/Mac keyboard navigation */
+*:focus-visible {
+  outline: 2px solid #0a58ca;
+  outline-offset: 2px;
+}
+
+/* Utility to hide scrollbars while maintaining scroll functionality */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
 }
 
 /* Premium Custom Scrollbars */
 ::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
+  width: 6px;
+  height: 6px;
 }
 ::-webkit-scrollbar-track {
   background: #050505;
@@ -36,7 +59,7 @@ body {
 ::-webkit-scrollbar-thumb {
   background: #1f2937;
   border-radius: 9999px;
-  border: 2px solid #050505;
+  border: 1px solid #050505;
 }
 ::-webkit-scrollbar-thumb:hover {
   background: #0a58ca;

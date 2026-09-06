@@ -279,16 +279,30 @@ export default function ShopClient({ initialProducts }: ShopClientProps) {
 
         {/* Main Content Grid: Sidebar Filters + Products Grid */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8 items-start">
-          {/* Desktop Filter Sidebar */}
-          <aside className={`md:block space-y-6 glass-card p-6 rounded-2xl border border-white/10 ${isMobileFilterOpen ? 'block' : 'hidden'}`}>
+          {/* Desktop & Mobile Filter Sidebar Drawer */}
+          <aside
+            className={`space-y-6 glass-card p-6 rounded-2xl border border-white/10 ${
+              isMobileFilterOpen
+                ? 'fixed inset-x-0 bottom-0 top-16 z-50 overflow-y-auto bg-slate-950/95 p-6 rounded-t-3xl border-t border-white/20 md:relative md:top-0 md:z-auto md:bg-transparent md:p-6 md:rounded-2xl md:border-white/10 block'
+                : 'hidden md:block'
+            }`}
+          >
             <div className="flex items-center justify-between border-b border-white/10 pb-4">
               <div className="flex items-center gap-2">
                 <Filter className="h-4 w-4 text-royal-blue" />
                 <h3 className="text-sm font-bold uppercase tracking-wider text-white">FILTERS</h3>
               </div>
-              <button onClick={resetFilters} className="flex items-center gap-1 text-[11px] text-slate-400 hover:text-white transition-colors">
-                <RotateCcw className="h-3 w-3" /> Reset
-              </button>
+              <div className="flex items-center gap-3">
+                <button onClick={resetFilters} className="flex items-center gap-1 text-[11px] text-slate-400 hover:text-white transition-colors">
+                  <RotateCcw className="h-3 w-3" /> Reset
+                </button>
+                <button
+                  onClick={() => setIsMobileFilterOpen(false)}
+                  className="md:hidden rounded-full p-1 text-slate-400 hover:text-white bg-white/10"
+                >
+                  <X className="h-4 w-4" />
+                </button>
+              </div>
             </div>
 
             {/* Category Filter */}
@@ -346,7 +360,7 @@ export default function ShopClient({ initialProducts }: ShopClientProps) {
                     <button
                       key={sz}
                       onClick={() => toggleSize(sz)}
-                      className={`h-8 w-8 rounded-lg text-xs font-bold border transition-all ${
+                      className={`h-9 min-w-[36px] rounded-lg text-xs font-bold border transition-all ${
                         isSel
                           ? 'border-royal-blue bg-royal-blue text-white shadow-md'
                           : 'border-white/10 bg-white/5 text-slate-300 hover:border-white/20'
@@ -369,7 +383,7 @@ export default function ShopClient({ initialProducts }: ShopClientProps) {
                     <button
                       key={col}
                       onClick={() => toggleColor(col)}
-                      className={`rounded-full px-3 py-1 text-[11px] font-semibold border transition-all ${
+                      className={`rounded-full px-3 py-1.5 text-[11px] font-semibold border transition-all ${
                         isSel
                           ? 'border-royal-blue bg-royal-blue/20 text-white'
                           : 'border-white/10 bg-white/5 text-slate-400 hover:text-white'
@@ -390,7 +404,7 @@ export default function ShopClient({ initialProducts }: ShopClientProps) {
                   <button
                     key={rate}
                     onClick={() => setMinRating(rate)}
-                    className={`flex items-center gap-1 rounded-lg px-2.5 py-1 text-xs font-bold border transition-all ${
+                    className={`flex items-center gap-1 rounded-lg px-3 py-1.5 text-xs font-bold border transition-all ${
                       minRating === rate
                         ? 'border-royal-blue bg-royal-blue text-white'
                         : 'border-white/10 bg-white/5 text-slate-400'
@@ -404,26 +418,36 @@ export default function ShopClient({ initialProducts }: ShopClientProps) {
 
             {/* Checkbox Toggles */}
             <div className="space-y-2 pt-2 border-t border-white/10 text-xs">
-              <label className="flex items-center gap-2 cursor-pointer text-slate-300">
+              <label className="flex items-center gap-2 cursor-pointer text-slate-300 py-1">
                 <input
                   type="checkbox"
                   checked={inStockOnly}
                   onChange={(e) => setInStockOnly(e.target.checked)}
-                  className="rounded border-white/10 bg-white/5 accent-royal-blue"
+                  className="rounded border-white/10 bg-white/5 accent-royal-blue h-4 w-4"
                 />
                 In Stock Only
               </label>
 
-              <label className="flex items-center gap-2 cursor-pointer text-slate-300">
+              <label className="flex items-center gap-2 cursor-pointer text-slate-300 py-1">
                 <input
                   type="checkbox"
                   checked={under2kOnly}
                   onChange={(e) => setUnder2kOnly(e.target.checked)}
-                  className="rounded border-white/10 bg-white/5 accent-royal-blue"
+                  className="rounded border-white/10 bg-white/5 accent-royal-blue h-4 w-4"
                 />
                 Under ₹2,000
               </label>
             </div>
+
+            {/* Apply Filters Mobile Button */}
+            {isMobileFilterOpen && (
+              <button
+                onClick={() => setIsMobileFilterOpen(false)}
+                className="w-full mt-4 rounded-xl bg-royal-blue hover:bg-royal-blue-hover py-3 text-xs font-bold uppercase tracking-widest text-white md:hidden shadow-lg shadow-royal-blue/30"
+              >
+                APPLY & VIEW ({filteredProducts.length} SNEAKERS)
+              </button>
+            )}
           </aside>
 
           {/* Product Grid */}

@@ -59,37 +59,37 @@ export default function ProductCard({ product }: ProductCardProps) {
         )}
       </div>
 
-      <button
-        onClick={toggleWishlist}
-        title={isWishlisted ? 'Remove from Wishlist' : 'Add to Wishlist'}
-        className={`absolute top-4 right-4 z-20 rounded-full p-2.5 backdrop-blur-md border transition-all ${
-          isWishlisted
-            ? 'bg-red-500/20 border-red-500/50 text-red-500'
-            : 'bg-black/40 border-white/10 text-slate-300 hover:text-white hover:bg-white/10'
-        }`}
-      >
-        <Heart className={`h-4 w-4 ${isWishlisted ? 'fill-current' : ''}`} />
-      </button>
+      {/* Top Action Buttons (Wishlist & Quick View) */}
+      <div className="absolute top-4 right-4 z-20 flex items-center gap-1.5">
+        <button
+          onClick={openQuickView}
+          title="Quick View"
+          className="rounded-full p-2.5 backdrop-blur-md bg-black/40 border border-white/10 text-slate-300 hover:text-white hover:bg-white/10 transition-all min-h-[40px] min-w-[40px] flex items-center justify-center"
+        >
+          <Eye className="h-4 w-4" />
+        </button>
+        <button
+          onClick={toggleWishlist}
+          title={isWishlisted ? 'Remove from Wishlist' : 'Add to Wishlist'}
+          className={`rounded-full p-2.5 backdrop-blur-md border transition-all min-h-[40px] min-w-[40px] flex items-center justify-center ${
+            isWishlisted
+              ? 'bg-red-500/20 border-red-500/50 text-red-500'
+              : 'bg-black/40 border-white/10 text-slate-300 hover:text-white hover:bg-white/10'
+          }`}
+        >
+          <Heart className={`h-4 w-4 ${isWishlisted ? 'fill-current' : ''}`} />
+        </button>
+      </div>
 
       {/* Image Container */}
       <Link href={`/product/${product.id}`} className="block relative w-full pt-2">
-        <div className="relative h-60 w-full rounded-xl bg-gradient-to-br from-slate-900 via-slate-950 to-black flex items-center justify-center overflow-hidden border border-white/5 group-hover:border-white/15 transition-all">
+        <div className="relative h-52 sm:h-60 w-full rounded-xl bg-gradient-to-br from-slate-900 via-slate-950 to-black flex items-center justify-center overflow-hidden border border-white/5 group-hover:border-white/15 transition-all">
           <div className="absolute inset-0 bg-royal-blue/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
           <img
             src={product.mainImage || product.images?.[0] || '/images/shoes/genesis_blue.png'}
             alt={product.name}
             className="z-10 h-full w-full object-contain p-4 group-hover:scale-105 transition-transform duration-300 ease-out"
           />
-
-          {/* Quick View Button overlay on hover */}
-          <div className="absolute inset-0 z-20 flex items-center justify-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200 bg-black/40 backdrop-blur-[2px]">
-            <button
-              onClick={openQuickView}
-              className="flex items-center gap-1.5 rounded-full bg-white/10 hover:bg-white/20 border border-white/20 px-3.5 py-2 text-xs font-bold text-white uppercase tracking-wider transition-all hover:scale-105"
-            >
-              <Eye className="h-3.5 w-3.5" /> Quick View
-            </button>
-          </div>
         </div>
       </Link>
 
