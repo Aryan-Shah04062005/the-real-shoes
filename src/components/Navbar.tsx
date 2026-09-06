@@ -119,15 +119,19 @@ export default function Navbar() {
                 <User className="h-5 w-5" />
               </Link>
 
-              {isAdmin && (
-                <Link
-                  href="/admin/dashboard"
-                  className="hidden sm:flex items-center gap-1.5 rounded-lg border border-red-500/30 bg-red-500/10 px-3 py-1.5 text-xs font-semibold text-red-400 hover:bg-red-500/20 transition-all"
-                >
-                  <ShieldAlert className="h-3.5 w-3.5" />
-                  ADMIN
-                </Link>
-              )}
+              {/* Admin Portal Link for Desktop & Mac browsers */}
+              <Link
+                href={isAdmin ? "/admin/dashboard" : "/admin/login"}
+                className={`hidden sm:flex items-center gap-1.5 rounded-lg border px-3 py-1.5 text-xs font-bold uppercase tracking-wider transition-all ${
+                  isAdmin
+                    ? 'border-red-500/40 bg-red-500/15 text-red-400 hover:bg-red-500/25'
+                    : 'border-white/10 bg-white/5 text-slate-300 hover:border-royal-blue/40 hover:text-white hover:bg-white/10'
+                }`}
+                title={isAdmin ? "Admin Dashboard" : "Admin Login Portal"}
+              >
+                <ShieldAlert className={`h-3.5 w-3.5 ${isAdmin ? 'text-red-400' : 'text-slate-400'}`} />
+                <span>{isAdmin ? 'ADMIN' : 'ADMIN'}</span>
+              </Link>
 
               {/* Mobile Hamburger menu */}
               <button

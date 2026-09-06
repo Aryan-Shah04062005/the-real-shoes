@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import { useCart } from '@/context/CartContext';
-import { Send, CheckCircle2, Camera } from 'lucide-react';
+import { Send, CheckCircle2, Camera, ShieldAlert } from 'lucide-react';
 
 export default function Footer() {
   const { setSizeGuideOpen } = useCart();
@@ -133,6 +133,11 @@ export default function Footer() {
               </li>
               <li>
                 <Link href="/policies/terms" className="hover:text-royal-blue transition-colors">Terms & Conditions</Link>
+              </li>
+              <li>
+                <Link href="/admin/login" className="hover:text-red-400 text-slate-300 font-semibold transition-colors flex items-center gap-1">
+                  <ShieldAlert className="h-3.5 w-3.5 text-red-400" /> Admin Portal
+                </Link>
               </li>
             </ul>
           </div>
