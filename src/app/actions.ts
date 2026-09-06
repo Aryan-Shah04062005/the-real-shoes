@@ -344,112 +344,13 @@ export async function importProductFromUrlAction(url: string, targetPrice: numbe
   let brand = 'THE REAL';
 
   const isAmazon = cleanUrl.includes('amazon.');
-  const isFlipkart = cleanUrl.includes('flipkart.');
+  const isFlipkart = cleanUrl.includes('flipkart.') || cleanUrl.includes('fkrt.it') || cleanUrl.includes('flipkart.com') || cleanUrl.includes('flipkart.in');
 
   if (!isAmazon && !isFlipkart) {
     return { success: false, error: 'Only Amazon or Flipkart URLs are supported.' };
   }
 
-  try {
-    // Attempt standard HTTP request to scrape
-    const res = await fetch(cleanUrl, {
-      headers: {
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
-        'Accept-Language': 'en-US,en;q=0.9',
-        'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
-        'Cache-Control': 'no-cache',
-        'Pragma': 'no-cache'
-      },
-      next: { revalidate: 0 } // Bypass Next.js fetch caching
-    });
-
-    if (res.ok) {
-      const html = await res.text();
-      
-      // Sanitizer helper to remove Amazon & Flipkart names and promotional text
-      const sanitizeTextOfStoreBrands = (text: string): string => {
-        if (!text) return '';
-        return text
-          .replace(/amazon\.in/gi, '')
-          .replace(/amazon\.com/gi, '')
-          .replace(/amazon/gi, '')
-          .replace(/flipkart\.com/gi, '')
-          .replace(/flipkart assured/gi, '')
-          .replace(/flipkart/gi, '')
-          .replace(/buy\s+online\s+at\s+low\s+prices\s+in\s+india/gi, '')
-          .replace(/at\s+low\s+prices/gi, '')
-          .replace(/visit\s+the\s+store/gi, '')
-          .replace(/on\s+sale\s+at/gi, '')
-          .replace(/only\s+on/gi, '')
-          .replace(/on\s+our\s+website/gi, '')
-          .replace(/assured\s+quality/gi, '')
-          .replace(/\s*\|\s*/g, ' ')
-          .replace(/\s*-\s*/g, ' ')
-          .replace(/\s*:\s*/g, ' ')
-          .replace(/\s+/g, ' ')
-          .trim();
-      };
-
-      // Parse HTML with regex
-      if (isAmazon) {
-        // Amazon title regexes
-        const titleMatch = html.match(/<span id="productTitle"[^>]*>\s*([^<]+)\s*<\/span>/i) || 
-                           html.match(/<meta name="title" content="([^"]+)"/i) ||
-                           html.match(/<title>([^<]+)<\/title>/i);
-        if (titleMatch) title = titleMatch[1].trim();
-
-        // Amazon description regexes
-        const descMatch = html.match(/<meta name="description" content="([^"]+)"/i) ||
-                          html.match(/<div id="productDescription"[^>]*>\s*<p>\s*([^<]+)\s*<\/p>/i);
-        if (descMatch) description = descMatch[1].trim();
-
-        // Amazon image regexes (including landingImage and zoom/dynamic image parsing)
-        const imgMatch = html.match(/id="landingImage"[^>]*src="([^"]+)"/i) ||
-                         html.match(/id="main-image"[^>]*src="([^"]+)"/i) ||
-                         html.match(/data-old-hires="([^"]+)"/i) ||
-                         html.match(/meta name="twitter:image" content="([^"]+)"/i) ||
-                         html.match(/<meta property="og:image" content="([^"]+)"/i) ||
-                         html.match(/"large":"([^"]+)"/i);
-        if (imgMatch) mainImage = imgMatch[1].trim();
-        
-        // Amazon brand regex
-        const brandMatch = html.match(/<a id="bylineInfo"[^>]*>\s*Brand:\s*([^<]+)\s*<\/a>/i) ||
-                           html.match(/Brand:\s*([^<]+)/i);
-        if (brandMatch) brand = brandMatch[1].trim();
-      } else {
-        // Flipkart title regexes
-        const titleMatch = html.match(/<span className="B_NuCI">([^<]+)<\/span>/i) ||
-                           html.match(/<h1[^>]*>\s*([^<]+)\s*<\/h1>/i) ||
-                           html.match(/<title>([^<]+)<\/title>/i);
-        if (titleMatch) title = titleMatch[1].trim();
-
-        // Flipkart description regexes
-        const descMatch = html.match(/<meta name="description" content="([^"]+)"/i) ||
-                          html.match(/<div className="_1mXERD">([^<]+)<\/div>/i);
-        if (descMatch) description = descMatch[1].trim();
-
-        // Flipkart image regexes (including primary detail slider image classes)
-        const imgMatch = html.match(/<meta property="og:image" content="([^"]+)"/i) ||
-                         html.match(/<img [^>]*src="([^"]+)"[^>]*class="[^"]*_396cs4[^"]*"/i) ||
-                         html.match(/<img [^>]*class="[^"]*_396cs4[^"]*"[^>]*src="([^"]+)"/i) ||
-                         html.match(/<img [^>]*src="([^"]+)"[^>]*class="[^"]*_2r_l1t[^"]*"/i);
-        if (imgMatch) mainImage = imgMatch[1].trim();
-
-        // Flipkart brand regex
-        const brandMatch = html.match(/<span className="G6XhY1">([^<]+)<\/span>/i);
-        if (brandMatch) brand = brandMatch[1].trim();
-      }
-
-      // Apply initial sanitization
-      title = sanitizeTextOfStoreBrands(title);
-      description = sanitizeTextOfStoreBrands(description);
-      brand = sanitizeTextOfStoreBrands(brand);
-    }
-  } catch (scrapeErr) {
-    console.error('Failed to parse URL html, invoking fallback parser:', scrapeErr);
-  }
-
-  // Define local sanitizer again for the fallback scope
+  // Sanitizer helper to remove Amazon & Flipkart names and promotional text
   const sanitizeTextOfStoreBrands = (text: string): string => {
     if (!text) return '';
     return text
@@ -473,12 +374,115 @@ export async function importProductFromUrlAction(url: string, targetPrice: numbe
       .trim();
   };
 
+  try {
+    // Attempt standard HTTP request to scrape with redirect follow
+    const res = await fetch(cleanUrl, {
+      redirect: 'follow',
+      headers: {
+        'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36',
+        'Accept-Language': 'en-US,en;q=0.9',
+        'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8',
+        'Cache-Control': 'no-cache',
+        'Pragma': 'no-cache',
+        'Sec-Ch-Ua': '"Chromium";v="122", "Not(A:Brand";v="24", "Google Chrome";v="122"',
+        'Sec-Ch-Ua-Mobile': '?0',
+        'Sec-Ch-Ua-Platform': '"macOS"',
+        'Sec-Fetch-Dest': 'document',
+        'Sec-Fetch-Mode': 'navigate',
+        'Sec-Fetch-Site': 'none',
+        'Sec-Fetch-User': '?1',
+        'Upgrade-Insecure-Requests': '1'
+      },
+      next: { revalidate: 0 } // Bypass Next.js fetch caching
+    });
+
+    if (res.ok) {
+      const html = await res.text();
+
+      // Parse HTML with regex
+      if (isAmazon) {
+        // Amazon title regexes
+        const titleMatch = html.match(/<span id="productTitle"[^>]*>\s*([^<]+)\s*<\/span>/i) || 
+                           html.match(/<meta name="title" content="([^"]+)"/i) ||
+                           html.match(/<meta property="og:title" content="([^"]+)"/i) ||
+                           html.match(/<title>([^<]+)<\/title>/i);
+        if (titleMatch) title = titleMatch[1].trim();
+
+        // Amazon description regexes
+        const descMatch = html.match(/<meta name="description" content="([^"]+)"/i) ||
+                          html.match(/<meta property="og:description" content="([^"]+)"/i) ||
+                          html.match(/<div id="productDescription"[^>]*>\s*<p>\s*([^<]+)\s*<\/p>/i);
+        if (descMatch) description = descMatch[1].trim();
+
+        // Amazon image regexes (including landingImage and zoom/dynamic image parsing)
+        const imgMatch = html.match(/id="landingImage"[^>]*src="([^"]+)"/i) ||
+                         html.match(/id="main-image"[^>]*src="([^"]+)"/i) ||
+                         html.match(/data-old-hires="([^"]+)"/i) ||
+                         html.match(/meta name="twitter:image" content="([^"]+)"/i) ||
+                         html.match(/<meta property="og:image" content="([^"]+)"/i) ||
+                         html.match(/"large":"([^"]+)"/i);
+        if (imgMatch) mainImage = imgMatch[1].trim();
+        
+        // Amazon brand regex
+        const brandMatch = html.match(/<a id="bylineInfo"[^>]*>\s*Brand:\s*([^<]+)\s*<\/a>/i) ||
+                           html.match(/Brand:\s*([^<]+)/i);
+        if (brandMatch) brand = brandMatch[1].trim();
+      } else {
+        // Flipkart title regexes (OpenGraph, Twitter card, Class tags, H1, Title)
+        const titleMatch = html.match(/<meta property="og:title" content="([^"]+)"/i) ||
+                           html.match(/<meta name="twitter:title" content="([^"]+)"/i) ||
+                           html.match(/<meta name="title" content="([^"]+)"/i) ||
+                           html.match(/<span [^>]*class="[^"]*B_NuCI[^"]*"[^>]*>\s*([^<]+)\s*<\/span>/i) ||
+                           html.match(/<span [^>]*class="[^"]*VU-423[^"]*"[^>]*>\s*([^<]+)\s*<\/span>/i) ||
+                           html.match(/<span [^>]*class="[^"]*_2lT163[^"]*"[^>]*>\s*([^<]+)\s*<\/span>/i) ||
+                           html.match(/<h1[^>]*>\s*([^<]+)\s*<\/h1>/i) ||
+                           html.match(/<title>([^<]+)<\/title>/i);
+        if (titleMatch) title = titleMatch[1].trim();
+
+        // Flipkart description regexes
+        const descMatch = html.match(/<meta property="og:description" content="([^"]+)"/i) ||
+                          html.match(/<meta name="description" content="([^"]+)"/i) ||
+                          html.match(/<div [^>]*class="[^"]*_1mXERD[^"]*"[^>]*>\s*([^<]+)\s*<\/div>/i);
+        if (descMatch) description = descMatch[1].trim();
+
+        // Flipkart image regexes (OpenGraph, Twitter card, JSON-LD, Rukminim CDN)
+        const imgMatch = html.match(/<meta property="og:image" content="([^"]+)"/i) ||
+                         html.match(/<meta name="twitter:image" content="([^"]+)"/i) ||
+                         html.match(/"image":\s*\[?"(https:\/\/rukminim[0-9]\.flixcart\.com\/image\/[^"]+)"/i) ||
+                         html.match(/<img [^>]*src="(https:\/\/rukminim[0-9]\.flixcart\.com\/image\/[^"]+)"/i) ||
+                         html.match(/<img [^>]*src="([^"]+)"[^>]*class="[^"]*_396cs4[^"]*"/i) ||
+                         html.match(/<img [^>]*class="[^"]*_396cs4[^"]*"[^>]*src="([^"]+)"/i) ||
+                         html.match(/<img [^>]*src="([^"]+)"[^>]*class="[^"]*_2r_l1t[^"]*"/i);
+        if (imgMatch) mainImage = imgMatch[1].trim();
+
+        // Flipkart brand regex
+        const brandMatch = html.match(/<span [^>]*class="[^"]*G6XhY1[^"]*"[^>]*>\s*([^<]+)\s*<\/span>/i) ||
+                           html.match(/<span [^>]*class="[^"]*m7-21p[^"]*"[^>]*>\s*([^<]+)\s*<\/span>/i) ||
+                           html.match(/<span [^>]*class="[^"]*_2Wk1fc[^"]*"[^>]*>\s*([^<]+)\s*<\/span>/i);
+        if (brandMatch) brand = brandMatch[1].trim();
+      }
+
+      // Upgrade Flipkart low-res image thumbnails to high-res (e.g. 128/128 -> 832/832)
+      if (mainImage && mainImage.includes('rukminim')) {
+        mainImage = mainImage.replace(/\/image\/\d+\/\d+\//, '/image/832/832/');
+      }
+
+      // Apply initial sanitization
+      title = sanitizeTextOfStoreBrands(title);
+      description = sanitizeTextOfStoreBrands(description);
+      brand = sanitizeTextOfStoreBrands(brand);
+    }
+  } catch (scrapeErr) {
+    console.error('Failed to parse URL html, invoking fallback parser:', scrapeErr);
+  }
+
   // Resilient Fallback: If scraper is blocked or returns generic values, parse the URL path!
   if (!title || title.toLowerCase().includes('robot check') || title.toLowerCase().includes('security check') || title.toLowerCase().includes('captcha')) {
     try {
-      const urlObj = new URL(cleanUrl);
-      const pathParts = urlObj.pathname.split('/');
-      
+      const targetUrl = cleanUrl.split('?')[0];
+      const urlObj = new URL(targetUrl);
+      const pathParts = urlObj.pathname.split('/').filter(Boolean);
+
       if (isAmazon) {
         // Amazon URL typical form: /Nike-Mens-Air-Max-Running/dp/B08XXX or /dp/B08XXX
         const dpIdx = pathParts.indexOf('dp');
@@ -486,21 +490,20 @@ export async function importProductFromUrlAction(url: string, targetPrice: numbe
         if (dpIdx > 0) {
           rawSlug = pathParts[dpIdx - 1];
         } else {
-          // Look for any part that looks like product description and is long
-          rawSlug = pathParts.find(p => p.length > 10 && !p.includes('.') && p !== 'dp') || '';
+          rawSlug = pathParts.find(p => p.length > 8 && !p.includes('.') && p !== 'dp') || '';
         }
         
         if (rawSlug) {
           title = rawSlug.replace(/[-_]+/g, ' ');
         }
       } else if (isFlipkart) {
-        // Flipkart URL typical form: /nike-air-zoom-pegasus-38-running-shoe-men/p/itmxxx
+        // Flipkart URL typical form: /puma-smashic-comfort-casual-sneakers-men/p/itm5d13a96860dbd
         const pIdx = pathParts.indexOf('p');
         let rawSlug = '';
         if (pIdx > 0) {
           rawSlug = pathParts[pIdx - 1];
         } else {
-          rawSlug = pathParts.find(p => p.length > 10 && !p.includes('.') && p !== 'p') || '';
+          rawSlug = pathParts.find(p => p.length > 8 && !p.includes('.') && p !== 'p' && !p.startsWith('itm')) || '';
         }
         
         if (rawSlug) {
