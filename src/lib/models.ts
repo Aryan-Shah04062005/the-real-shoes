@@ -47,6 +47,8 @@ const ProductSchema = new Schema({
   status: { type: String, enum: ['ACTIVE', 'DRAFT', 'HIDDEN', 'OUT_OF_STOCK', 'ARCHIVED'], default: 'ACTIVE' },
   sourcePlatform: { type: String, enum: ['AMAZON', 'FLIPKART', 'MANUAL', 'THE_REAL'], default: 'THE_REAL' },
   sourceUrl: { type: String },
+  sourceProductId: { type: String },
+  sourcePrice: { type: Number },
   sizeStock: { type: Map, of: Number },
   updatedAt: { type: String }
 }, { timestamps: true });

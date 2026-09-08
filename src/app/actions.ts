@@ -294,6 +294,8 @@ export async function saveProductAction(productData: Partial<Product> & { id?: s
       status: status,
       sourcePlatform: productData.sourcePlatform || 'MANUAL',
       sourceUrl: productData.sourceUrl || '',
+      sourceProductId: productData.sourceProductId || '',
+      sourcePrice: productData.sourcePrice || price,
       updatedAt: new Date().toISOString()
     };
     
@@ -516,15 +518,29 @@ export async function importProductFromUrlAction(url: string, targetPrice: numbe
     return { success: false, error: 'Only Amazon or Flipkart URLs are supported.' };
   }
 
-  // Duplicate URL check
-  const dupCheck = await checkDuplicateProduct(cleanUrl);
+  let sourceProductId = '';
+  if (isFlipkart) {
+    const itmMatch = cleanUrl.match(/\/p\/(itm[a-zA-Z0-9]+)/i) || cleanUrl.match(/(itm[a-zA-Z0-9]{10,})/i);
+    if (itmMatch) {
+      sourceProductId = itmMatch[1] || itmMatch[0];
+    } else {
+      const pidMatch = cleanUrl.match(/[?&]pid=([a-zA-Z0-9]+)/i);
+      if (pidMatch) sourceProductId = pidMatch[1];
+    }
+  } else if (isAmazon) {
+    const dpMatch = cleanUrl.match(/\/dp\/([A-Z0-9]{10})/i) || cleanUrl.match(/\/gp\/product\/([A-Z0-9]{10})/i);
+    if (dpMatch) sourceProductId = dpMatch[1];
+  }
+
+  // Duplicate URL & ID check
+  const dupCheck = await checkDuplicateProduct(cleanUrl, undefined, undefined, undefined, sourceProductId);
   if (dupCheck.exists && dupCheck.existingProduct) {
     return {
       success: true,
       isDuplicate: true,
       duplicateProduct: dupCheck.existingProduct,
       preview: null,
-      error: 'This product link or title has already been imported.'
+      error: 'This product link or ID has already been imported to your store.'
     };
   }
 
@@ -969,6 +985,8 @@ export async function importProductFromUrlAction(url: string, targetPrice: numbe
     status: 'ACTIVE',
     sourcePlatform: sourcePlatform as any,
     sourceUrl: cleanUrl,
+    sourceProductId: sourceProductId,
+    sourcePrice: targetPrice,
     updatedAt: new Date().toISOString()
   };
 

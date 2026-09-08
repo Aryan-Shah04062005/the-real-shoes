@@ -55,6 +55,8 @@ export interface Product {
   status?: 'ACTIVE' | 'DRAFT' | 'HIDDEN' | 'OUT_OF_STOCK' | 'ARCHIVED';
   sourcePlatform?: 'AMAZON' | 'FLIPKART' | 'MANUAL' | 'THE_REAL';
   sourceUrl?: string;
+  sourceProductId?: string;
+  sourcePrice?: number;
   updatedAt?: string;
 }
 
@@ -506,9 +508,14 @@ export async function restoreProduct(id: string): Promise<boolean> {
   }
 }
 
-export async function checkDuplicateProduct(sourceUrl?: string, sku?: string, name?: string, brand?: string): Promise<{ exists: boolean; existingProduct?: Product }> {
+export async function checkDuplicateProduct(sourceUrl?: string, sku?: string, name?: string, brand?: string, sourceProductId?: string): Promise<{ exists: boolean; existingProduct?: Product }> {
   const products = await getProductsList();
   
+  if (sourceProductId && sourceProductId.trim()) {
+    const foundBySourceId = products.find(p => p.sourceProductId && p.sourceProductId.trim().toLowerCase() === sourceProductId.trim().toLowerCase());
+    if (foundBySourceId) return { exists: true, existingProduct: foundBySourceId };
+  }
+
   if (sourceUrl && sourceUrl.trim()) {
     const foundByUrl = products.find(p => p.sourceUrl && p.sourceUrl.trim().toLowerCase() === sourceUrl.trim().toLowerCase());
     if (foundByUrl) return { exists: true, existingProduct: foundByUrl };

@@ -101,6 +101,7 @@ export default function DashboardClient({ initialDb }: DashboardClientProps) {
   // Import Preview Modal state
   const [importPreviewProduct, setImportPreviewProduct] = useState<Partial<Product> | null>(null);
   const [duplicateWarning, setDuplicateWarning] = useState<{ duplicateProduct: Product; newPreview: Partial<Product> } | null>(null);
+  const [successModalProduct, setSuccessModalProduct] = useState<Product | null>(null);
 
   // Audit logs state
   const [auditLogs, setAuditLogs] = useState<AuditLog[]>([]);
@@ -308,11 +309,13 @@ export default function DashboardClient({ initialDb }: DashboardClientProps) {
         nextProducts.unshift(res.product);
       }
       syncLocalState({ products: nextProducts });
+      const published = res.product;
       setImportPreviewProduct(null);
       setImportUrl('');
       setImportPrice('');
       setImportStatus('idle');
       setImportMessage('');
+      setSuccessModalProduct(published);
     } else {
       triggerStatus('error', res.error || 'Failed to publish product.');
     }
@@ -1934,9 +1937,9 @@ export default function DashboardClient({ initialDb }: DashboardClientProps) {
               <div>
                 <h3 className="text-base font-black uppercase tracking-widest text-royal-blue flex items-center gap-2">
                   <Compass className="h-5 w-5 text-royal-blue" />
-                  IMPORT PREVIEW & REVIEW
+                  IMPORT PRODUCT PREVIEW & REVIEW
                 </h3>
-                <p className="text-xs text-slate-400">Verify scraped product details before importing to your live catalog</p>
+                <p className="text-xs text-slate-400">Verify imported product details before saving to THE REAL store database</p>
               </div>
               <button onClick={() => setImportPreviewProduct(null)} className="text-xs text-slate-500 hover:text-white">
                 Close
@@ -1946,7 +1949,7 @@ export default function DashboardClient({ initialDb }: DashboardClientProps) {
             <div className="space-y-4 text-xs">
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                 <div className="sm:col-span-2 space-y-1">
-                  <label className="text-[9px] font-bold uppercase text-slate-500 block">Product Name</label>
+                  <label className="text-[9px] font-bold uppercase text-slate-500 block">Product Name / Title</label>
                   <input
                     type="text"
                     value={importPreviewProduct.name || ''}
@@ -1965,38 +1968,37 @@ export default function DashboardClient({ initialDb }: DashboardClientProps) {
                 </div>
               </div>
 
-              <div className="grid grid-cols-3 gap-4">
+              {/* Price Management Section */}
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 bg-white/5 p-3 rounded-2xl border border-white/10">
                 <div className="space-y-1">
-                  <label className="text-[9px] font-bold uppercase text-slate-500 block">Selling Price (₹)</label>
-                  <input
-                    type="number"
-                    value={importPreviewProduct.price || 0}
-                    onChange={(e) => setImportPreviewProduct({ ...importPreviewProduct, price: Number(e.target.value) })}
-                    className="w-full rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-white font-bold"
-                  />
+                  <label className="text-[9px] font-bold uppercase text-slate-400 block">Source Price (₹)</label>
+                  <div className="w-full rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-slate-300 font-mono font-bold">
+                    ₹{importPreviewProduct.sourcePrice || importPreviewProduct.price || 0}
+                  </div>
                 </div>
                 <div className="space-y-1">
-                  <label className="text-[9px] font-bold uppercase text-slate-500 block">Original Price (₹)</label>
+                  <label className="text-[9px] font-bold uppercase text-slate-400 block">MRP (Original Price ₹)</label>
                   <input
                     type="number"
                     value={importPreviewProduct.originalPrice || 0}
                     onChange={(e) => setImportPreviewProduct({ ...importPreviewProduct, originalPrice: Number(e.target.value) })}
-                    className="w-full rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-white"
+                    className="w-full rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-white font-mono"
                   />
                 </div>
                 <div className="space-y-1">
-                  <label className="text-[9px] font-bold uppercase text-slate-500 block">Discount %</label>
-                  <div className="w-full rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-green-400 font-bold">
-                    {importPreviewProduct.originalPrice && importPreviewProduct.originalPrice > (importPreviewProduct.price || 0)
-                      ? `${Math.round(((importPreviewProduct.originalPrice - (importPreviewProduct.price || 0)) / importPreviewProduct.originalPrice) * 100)}% OFF`
-                      : '0% OFF'}
-                  </div>
+                  <label className="text-[9px] font-bold uppercase text-royal-blue block">THE REAL Selling Price (₹)</label>
+                  <input
+                    type="number"
+                    value={importPreviewProduct.price || 0}
+                    onChange={(e) => setImportPreviewProduct({ ...importPreviewProduct, price: Number(e.target.value) })}
+                    className="w-full rounded-xl border border-royal-blue/50 bg-royal-blue/10 px-3 py-2 text-white font-bold font-mono"
+                  />
                 </div>
               </div>
 
               {/* Scraped Image Preview */}
               <div className="space-y-1">
-                <label className="text-[9px] font-bold uppercase text-slate-500 block">Scraped Main Image URL</label>
+                <label className="text-[9px] font-bold uppercase text-slate-500 block">Main Image URL</label>
                 <div className="flex gap-3 items-center">
                   <input
                     type="text"
@@ -2010,21 +2012,33 @@ export default function DashboardClient({ initialDb }: DashboardClientProps) {
                 </div>
               </div>
 
-              {/* Scraped Description */}
+              {/* Description */}
               <div className="space-y-1">
                 <label className="text-[9px] font-bold uppercase text-slate-500 block">Description</label>
                 <textarea
                   rows={3}
                   value={importPreviewProduct.description || ''}
                   onChange={(e) => setImportPreviewProduct({ ...importPreviewProduct, description: e.target.value })}
-                  className="w-full rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-white resize-none"
+                  className="w-full rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-white resize-none text-[11px]"
                 />
               </div>
 
-              {/* Source Platform Badge */}
-              <div className="flex items-center gap-2 bg-white/5 p-3 rounded-xl border border-white/10">
-                <span className="text-[10px] text-slate-400 font-bold uppercase">Source Platform:</span>
-                <span className="text-xs font-black text-royal-blue uppercase">{importPreviewProduct.sourcePlatform || 'Imported'}</span>
+              {/* Source Badges */}
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 bg-white/5 p-3 rounded-xl border border-white/10 text-[11px]">
+                <div>
+                  <span className="text-[9px] text-slate-400 font-bold uppercase block">Source Platform:</span>
+                  <span className="font-black text-royal-blue uppercase">{importPreviewProduct.sourcePlatform || 'FLIPKART'}</span>
+                </div>
+                {importPreviewProduct.sourceProductId && (
+                  <div>
+                    <span className="text-[9px] text-slate-400 font-bold uppercase block">Source Product ID:</span>
+                    <span className="font-mono text-white font-bold">{importPreviewProduct.sourceProductId}</span>
+                  </div>
+                )}
+                <div>
+                  <span className="text-[9px] text-slate-400 font-bold uppercase block">Rating / Sizes:</span>
+                  <span className="text-amber-400 font-bold">⭐ {importPreviewProduct.rating || 4.2}</span> &bull; <span className="text-slate-300 font-mono">Sizes: 6-11</span>
+                </div>
               </div>
             </div>
 
@@ -2042,9 +2056,54 @@ export default function DashboardClient({ initialDb }: DashboardClientProps) {
                 disabled={isSubmitting}
                 className="rounded-xl bg-royal-blue hover:bg-royal-blue-hover px-6 py-2.5 text-xs font-bold uppercase tracking-widest text-white disabled:opacity-50 shadow-lg shadow-royal-blue/20"
               >
-                {isSubmitting ? 'SAVING...' : 'IMPORT TO STORE'}
+                {isSubmitting ? 'SAVING TO DATABASE...' : 'SAVE TO THE REAL STORE'}
               </button>
             </div>
+          </div>
+        </div>
+      )}
+
+      {/* SUCCESS CONFIRMATION MODAL */}
+      {successModalProduct && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/90 backdrop-blur-md text-left">
+          <div className="glass-panel w-full max-w-md rounded-3xl border border-green-500/30 bg-slate-900 p-6 shadow-2xl space-y-6 text-center">
+            <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-green-500/20 text-green-400 border border-green-500/30">
+              <CheckCircle className="h-8 w-8" />
+            </div>
+            
+            <div className="space-y-2">
+              <h3 className="text-base font-black uppercase text-white tracking-wider">✓ Product Added Successfully</h3>
+              <p className="text-xs text-slate-200 font-bold uppercase">{successModalProduct.name}</p>
+              <div className="p-2 rounded-xl bg-white/5 border border-white/10 text-[11px] font-mono text-slate-400">
+                Product ID: <span className="text-white font-bold">{successModalProduct.id}</span>
+              </div>
+            </div>
+
+            <div className="flex gap-3 pt-2">
+              <a
+                href={`/product/${successModalProduct.id}`}
+                target="_blank"
+                rel="noreferrer"
+                className="flex-1 rounded-xl bg-royal-blue hover:bg-royal-blue-hover py-3 text-xs font-bold uppercase tracking-wider text-white text-center shadow-lg shadow-royal-blue/20"
+              >
+                VIEW PRODUCT
+              </a>
+              <a
+                href="/shop"
+                target="_blank"
+                rel="noreferrer"
+                className="flex-1 rounded-xl border border-white/15 bg-white/5 hover:bg-white/10 py-3 text-xs font-bold uppercase tracking-wider text-slate-300 hover:text-white text-center"
+              >
+                VIEW IN SHOP
+              </a>
+            </div>
+
+            <button
+              onClick={() => setSuccessModalProduct(null)}
+              className="text-xs text-slate-500 hover:text-white pt-1 block mx-auto"
+            >
+              Close
+            </button>
           </div>
         </div>
       )}
