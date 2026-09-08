@@ -130,7 +130,12 @@ export default function ShopClient({ initialProducts }: ShopClientProps) {
     // Sorting
     switch (sortBy) {
       case 'newest':
-        return result.sort((a, b) => (b.isNewArrival ? 1 : 0) - (a.isNewArrival ? 1 : 0));
+        return result.sort((a, b) => {
+          const tA = new Date(a.updatedAt || 0).getTime();
+          const tB = new Date(b.updatedAt || 0).getTime();
+          if (tB !== tA) return tB - tA;
+          return (b.isNewArrival ? 1 : 0) - (a.isNewArrival ? 1 : 0);
+        });
       case 'popular':
         return result.sort((a, b) => (b.isBestSeller ? 1 : 0) - (a.isBestSeller ? 1 : 0));
       case 'price-asc':
@@ -140,7 +145,11 @@ export default function ShopClient({ initialProducts }: ShopClientProps) {
       case 'rating-desc':
         return result.sort((a, b) => b.rating - a.rating);
       default: // 'featured'
-        return result;
+        return result.sort((a, b) => {
+          const tA = new Date(a.updatedAt || 0).getTime();
+          const tB = new Date(b.updatedAt || 0).getTime();
+          return tB - tA;
+        });
     }
   }, [
     initialProducts,

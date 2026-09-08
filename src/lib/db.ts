@@ -373,15 +373,11 @@ export function isValidProductImage(mainImage?: string): boolean {
   if (trimmed === '/images/placeholder.png' || trimmed === 'placeholder') {
     return false;
   }
-  if (trimmed.startsWith('http://') || trimmed.startsWith('https://')) {
+  if (trimmed.startsWith('http://') || trimmed.startsWith('https://') || trimmed.startsWith('//') || trimmed.startsWith('data:image/') || trimmed.startsWith('blob:')) {
     return true;
   }
   if (trimmed.startsWith('/')) {
-    return !trimmed.includes('/images/shoes/genesis_') && 
-           !trimmed.includes('/images/shoes/horizon_') && 
-           !trimmed.includes('/images/shoes/apex_') && 
-           !trimmed.includes('/images/shoes/stealth_') && 
-           !trimmed.includes('/images/shoes/retro_');
+    return true;
   }
   return false;
 }
@@ -392,9 +388,14 @@ export async function getProductsList(): Promise<Product[]> {
   const isMongo = await isMongoDBConnected();
   if (isMongo) {
     await seedMongoDBIfNeeded();
-    products = await ProductModel.find({}).sort({ createdAt: -1 }).lean() as unknown as Product[];
+    products = await ProductModel.find({}).sort({ updatedAt: -1, createdAt: -1 }).lean() as unknown as Product[];
   } else {
     products = readDB().products;
+    products = [...products].sort((a, b) => {
+      const timeA = new Date(a.updatedAt || 0).getTime();
+      const timeB = new Date(b.updatedAt || 0).getTime();
+      return timeB - timeA;
+    });
   }
 
   return products.filter(p => isValidProductImage(p.mainImage) || (p.images && p.images.some(img => isValidProductImage(img))));

@@ -15,6 +15,7 @@ import {
   archiveProduct,
   restoreProduct,
   checkDuplicateProduct,
+  isValidProductImage,
   addAuditLog,
   getAuditLogsList,
   getOrdersList,
@@ -217,7 +218,7 @@ export async function saveProductAction(productData: Partial<Product> & { id?: s
   }
 
   const mainImg = (productData.mainImage || (productData.images && productData.images[0]) || '').trim();
-  if (!mainImg || mainImg.includes('/images/shoes/')) {
+  if (!mainImg || !isValidProductImage(mainImg)) {
     return { success: false, error: 'A valid product image URL is required to add or update this shoe.' };
   }
 
