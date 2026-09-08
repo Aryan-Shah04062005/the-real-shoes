@@ -216,6 +216,11 @@ export async function saveProductAction(productData: Partial<Product> & { id?: s
     return { success: false, error: 'Stock cannot be negative.' };
   }
 
+  const mainImg = (productData.mainImage || (productData.images && productData.images[0]) || '').trim();
+  if (!mainImg || mainImg.includes('/images/shoes/')) {
+    return { success: false, error: 'A valid product image URL is required to add or update this shoe.' };
+  }
+
   const originalPrice = productData.originalPrice ?? productData.price ?? 0;
   const price = productData.price ?? originalPrice;
   const discountPercentage = originalPrice > price ? Math.round(((originalPrice - price) / originalPrice) * 100) : 0;
@@ -277,8 +282,8 @@ export async function saveProductAction(productData: Partial<Product> & { id?: s
       rating: 5.0,
       reviews: [],
       tags: productData.tags || [],
-      images: productData.images || ['/images/shoes/genesis_blue.png'],
-      mainImage: productData.mainImage || (productData.images && productData.images[0]) || '/images/shoes/genesis_blue.png',
+      images: (productData.images && productData.images.length > 0) ? productData.images : [mainImg],
+      mainImage: mainImg,
       isNewArrival: productData.isNewArrival ?? true,
       isBestSeller: productData.isBestSeller ?? false,
       isTrending: productData.isTrending ?? false,
@@ -771,21 +776,20 @@ export async function importProductFromUrlAction(url: string, targetPrice: numbe
     description = sanitizeTextOfStoreBrands(description);
   }
 
+  const validScrapedImages = extractedImages.filter(img => img && img.startsWith('http'));
   if (!mainImage || !mainImage.startsWith('http')) {
-    // Choose a fallback base image based on category
-    if (category.toLowerCase() === 'running') {
-      mainImage = '/images/shoes/genesis_blue.png';
-    } else if (category.toLowerCase() === 'sport') {
-      mainImage = '/images/shoes/apex_black.png';
-    } else if (category.toLowerCase() === 'casual') {
-      mainImage = '/images/shoes/retro_white.png';
+    if (validScrapedImages.length > 0) {
+      mainImage = validScrapedImages[0];
     } else {
-      mainImage = '/images/shoes/horizon_light.png';
+      return {
+        success: false,
+        error: 'No valid product image could be scraped from this link. Please enter the image URL manually.'
+      };
     }
   }
 
   // Build full images list
-  const allImages = extractedImages.length > 0 ? extractedImages.slice(0, 6) : [mainImage];
+  const allImages = validScrapedImages.length > 0 ? validScrapedImages.slice(0, 6) : [mainImage];
   if (!allImages.includes(mainImage) && mainImage.startsWith('http')) {
     allImages.unshift(mainImage);
   }

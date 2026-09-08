@@ -44,10 +44,10 @@ export default function QuickViewModal() {
           {/* Product Image */}
           <div className="relative aspect-square w-full rounded-xl bg-gradient-to-br from-slate-900 via-slate-950 to-black p-4 flex items-center justify-center border border-white/5">
             <img
-              src={quickViewProduct.mainImage || quickViewProduct.images?.[0] || '/images/shoes/genesis_blue.png'}
+              src={quickViewProduct.mainImage || quickViewProduct.images?.[0] || '/images/placeholder-shoe.svg'}
               alt={quickViewProduct.name}
               onError={(e) => {
-                e.currentTarget.src = '/images/shoes/genesis_blue.png';
+                e.currentTarget.src = '/images/placeholder-shoe.svg';
               }}
               className="h-full w-full object-contain"
             />

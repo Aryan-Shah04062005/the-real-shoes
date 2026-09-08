@@ -547,15 +547,34 @@ export async function getFullDb(): Promise<DatabaseSchema> {
   }
 }
 
+export function isValidProductImage(mainImage?: string): boolean {
+  if (!mainImage || typeof mainImage !== 'string' || !mainImage.trim()) return false;
+  const trimmed = mainImage.trim();
+  if (trimmed === '/images/placeholder.png' || trimmed.includes('/images/shoes/') || trimmed === 'placeholder') {
+    return false;
+  }
+  if (trimmed.startsWith('http://') || trimmed.startsWith('https://')) {
+    return true;
+  }
+  if (trimmed.startsWith('/')) {
+    const localPath = path.join(process.cwd(), 'public', trimmed);
+    return fs.existsSync(localPath);
+  }
+  return false;
+}
+
 // 2. Product operations
 export async function getProductsList(): Promise<Product[]> {
+  let products: Product[] = [];
   const isMongo = await isMongoDBConnected();
   if (isMongo) {
     await seedMongoDBIfNeeded();
-    return await ProductModel.find({}).sort({ createdAt: -1 }).lean() as unknown as Product[];
+    products = await ProductModel.find({}).sort({ createdAt: -1 }).lean() as unknown as Product[];
   } else {
-    return readDB().products;
+    products = readDB().products;
   }
+
+  return products.filter(p => isValidProductImage(p.mainImage) || (p.images && p.images.some(img => isValidProductImage(img))));
 }
 
 export async function getProductById(id: string): Promise<Product | null> {

@@ -843,8 +843,8 @@ export default function DashboardClient({ initialDb }: DashboardClientProps) {
                       gender: 'Unisex',
                       stock: 10,
                       tags: [],
-                      images: ['/images/shoes/genesis_blue.png'],
-                      mainImage: '/images/shoes/genesis_blue.png',
+                      images: [],
+                      mainImage: '',
                       isNewArrival: true,
                       isBestSeller: false,
                       isSale: false
@@ -1043,7 +1043,7 @@ export default function DashboardClient({ initialDb }: DashboardClientProps) {
                             alt="Live Preview" 
                             className="h-full w-full object-contain"
                             onError={(e) => {
-                              e.currentTarget.src = '/images/shoes/genesis_blue.png';
+                              e.currentTarget.src = '/images/placeholder-shoe.svg';
                             }}
                           />
                         </div>
@@ -1295,7 +1295,7 @@ export default function DashboardClient({ initialDb }: DashboardClientProps) {
                             <td className="px-6 py-4">
                               <div className="flex items-center gap-3">
                                 <div className="h-10 w-10 rounded-lg bg-black/60 p-1 flex items-center justify-center shrink-0 border border-white/10">
-                                  <img src={product.mainImage || '/images/shoes/genesis_blue.png'} alt={product.name} className="h-full w-full object-contain" />
+                                  <img src={product.mainImage || '/images/placeholder-shoe.svg'} alt={product.name} onError={(e) => { e.currentTarget.src = '/images/placeholder-shoe.svg'; }} className="h-full w-full object-contain" />
                                 </div>
                                 <div>
                                   <span className="font-bold text-white uppercase block">{product.name}</span>

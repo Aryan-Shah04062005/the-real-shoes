@@ -104,9 +104,10 @@ export default function CartDrawer() {
                       {/* Image Container */}
                       <div className="relative h-24 w-24 flex-shrink-0 overflow-hidden rounded-xl border border-white/10 bg-slate-900 flex items-center justify-center">
                         <img
-                          src={item.product.mainImage || item.product.images?.[0] || '/images/shoes/genesis_blue.png'}
+                          src={item.product.mainImage || item.product.images?.[0] || '/images/placeholder-shoe.svg'}
                           alt={item.product.name}
                           className="h-full w-full object-contain p-2"
+                          onError={(e) => { e.currentTarget.src = '/images/placeholder-shoe.svg'; }}
                         />
                       </div>
 

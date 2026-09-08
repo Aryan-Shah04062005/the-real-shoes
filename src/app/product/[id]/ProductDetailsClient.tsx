@@ -101,7 +101,7 @@ export default function ProductDetailsClient({ product }: ProductDetailsClientPr
               src={galleryImages[activeImageIndex] || galleryImages[0]}
               alt={product.name}
               onError={(e) => {
-                e.currentTarget.src = '/images/shoes/genesis_blue.png';
+                e.currentTarget.src = '/images/placeholder-shoe.svg';
               }}
               className="h-full w-full object-contain transition-transform duration-500 group-hover:scale-105"
             />
@@ -124,7 +124,7 @@ export default function ProductDetailsClient({ product }: ProductDetailsClientPr
                     src={img} 
                     alt={`${product.name} thumbnail ${idx + 1}`} 
                     onError={(e) => {
-                      e.currentTarget.src = '/images/shoes/genesis_blue.png';
+                      e.currentTarget.src = '/images/placeholder-shoe.svg';
                     }}
                     className="h-full w-full object-contain" 
                   />

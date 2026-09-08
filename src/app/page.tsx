@@ -53,10 +53,10 @@ export default async function HomePage() {
   ];
 
   const socialGrid = [
-    '/images/shoes/genesis_blue.png',
-    '/images/shoes/genesis_silver.png',
-    '/images/shoes/genesis_black.png',
     '/images/brand/logo.jpg',
+    '/images/placeholder-shoe.svg',
+    '/images/brand/logo.jpg',
+    '/images/placeholder-shoe.svg',
   ];
 
   return (
@@ -246,8 +246,9 @@ export default async function HomePage() {
 
           <div className="relative w-full lg:w-1/2 aspect-video rounded-2xl overflow-hidden border border-white/10 bg-black flex items-center justify-center">
             <img
-              src="/images/shoes/genesis_blue.png"
+              src={activeProducts[0]?.mainImage || '/images/brand/logo.jpg'}
               alt="THE REAL SNEAKER COLLECTION"
+              onError={(e) => { e.currentTarget.src = '/images/brand/logo.jpg'; }}
               className="h-full w-full object-contain p-6 hover:scale-105 transition-transform duration-500"
             />
           </div>

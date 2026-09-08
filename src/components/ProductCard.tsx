@@ -86,10 +86,10 @@ export default function ProductCard({ product }: ProductCardProps) {
         <div className="relative h-52 sm:h-60 w-full rounded-xl bg-gradient-to-br from-slate-900 via-slate-950 to-black flex items-center justify-center overflow-hidden border border-white/5 group-hover:border-white/15 transition-all">
           <div className="absolute inset-0 bg-royal-blue/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
           <img
-            src={product.mainImage || product.images?.[0] || '/images/shoes/genesis_blue.png'}
+            src={product.mainImage || product.images?.[0] || '/images/placeholder-shoe.svg'}
             alt={product.name}
             onError={(e) => {
-              e.currentTarget.src = '/images/shoes/genesis_blue.png';
+              e.currentTarget.src = '/images/placeholder-shoe.svg';
             }}
             className="z-10 h-full w-full object-contain p-4 group-hover:scale-105 transition-transform duration-300 ease-out"
           />
