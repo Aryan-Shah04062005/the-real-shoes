@@ -2,8 +2,6 @@ import React from 'react';
 import Link from 'next/link';
 import { getFullDb, isValidProductImage } from '@/lib/db';
 import ProductCard from '@/components/ProductCard';
-import QuickViewModal from '@/components/QuickViewModal';
-import SizeGuideModal from '@/components/SizeGuideModal';
 import { 
   ArrowRight, 
   Sparkles, 
@@ -61,8 +59,6 @@ export default async function HomePage() {
 
   return (
     <div className="relative w-full overflow-hidden">
-      <QuickViewModal />
-      <SizeGuideModal />
 
       {/* BACKGROUND GLOWS */}
       <div className="glow-blue top-[10%] left-[-100px]" />

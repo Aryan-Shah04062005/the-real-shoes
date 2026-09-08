@@ -5,7 +5,8 @@ import { CartProvider } from "@/context/CartContext";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import CartDrawer from "@/components/CartDrawer";
-
+import QuickViewModal from "@/components/QuickViewModal";
+import SizeGuideModal from "@/components/SizeGuideModal";
 import RegisterSW from "@/components/RegisterSW";
 
 const geistSans = Geist({
@@ -116,6 +117,8 @@ export default function RootLayout({
         <CartProvider>
           <Navbar />
           <CartDrawer />
+          <QuickViewModal />
+          <SizeGuideModal />
           <main className="flex-grow flex flex-col relative z-10">
             {children}
           </main>
