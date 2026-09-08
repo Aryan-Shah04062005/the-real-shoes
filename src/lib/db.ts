@@ -457,39 +457,68 @@ export async function getDatabaseStatus(): Promise<{
   };
 }
 
-export async function deleteProduct(id: string): Promise<{ success: boolean; mode: 'deleted' | 'archived' | 'not_found' }> {
+export async function deleteProduct(idOrName: string): Promise<{ success: boolean; mode: 'deleted' | 'archived' | 'not_found' }> {
   const orders = await getOrdersList();
-  const hasOrders = orders.some(o => o.items && o.items.some(i => i.productId === id));
-  
   const isMongo = await isMongoDBConnected();
+  const targetQuery = idOrName.trim().toLowerCase();
 
-  if (hasOrders) {
-    // Soft Archive to prevent breaking historical order items!
-    if (isMongo) {
-      await ProductModel.updateOne({ id }, { status: 'ARCHIVED', updatedAt: new Date().toISOString() });
-    } else {
-      const db = readDB();
-      const p = db.products.find(p => p.id === id);
-      if (p) {
-        p.status = 'ARCHIVED';
-        p.updatedAt = new Date().toISOString();
-        writeDB(db);
+  if (isMongo) {
+    const prods = await ProductModel.find({
+      $or: [
+        { id: idOrName },
+        { id: targetQuery },
+        { name: { $regex: new RegExp('^' + idOrName.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, '\\$&') + '$', 'i') } }
+      ]
+    });
+
+    if (prods.length === 0) return { success: false, mode: 'not_found' };
+
+    let mode: 'deleted' | 'archived' = 'deleted';
+    for (const prod of prods) {
+      const hasOrders = orders.some(o => o.items && o.items.some(i => i.productId === prod.id));
+      if (hasOrders) {
+        await ProductModel.updateOne({ id: prod.id }, { status: 'ARCHIVED', updatedAt: new Date().toISOString() });
+        mode = 'archived';
+      } else {
+        await ProductModel.deleteOne({ id: prod.id });
       }
     }
-    return { success: true, mode: 'archived' };
+
+    return { success: true, mode };
   } else {
-    // Hard delete
-    if (isMongo) {
-      const res = await ProductModel.deleteOne({ id });
-      return { success: res.deletedCount > 0, mode: res.deletedCount > 0 ? 'deleted' : 'not_found' };
-    } else {
-      const db = readDB();
-      const index = db.products.findIndex(p => p.id === id);
-      if (index === -1) return { success: false, mode: 'not_found' };
-      db.products.splice(index, 1);
-      writeDB(db);
-      return { success: true, mode: 'deleted' };
+    const db = readDB();
+    const matchingIndices: number[] = [];
+
+    db.products.forEach((p, idx) => {
+      if (
+        p.id === idOrName ||
+        p.id.toLowerCase() === targetQuery ||
+        p.name.toLowerCase() === targetQuery ||
+        p.name.toLowerCase().trim() === targetQuery.trim()
+      ) {
+        matchingIndices.push(idx);
+      }
+    });
+
+    if (matchingIndices.length === 0) return { success: false, mode: 'not_found' };
+
+    let mode: 'deleted' | 'archived' = 'deleted';
+    for (let i = matchingIndices.length - 1; i >= 0; i--) {
+      const idx = matchingIndices[i];
+      const targetProd = db.products[idx];
+      const hasOrders = orders.some(o => o.items && o.items.some(i => i.productId === targetProd.id));
+
+      if (hasOrders) {
+        targetProd.status = 'ARCHIVED';
+        targetProd.updatedAt = new Date().toISOString();
+        mode = 'archived';
+      } else {
+        db.products.splice(idx, 1);
+      }
     }
+
+    writeDB(db);
+    return { success: true, mode };
   }
 }
 
