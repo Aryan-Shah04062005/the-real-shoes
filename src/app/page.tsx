@@ -23,9 +23,13 @@ export default async function HomePage() {
   const db = await getFullDb();
   const { websiteContent, products } = db;
 
-  const newArrivals = products.filter((p) => p.isNewArrival).slice(0, 6);
-  const bestSellers = products.filter((p) => p.isBestSeller).slice(0, 6);
-  const trending = products.slice(0, 6);
+  const activeProducts = products.filter(
+    (p) => !p.status || p.status === 'ACTIVE' || p.status === 'OUT_OF_STOCK'
+  );
+
+  const newArrivals = activeProducts.filter((p) => p.isNewArrival).slice(0, 6);
+  const bestSellers = activeProducts.filter((p) => p.isBestSeller).slice(0, 6);
+  const trending = activeProducts.slice(0, 6);
 
   const trustIndicators = [
     { icon: Truck, label: 'Free Shipping', desc: 'On orders over ₹3,000 across India' },

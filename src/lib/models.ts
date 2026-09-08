@@ -42,7 +42,13 @@ const ProductSchema = new Schema({
   isNewArrival: { type: Boolean, required: true, default: false },
   isBestSeller: { type: Boolean, required: true, default: false },
   isTrending: { type: Boolean, required: true, default: false },
-  isSale: { type: Boolean, required: true, default: false }
+  isFeatured: { type: Boolean, required: true, default: false },
+  isSale: { type: Boolean, required: true, default: false },
+  status: { type: String, enum: ['ACTIVE', 'DRAFT', 'HIDDEN', 'OUT_OF_STOCK', 'ARCHIVED'], default: 'ACTIVE' },
+  sourcePlatform: { type: String, enum: ['AMAZON', 'FLIPKART', 'MANUAL', 'THE_REAL'], default: 'THE_REAL' },
+  sourceUrl: { type: String },
+  sizeStock: { type: Map, of: Number },
+  updatedAt: { type: String }
 }, { timestamps: true });
 
 // 3. Order Item Schema
@@ -149,9 +155,20 @@ const WebsiteContentSchema = new Schema({
   policies: PoliciesSchema
 }, { timestamps: true });
 
+// 9. Audit Log Schema
+const AuditLogSchema = new Schema({
+  id: { type: String, required: true, unique: true },
+  admin: { type: String, required: true },
+  action: { type: String, required: true },
+  target: { type: String, required: true },
+  details: { type: String },
+  timestamp: { type: String, required: true }
+}, { timestamps: true });
+
 export const ProductModel = mongoose.models.Product || mongoose.model('Product', ProductSchema);
 export const OrderModel = mongoose.models.Order || mongoose.model('Order', OrderSchema);
 export const CustomerModel = mongoose.models.Customer || mongoose.model('Customer', CustomerSchema);
 export const CouponModel = mongoose.models.Coupon || mongoose.model('Coupon', CouponSchema);
 export const CustomShoeModel = mongoose.models.CustomShoe || mongoose.model('CustomShoe', CustomShoeSchema);
 export const WebsiteContentModel = mongoose.models.WebsiteContent || mongoose.model('WebsiteContent', WebsiteContentSchema);
+export const AuditLogModel = mongoose.models.AuditLog || mongoose.model('AuditLog', AuditLogSchema);

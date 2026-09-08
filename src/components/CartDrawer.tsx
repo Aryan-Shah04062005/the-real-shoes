@@ -94,6 +94,8 @@ export default function CartDrawer() {
               ) : (
                 cart.map((item) => {
                   const itemKey = `${item.product.id}-${item.size}-${item.color}-${item.customizationId || ''}`;
+                  const isUnavailable = item.product.status === 'ARCHIVED' || item.product.status === 'HIDDEN' || item.product.status === 'DRAFT';
+
                   return (
                     <div
                       key={itemKey}
@@ -132,6 +134,12 @@ export default function CartDrawer() {
                             <span className="inline-block mt-1 rounded bg-royal-blue/20 text-royal-blue border border-royal-blue/30 px-2 py-0.5 text-[9px] font-bold">
                               Custom Colorway: #{item.customizationId}
                             </span>
+                          )}
+
+                          {isUnavailable && (
+                            <div className="mt-1.5 rounded-lg bg-red-500/10 border border-red-500/30 px-2.5 py-1 text-[10px] font-bold text-red-400 uppercase tracking-wider">
+                              This product is no longer available
+                            </div>
                           )}
 
                           <div className="mt-2 text-sm font-bold text-white">
@@ -238,14 +246,29 @@ export default function CartDrawer() {
                   </div>
                 </div>
 
-                <Link
-                  href="/checkout"
-                  onClick={() => setCartOpen(false)}
-                  className="flex w-full items-center justify-center gap-2 rounded-xl bg-royal-blue hover:bg-royal-blue-hover px-6 py-4 text-xs font-bold uppercase tracking-widest text-white transition-all shadow-lg shadow-royal-blue/20 hover:scale-[1.02]"
-                >
-                  PROCEED TO CHECKOUT
-                  <ArrowRight className="h-4 w-4" />
-                </Link>
+                {cart.some(item => item.product.status === 'ARCHIVED' || item.product.status === 'HIDDEN' || item.product.status === 'DRAFT') ? (
+                  <div className="space-y-2">
+                    <div className="rounded-xl border border-red-500/30 bg-red-500/10 p-3 text-center text-xs font-bold text-red-400 uppercase tracking-wider">
+                      Please remove unavailable items to proceed
+                    </div>
+                    <button
+                      disabled
+                      className="flex w-full cursor-not-allowed items-center justify-center gap-2 rounded-xl bg-slate-800 px-6 py-4 text-xs font-bold uppercase tracking-widest text-slate-500 opacity-60"
+                    >
+                      PROCEED TO CHECKOUT
+                      <ArrowRight className="h-4 w-4" />
+                    </button>
+                  </div>
+                ) : (
+                  <Link
+                    href="/checkout"
+                    onClick={() => setCartOpen(false)}
+                    className="flex w-full items-center justify-center gap-2 rounded-xl bg-royal-blue hover:bg-royal-blue-hover px-6 py-4 text-xs font-bold uppercase tracking-widest text-white transition-all shadow-lg shadow-royal-blue/20 hover:scale-[1.02]"
+                  >
+                    PROCEED TO CHECKOUT
+                    <ArrowRight className="h-4 w-4" />
+                  </Link>
+                )}
               </div>
             )}
           </motion.div>

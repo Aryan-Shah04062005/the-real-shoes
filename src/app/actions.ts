@@ -6,11 +6,17 @@ import {
   Customer, 
   WebsiteContent, 
   OrderItem,
+  AuditLog,
   getFullDb,
   getProductsList,
   getProductById,
   saveProduct,
   deleteProduct,
+  archiveProduct,
+  restoreProduct,
+  checkDuplicateProduct,
+  addAuditLog,
+  getAuditLogsList,
   getOrdersList,
   saveOrder,
   deleteOrder,
@@ -39,6 +45,7 @@ export async function loginAdminAction(formData: FormData) {
   
   const success = await loginAdmin(username, password);
   if (success) {
+    await addAuditLog(username || 'Admin', 'Admin Login', 'Dashboard Session', 'Successfully logged in to Admin Dashboard');
     revalidatePath('/', 'layout');
     return { success: true };
   }
@@ -46,6 +53,7 @@ export async function loginAdminAction(formData: FormData) {
 }
 
 export async function logoutAdminAction() {
+  await addAuditLog('Admin', 'Admin Logout', 'Dashboard Session', 'Logged out of Admin Dashboard');
   await logoutAdmin();
   revalidatePath('/', 'layout');
   return { success: true };
@@ -85,16 +93,33 @@ export async function placeOrderAction(customerData: {
       if (!product) {
         return { success: false, error: `Product not found.` };
       }
-      
-      if (product.stock < item.quantity) {
-        return { success: false, error: `Insufficient stock for ${product.name}. Only ${product.stock} left.` };
+
+      if (product.status === 'ARCHIVED' || product.status === 'HIDDEN' || product.status === 'DRAFT') {
+        return { success: false, error: `${product.name} is no longer available for purchase.` };
+      }
+
+      // Check size-specific stock if defined
+      const availableSizeStock = product.sizeStock?.[item.size] ?? product.stock;
+      if (availableSizeStock < item.quantity || product.stock < item.quantity) {
+        return { success: false, error: `Insufficient stock for ${product.name} (UK ${item.size}). Only ${availableSizeStock} left.` };
       }
       
       const selectedColorway = product.availableColors?.find(c => c.name === item.color);
       const colorHex = selectedColorway ? selectedColorway.hex : '#ffffff';
       
-      // Update stock
-      product.stock -= item.quantity;
+      // Update sizeStock and total stock
+      if (!product.sizeStock) {
+        product.sizeStock = {};
+        for (const s of product.availableSizes || [7, 8, 9, 10, 11]) {
+          product.sizeStock[s] = Math.floor(product.stock / (product.availableSizes?.length || 1));
+        }
+      }
+      product.sizeStock[item.size] = Math.max(0, (product.sizeStock[item.size] || 0) - item.quantity);
+      product.stock = Math.max(0, product.stock - item.quantity);
+      if (product.stock === 0) {
+        product.status = 'OUT_OF_STOCK';
+      }
+
       await saveProduct(product);
       
       const itemPrice = product.price;
@@ -181,46 +206,73 @@ export async function placeOrderAction(customerData: {
 export async function saveProductAction(productData: Partial<Product> & { id?: string }) {
   await requireAdmin();
   
+  if (!productData.name || !productData.name.trim()) {
+    return { success: false, error: 'Product name is required.' };
+  }
+  if (productData.price === undefined || productData.price < 0) {
+    return { success: false, error: 'A valid selling price is required.' };
+  }
+  if (productData.stock !== undefined && productData.stock < 0) {
+    return { success: false, error: 'Stock cannot be negative.' };
+  }
+
+  const originalPrice = productData.originalPrice ?? productData.price ?? 0;
+  const price = productData.price ?? originalPrice;
+  const discountPercentage = originalPrice > price ? Math.round(((originalPrice - price) / originalPrice) * 100) : 0;
+  
+  let savedProd: Product;
+
   if (productData.id) {
     // Edit existing product
     const existing = await getProductById(productData.id);
     if (!existing) return { success: false, error: 'Product not found.' };
     
-    const originalPrice = productData.originalPrice ?? existing.originalPrice;
-    const price = productData.price ?? existing.price;
-    const discountPercentage = originalPrice > price ? Math.round(((originalPrice - price) / originalPrice) * 100) : 0;
-    
-    const updatedProduct = {
+    const totalStock = productData.stock ?? existing.stock;
+    const status = totalStock === 0 ? 'OUT_OF_STOCK' : (productData.status || existing.status || 'ACTIVE');
+
+    savedProd = {
       ...existing,
       ...productData,
+      price,
+      originalPrice,
+      discountPrice: price,
       discountPercentage,
-      discountPrice: price
+      stock: totalStock,
+      status,
+      updatedAt: new Date().toISOString()
     } as Product;
     
-    await saveProduct(updatedProduct);
+    await saveProduct(savedProd);
+    await addAuditLog('Admin', 'Updated Product', savedProd.name, `Price: ₹${price}, Stock: ${totalStock}, Status: ${status}`);
   } else {
     // Add new product
-    const id = (productData.name || 'product').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
-    const sku = 'TR-' + (productData.brand || 'REAL').substring(0, 3).toUpperCase() + '-' + Math.floor(100 + Math.random() * 900);
-    const price = productData.price || 0;
-    const originalPrice = productData.originalPrice || price;
-    const discountPercentage = originalPrice > price ? Math.round(((originalPrice - price) / originalPrice) * 100) : 0;
+    const id = (productData.name || 'product').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '') + '-' + Math.random().toString(36).substring(2, 6);
+    const sku = productData.sku || ('TR-' + (productData.brand || 'REAL').substring(0, 3).toUpperCase() + '-' + Math.floor(100 + Math.random() * 900));
+    const totalStock = productData.stock ?? 10;
+    const status = totalStock === 0 ? 'OUT_OF_STOCK' : (productData.status || 'ACTIVE');
     
-    const newProduct: Product = {
+    // Check duplicates
+    const dupCheck = await checkDuplicateProduct(productData.sourceUrl, sku, productData.name, productData.brand);
+    if (dupCheck.exists && dupCheck.existingProduct) {
+      return { success: false, isDuplicate: true, existingProduct: dupCheck.existingProduct, error: 'This product has already been imported or created.' };
+    }
+
+    savedProd = {
       id,
-      name: productData.name || 'Unnamed Product',
-      brand: productData.brand || 'THE REAL',
-      category: productData.category || 'Casual',
-      description: productData.description || '',
+      name: productData.name.trim(),
+      brand: productData.brand?.trim() || 'THE REAL',
+      category: productData.category?.trim() || 'Casual',
+      description: productData.description?.trim() || '',
       price: price,
       originalPrice: originalPrice,
       discountPrice: price,
       discountPercentage: discountPercentage,
-      availableSizes: productData.availableSizes || [8, 9, 10],
+      availableSizes: productData.availableSizes || [7, 8, 9, 10, 11],
       availableColors: productData.availableColors || [{ name: 'Royal Blue', hex: '#0a58ca', threeColor: '#0a58ca' }],
       material: productData.material || 'Premium Fabrics',
       gender: productData.gender || 'Unisex',
-      stock: productData.stock ?? 10,
+      stock: totalStock,
+      sizeStock: productData.sizeStock || { 7: 2, 8: 3, 9: 3, 10: 2 },
       sku: sku,
       rating: 5.0,
       reviews: [],
@@ -229,25 +281,126 @@ export async function saveProductAction(productData: Partial<Product> & { id?: s
       mainImage: productData.mainImage || (productData.images && productData.images[0]) || '/images/shoes/genesis_blue.png',
       isNewArrival: productData.isNewArrival ?? true,
       isBestSeller: productData.isBestSeller ?? false,
-      isSale: productData.isSale ?? false
+      isTrending: productData.isTrending ?? false,
+      isFeatured: productData.isFeatured ?? false,
+      isSale: productData.isSale ?? false,
+      status: status,
+      sourcePlatform: productData.sourcePlatform || 'MANUAL',
+      sourceUrl: productData.sourceUrl || '',
+      updatedAt: new Date().toISOString()
     };
     
-    await saveProduct(newProduct);
+    await saveProduct(savedProd);
+    await addAuditLog('Admin', 'Created Product', savedProd.name, `SKU: ${sku}, Price: ₹${price}, Source: ${savedProd.sourcePlatform}`);
   }
   
+  revalidatePath('/', 'layout');
+  revalidatePath('/shop');
+  revalidatePath('/admin/dashboard');
+  return { success: true, product: savedProd };
+}
+
+export async function deleteProductAction(productId: string) {
+  await requireAdmin();
+  const product = await getProductById(productId);
+  if (!product) return { success: false, error: 'Product not found.' };
+
+  const res = await deleteProduct(productId);
+  if (!res.success) return { success: false, error: 'Unable to delete product. Please try again.' };
+  
+  const actionName = res.mode === 'archived' ? 'Archived Product (Order Preserved)' : 'Deleted Product';
+  await addAuditLog('Admin', actionName, product.name, `ID: ${productId}, Mode: ${res.mode}`);
+
+  revalidatePath('/', 'layout');
+  revalidatePath('/shop');
+  revalidatePath('/admin/dashboard');
+  return { success: true, mode: res.mode };
+}
+
+export async function archiveProductAction(productId: string) {
+  await requireAdmin();
+  const product = await getProductById(productId);
+  if (!product) return { success: false, error: 'Product not found.' };
+
+  const success = await archiveProduct(productId);
+  if (!success) return { success: false, error: 'Unable to archive product. Please try again.' };
+
+  await addAuditLog('Admin', 'Archived Product', product.name, `ID: ${productId}`);
+
   revalidatePath('/', 'layout');
   revalidatePath('/shop');
   revalidatePath('/admin/dashboard');
   return { success: true };
 }
 
-export async function deleteProductAction(productId: string) {
+export async function restoreProductAction(productId: string) {
   await requireAdmin();
-  const success = await deleteProduct(productId);
-  if (!success) return { success: false, error: 'Product not found.' };
-  
+  const product = await getProductById(productId);
+  if (!product) return { success: false, error: 'Product not found.' };
+
+  const success = await restoreProduct(productId);
+  if (!success) return { success: false, error: 'Unable to restore product. Please try again.' };
+
+  await addAuditLog('Admin', 'Restored Product', product.name, `ID: ${productId}`);
+
   revalidatePath('/', 'layout');
+  revalidatePath('/shop');
+  revalidatePath('/admin/dashboard');
   return { success: true };
+}
+
+export async function bulkProductAction(action: 'archive' | 'delete' | 'status' | 'stock' | 'flag', productIds: string[], payload?: any) {
+  await requireAdmin();
+  if (!productIds || productIds.length === 0) return { success: false, error: 'No products selected.' };
+
+  let count = 0;
+
+  for (const id of productIds) {
+    const product = await getProductById(id);
+    if (!product) continue;
+
+    if (action === 'archive') {
+      await archiveProduct(id);
+      await addAuditLog('Admin', 'Bulk Archive', product.name, `ID: ${id}`);
+      count++;
+    } else if (action === 'delete') {
+      const res = await deleteProduct(id);
+      if (res.success) {
+        await addAuditLog('Admin', 'Bulk Delete', product.name, `Mode: ${res.mode}`);
+        count++;
+      }
+    } else if (action === 'status' && payload?.status) {
+      product.status = payload.status;
+      await saveProduct(product);
+      await addAuditLog('Admin', 'Bulk Status Update', product.name, `New Status: ${payload.status}`);
+      count++;
+    } else if (action === 'stock' && payload?.stock !== undefined) {
+      product.stock = Math.max(0, payload.stock);
+      if (product.stock === 0) product.status = 'OUT_OF_STOCK';
+      await saveProduct(product);
+      await addAuditLog('Admin', 'Bulk Stock Update', product.name, `New Stock: ${product.stock}`);
+      count++;
+    } else if (action === 'flag' && payload) {
+      if (payload.isNewArrival !== undefined) product.isNewArrival = payload.isNewArrival;
+      if (payload.isBestSeller !== undefined) product.isBestSeller = payload.isBestSeller;
+      if (payload.isTrending !== undefined) product.isTrending = payload.isTrending;
+      if (payload.isFeatured !== undefined) product.isFeatured = payload.isFeatured;
+      await saveProduct(product);
+      await addAuditLog('Admin', 'Bulk Flag Update', product.name, `Flags updated`);
+      count++;
+    }
+  }
+
+  revalidatePath('/', 'layout');
+  revalidatePath('/shop');
+  revalidatePath('/admin/dashboard');
+
+  return { success: true, count };
+}
+
+export async function getAuditLogsAction() {
+  await requireAdmin();
+  return await getAuditLogsList();
 }
 
 // 4. Admin Order Management Actions
@@ -354,6 +507,18 @@ export async function importProductFromUrlAction(url: string, targetPrice: numbe
 
   if (!isAmazon && !isFlipkart) {
     return { success: false, error: 'Only Amazon or Flipkart URLs are supported.' };
+  }
+
+  // Duplicate URL check
+  const dupCheck = await checkDuplicateProduct(cleanUrl);
+  if (dupCheck.exists && dupCheck.existingProduct) {
+    return {
+      success: true,
+      isDuplicate: true,
+      duplicateProduct: dupCheck.existingProduct,
+      preview: null,
+      error: 'This product link or title has already been imported.'
+    };
   }
 
   // Sanitizer helper to remove Amazon & Flipkart names and promotional text
@@ -705,16 +870,17 @@ export async function importProductFromUrlAction(url: string, targetPrice: numbe
     );
   }
 
-  // Create the new product object
-  const id = title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '') + '-' + Math.random().toString(36).substring(2, 6);
+  const sourcePlatform = isAmazon ? 'AMAZON' : 'FLIPKART';
+  const sku = 'TR-IMP-' + Math.floor(100 + Math.random() * 900) + '-' + brand.substring(0, 3).toUpperCase();
+  const productId = title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '') || ('imported-' + Date.now());
   const originalPrice = Math.round(targetPrice * 1.25);
-  const discountPercentage = 20;
+  const discountPercentage = Math.round(((originalPrice - targetPrice) / originalPrice) * 100);
 
-  const newProduct: Product = {
-    id,
+  const previewProduct: Product = {
+    id: productId,
     name: title,
     brand: brand,
-    category: category,
+    category: category || 'Sneakers',
     description: description,
     price: targetPrice,
     originalPrice: originalPrice,
@@ -725,26 +891,25 @@ export async function importProductFromUrlAction(url: string, targetPrice: numbe
     material: 'Engineered Synthetic Blend & Responsive Sole',
     gender: 'Unisex',
     stock: 20,
-    sku: 'TR-IMP-' + Math.floor(100 + Math.random() * 900) + '-' + brand.substring(0, 3).toUpperCase(),
+    sizeStock: { 7: 4, 8: 6, 9: 6, 10: 4 },
+    sku: sku,
     rating: parseFloat((4.4 + Math.random() * 0.5).toFixed(1)),
-    reviews: [
-      { name: 'Aryan Shah', rating: 5, comment: 'Imported product verification: Elite build quality and responsive sole profile.', date: new Date().toISOString().split('T')[0] }
-    ],
+    reviews: [],
     tags: ['Imported', brand, category],
     images: allImages,
     mainImage: finalMainImage,
     isNewArrival: true,
     isBestSeller: false,
-    isSale: true
+    isTrending: true,
+    isFeatured: false,
+    isSale: true,
+    status: 'DRAFT',
+    sourcePlatform: sourcePlatform as any,
+    sourceUrl: cleanUrl,
+    updatedAt: new Date().toISOString()
   };
 
-  await saveProduct(newProduct);
-
-  revalidatePath('/', 'layout');
-  revalidatePath('/shop');
-  revalidatePath('/admin/dashboard');
-
-  return { success: true, product: newProduct };
+  return { success: true, isDuplicate: false, duplicateProduct: null, preview: previewProduct };
 }
 
 // 9. Upload Product Image Action

@@ -3,7 +3,7 @@ import path from 'path';
 import { exec } from 'child_process';
 import util from 'util';
 import { connectToDatabase } from './mongodb';
-import { ProductModel, OrderModel, CustomerModel, WebsiteContentModel, CouponModel, CustomShoeModel } from './models';
+import { ProductModel, OrderModel, CustomerModel, WebsiteContentModel, CouponModel, CustomShoeModel, AuditLogModel } from './models';
 
 const execAsync = util.promisify(exec);
 
@@ -39,6 +39,7 @@ export interface Product {
   material: string;
   gender: string;
   stock: number;
+  sizeStock?: Record<number, number>;
   sku: string;
   rating: number;
   reviews: Review[];
@@ -46,9 +47,23 @@ export interface Product {
   isNewArrival: boolean;
   isBestSeller: boolean;
   isTrending?: boolean;
+  isFeatured?: boolean;
   isSale: boolean;
   images: string[];
   mainImage: string;
+  status?: 'ACTIVE' | 'DRAFT' | 'HIDDEN' | 'OUT_OF_STOCK' | 'ARCHIVED';
+  sourcePlatform?: 'AMAZON' | 'FLIPKART' | 'MANUAL' | 'THE_REAL';
+  sourceUrl?: string;
+  updatedAt?: string;
+}
+
+export interface AuditLog {
+  id: string;
+  admin: string;
+  action: string;
+  target: string;
+  details?: string;
+  timestamp: string;
 }
 
 export interface OrderItem {
@@ -149,6 +164,7 @@ export interface DatabaseSchema {
   coupons?: Coupon[];
   customShoes?: CustomShoe[];
   websiteContent: WebsiteContent;
+  auditLogs?: AuditLog[];
 }
 
 // Ensure db.json exists with initial data
@@ -564,6 +580,9 @@ export async function getProductById(id: string): Promise<Product | null> {
 }
 
 export async function saveProduct(productData: Product): Promise<void> {
+  productData.updatedAt = new Date().toISOString();
+  if (!productData.status) productData.status = 'ACTIVE';
+
   const isMongo = await isMongoDBConnected();
   if (isMongo) {
     await seedMongoDBIfNeeded();
@@ -585,19 +604,128 @@ export async function saveProduct(productData: Product): Promise<void> {
   }
 }
 
-export async function deleteProduct(id: string): Promise<boolean> {
+export async function deleteProduct(id: string): Promise<{ success: boolean; mode: 'deleted' | 'archived' | 'not_found' }> {
+  const orders = await getOrdersList();
+  const hasOrders = orders.some(o => o.items && o.items.some(i => i.productId === id));
+  
+  const isMongo = await isMongoDBConnected();
+
+  if (hasOrders) {
+    // Soft Archive to prevent breaking historical order items!
+    if (isMongo) {
+      await ProductModel.updateOne({ id }, { status: 'ARCHIVED', updatedAt: new Date().toISOString() });
+    } else {
+      const db = readDB();
+      const p = db.products.find(p => p.id === id);
+      if (p) {
+        p.status = 'ARCHIVED';
+        p.updatedAt = new Date().toISOString();
+        writeDB(db);
+      }
+    }
+    return { success: true, mode: 'archived' };
+  } else {
+    // Hard delete
+    if (isMongo) {
+      const res = await ProductModel.deleteOne({ id });
+      return { success: res.deletedCount > 0, mode: res.deletedCount > 0 ? 'deleted' : 'not_found' };
+    } else {
+      const db = readDB();
+      const index = db.products.findIndex(p => p.id === id);
+      if (index === -1) return { success: false, mode: 'not_found' };
+      db.products.splice(index, 1);
+      writeDB(db);
+      return { success: true, mode: 'deleted' };
+    }
+  }
+}
+
+export async function archiveProduct(id: string): Promise<boolean> {
   const isMongo = await isMongoDBConnected();
   if (isMongo) {
-    await seedMongoDBIfNeeded();
-    const res = await ProductModel.deleteOne({ id });
-    return res.deletedCount > 0;
+    const res = await ProductModel.updateOne({ id }, { status: 'ARCHIVED', updatedAt: new Date().toISOString() });
+    return res.modifiedCount > 0;
   } else {
     const db = readDB();
-    const index = db.products.findIndex(p => p.id === id);
-    if (index === -1) return false;
-    db.products.splice(index, 1);
+    const p = db.products.find(prod => prod.id === id);
+    if (!p) return false;
+    p.status = 'ARCHIVED';
+    p.updatedAt = new Date().toISOString();
     writeDB(db);
     return true;
+  }
+}
+
+export async function restoreProduct(id: string): Promise<boolean> {
+  const isMongo = await isMongoDBConnected();
+  if (isMongo) {
+    const res = await ProductModel.updateOne({ id }, { status: 'ACTIVE', updatedAt: new Date().toISOString() });
+    return res.modifiedCount > 0;
+  } else {
+    const db = readDB();
+    const p = db.products.find(prod => prod.id === id);
+    if (!p) return false;
+    p.status = 'ACTIVE';
+    p.updatedAt = new Date().toISOString();
+    writeDB(db);
+    return true;
+  }
+}
+
+export async function checkDuplicateProduct(sourceUrl?: string, sku?: string, name?: string, brand?: string): Promise<{ exists: boolean; existingProduct?: Product }> {
+  const products = await getProductsList();
+  
+  if (sourceUrl && sourceUrl.trim()) {
+    const foundByUrl = products.find(p => p.sourceUrl && p.sourceUrl.trim().toLowerCase() === sourceUrl.trim().toLowerCase());
+    if (foundByUrl) return { exists: true, existingProduct: foundByUrl };
+  }
+
+  if (sku && sku.trim()) {
+    const foundBySku = products.find(p => p.sku && p.sku.trim().toLowerCase() === sku.trim().toLowerCase());
+    if (foundBySku) return { exists: true, existingProduct: foundBySku };
+  }
+
+  if (name && brand) {
+    const foundByNameBrand = products.find(p => 
+      p.name.trim().toLowerCase() === name.trim().toLowerCase() && 
+      p.brand.trim().toLowerCase() === brand.trim().toLowerCase()
+    );
+    if (foundByNameBrand) return { exists: true, existingProduct: foundByNameBrand };
+  }
+
+  return { exists: false };
+}
+
+export async function addAuditLog(admin: string, action: string, target: string, details?: string): Promise<AuditLog> {
+  const newLog: AuditLog = {
+    id: 'log-' + Date.now() + '-' + Math.random().toString(36).substring(2, 6),
+    admin,
+    action,
+    target,
+    details: details || '',
+    timestamp: new Date().toISOString()
+  };
+
+  const isMongo = await isMongoDBConnected();
+  if (isMongo) {
+    await AuditLogModel.create(newLog);
+  } else {
+    const db = readDB();
+    if (!db.auditLogs) db.auditLogs = [];
+    db.auditLogs.unshift(newLog);
+    writeDB(db);
+  }
+
+  return newLog;
+}
+
+export async function getAuditLogsList(): Promise<AuditLog[]> {
+  const isMongo = await isMongoDBConnected();
+  if (isMongo) {
+    return await AuditLogModel.find({}).sort({ createdAt: -1 }).lean() as unknown as AuditLog[];
+  } else {
+    const db = readDB();
+    return db.auditLogs || [];
   }
 }
 

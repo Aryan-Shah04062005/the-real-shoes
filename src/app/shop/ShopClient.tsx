@@ -61,7 +61,9 @@ export default function ShopClient({ initialProducts }: ShopClientProps) {
 
   // Filter & Sort computation
   const filteredProducts = useMemo(() => {
-    let result = [...initialProducts];
+    let result = initialProducts.filter(
+      (p) => !p.status || p.status === 'ACTIVE' || p.status === 'OUT_OF_STOCK'
+    );
 
     // Wishlist view
     if (sortBy === 'wishlist') {

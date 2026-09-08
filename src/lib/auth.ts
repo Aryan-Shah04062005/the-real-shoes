@@ -1,8 +1,10 @@
 import { cookies } from 'next/headers';
 
 export async function loginAdmin(username: string, password: string): Promise<boolean> {
-  // Check default credentials
-  if (username === 'Aryan' && password === '1234') {
+  const envUser = process.env.ADMIN_USERNAME || 'Aryan';
+  const envPass = process.env.ADMIN_PASSWORD || '1234';
+
+  if (username.trim() === envUser && password === envPass) {
     const cookieStore = await cookies();
     cookieStore.set('admin_session', 'true', {
       httpOnly: true,
