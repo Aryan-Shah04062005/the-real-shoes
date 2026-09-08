@@ -3,6 +3,7 @@ import { getProductById } from '@/lib/db';
 import { notFound } from 'next/navigation';
 import ProductDetailsClient from './ProductDetailsClient';
 
+export const dynamic = 'force-dynamic';
 export const revalidate = 0; // Ensure inventory stock and custom updates reflect immediately
 
 interface PageProps {

@@ -366,10 +366,6 @@ const PRIMARY_DB_PATH = path.join(process.cwd(), 'src/lib/db.json');
 const TMP_DB_PATH = path.join('/tmp', 'db.json');
 
 export const readDB = (): DatabaseSchema => {
-  if (inMemoryDbCache) {
-    return inMemoryDbCache;
-  }
-
   let dbData: DatabaseSchema | null = null;
 
   // Try reading from /tmp/db.json first (if updated in current runtime)
