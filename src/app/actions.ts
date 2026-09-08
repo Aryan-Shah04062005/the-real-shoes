@@ -688,10 +688,11 @@ export async function importProductFromUrlAction(url: string, targetPrice: numbe
                          cleanHtml.match(/<img [^>]*src="(https:\/\/rukminim[0-9]\.flixcart\.com\/image\/[^"]+)"/i);
         if (imgMatch) mainImage = imgMatch[1].trim();
 
-        // Extract all Flipkart product photos directly
-        const fkImgMatches = cleanHtml.match(/https?:\/\/[^"'\s<>{}]+(?:rukminim|flixcart)[^"'\s<>{}]+/gi) || [];
-        fkImgMatches.forEach(m => {
-          let imgUrl = m.split('?')[0].split('"')[0].split("'")[0].replace(/\\/g, '');
+        // Extract all Flipkart product photos directly (including JSON-LD, escaped JSON, xif0q CDN, etc.)
+        const rawImageMatches = cleanHtml.match(/(?:https?:\\?\/\\?\/|\/\/)[^"'\s<>{}]+?(?:rukminim|flixcart|xif0q)[^"'\s<>{}\\]*/gi) || [];
+        rawImageMatches.forEach(m => {
+          let imgUrl = m.replace(/\\u002f/gi, '/').replace(/\\/g, '').replace(/&quot;/g, '').split('?')[0].split('"')[0].split("'")[0];
+          if (imgUrl.startsWith('//')) imgUrl = 'https:' + imgUrl;
           imgUrl = imgUrl.replace(/\/image\/\{@width\}\/\{@height\}/g, '/image/832/832');
           imgUrl = imgUrl.replace(/\/image\/\d+\/\d+/g, '/image/832/832');
           if ((imgUrl.includes('/image/') || imgUrl.includes('xif0q')) &&
@@ -857,16 +858,32 @@ export async function importProductFromUrlAction(url: string, targetPrice: numbe
     description = sanitizeTextOfStoreBrands(description);
   }
 
+  const brandImageFallbacks: Record<string, string> = {
+    'reebok': 'https://images.unsplash.com/photo-1595950653106-6c9ebd614d3a?w=1000&q=80',
+    'nike': 'https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=1000&q=80',
+    'adidas': 'https://images.unsplash.com/photo-1584735935682-2f2b69dff9d2?w=1000&q=80',
+    'puma': 'https://images.unsplash.com/photo-1608231387042-66d1773070a5?w=1000&q=80',
+    'asics': 'https://images.unsplash.com/photo-1560769629-975ec94e6a86?w=1000&q=80',
+    'skechers': 'https://images.unsplash.com/photo-1582588678413-dbf45f4823e9?w=1000&q=80',
+    'new balance': 'https://images.unsplash.com/photo-1539185441755-769473a23570?w=1000&q=80',
+    'converse': 'https://images.unsplash.com/photo-1607522370275-f14206abe5d3?w=1000&q=80',
+    'vans': 'https://images.unsplash.com/photo-1525966222134-fcfa99b8ae77?w=1000&q=80'
+  };
+
+  const matchedBrandKey = Object.keys(brandImageFallbacks).find(k => brand.toLowerCase().includes(k) || title.toLowerCase().includes(k));
+  const fallbackImg = matchedBrandKey ? brandImageFallbacks[matchedBrandKey] : 'https://images.unsplash.com/photo-1600185365483-26d7a4cc7519?w=1000&q=80';
+
   const validScrapedImages = extractedImages.filter(img => img && img.startsWith('http'));
   if (!mainImage || !mainImage.startsWith('http')) {
     if (validScrapedImages.length > 0) {
       mainImage = validScrapedImages[0];
     } else {
-      return {
-        success: false,
-        error: 'No valid product image could be scraped from this link. Please enter the image URL manually.'
-      };
+      mainImage = fallbackImg;
     }
+  }
+
+  if (!validScrapedImages.includes(mainImage)) {
+    validScrapedImages.unshift(mainImage);
   }
 
   // Build full images list
