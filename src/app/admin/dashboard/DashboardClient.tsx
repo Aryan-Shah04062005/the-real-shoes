@@ -368,6 +368,7 @@ export default function DashboardClient({ initialDb }: DashboardClientProps) {
       syncLocalState({ products: nextProducts });
       setEditingProduct(null);
       setIsAddingNew(false);
+      setSuccessModalProduct(res.product);
     } else {
       triggerStatus('error', res.error || 'Failed to save product.');
     }
@@ -563,7 +564,7 @@ export default function DashboardClient({ initialDb }: DashboardClientProps) {
     }
 
     if (sourceFilter !== 'ALL') {
-      list = list.filter(p => (p.sourcePlatform || 'Manual') === sourceFilter);
+      list = list.filter(p => (p.sourcePlatform || 'MANUAL').toUpperCase() === sourceFilter.toUpperCase());
     }
 
     if (categoryFilter !== 'ALL') {

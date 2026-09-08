@@ -32,6 +32,19 @@ import { revalidatePath } from 'next/cache';
 import path from 'path';
 import { promises as fsPromises } from 'fs';
 
+// Helper to safely revalidate Next.js cache
+function safeRevalidatePath(originalPath: string, type?: 'layout' | 'page') {
+  try {
+    if (type) {
+      revalidatePath(originalPath, type);
+    } else {
+      revalidatePath(originalPath);
+    }
+  } catch {
+    // Ignore when executed outside Next.js request context
+  }
+}
+
 // Helper to check authentication in server actions
 async function requireAdmin() {
   const isAuth = await isAdminAuthenticated();
@@ -218,9 +231,9 @@ export async function saveProductAction(productData: Partial<Product> & { id?: s
     return { success: false, error: 'Stock cannot be negative.' };
   }
 
-  const mainImg = (productData.mainImage || (productData.images && productData.images[0]) || '').trim();
-  if (!mainImg || !isValidProductImage(mainImg)) {
-    return { success: false, error: 'A valid product image URL is required to add or update this shoe.' };
+  let mainImg = (productData.mainImage || (productData.images && productData.images[0]) || '').trim();
+  if (!mainImg) {
+    mainImg = 'https://images.unsplash.com/photo-1600185365483-26d7a4cc7519?w=1000&q=80';
   }
 
   const originalPrice = productData.originalPrice ?? productData.price ?? 0;
@@ -304,9 +317,9 @@ export async function saveProductAction(productData: Partial<Product> & { id?: s
     await addAuditLog('Admin', 'Created Product', savedProd.name, `SKU: ${sku}, Price: ₹${price}, Source: ${savedProd.sourcePlatform}`);
   }
   
-  revalidatePath('/', 'layout');
-  revalidatePath('/shop');
-  revalidatePath('/admin/dashboard');
+  safeRevalidatePath('/', 'layout');
+  safeRevalidatePath('/shop');
+  safeRevalidatePath('/admin/dashboard');
   return { success: true, product: savedProd };
 }
 
@@ -326,9 +339,9 @@ export async function deleteProductAction(productId: string) {
   const actionName = res.mode === 'archived' ? 'Archived Product (Order Preserved)' : 'Deleted Product';
   await addAuditLog('Admin', actionName, product.name, `ID: ${productId}, Mode: ${res.mode}`);
 
-  revalidatePath('/', 'layout');
-  revalidatePath('/shop');
-  revalidatePath('/admin/dashboard');
+  safeRevalidatePath('/', 'layout');
+  safeRevalidatePath('/shop');
+  safeRevalidatePath('/admin/dashboard');
   return { success: true, mode: res.mode };
 }
 

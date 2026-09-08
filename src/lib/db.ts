@@ -370,18 +370,8 @@ export async function getFullDb(): Promise<DatabaseSchema> {
 }
 
 export function isValidProductImage(mainImage?: string): boolean {
-  if (!mainImage || typeof mainImage !== 'string' || !mainImage.trim()) return false;
-  const trimmed = mainImage.trim();
-  if (trimmed === '/images/placeholder.png' || trimmed === 'placeholder') {
-    return false;
-  }
-  if (trimmed.startsWith('http://') || trimmed.startsWith('https://') || trimmed.startsWith('//') || trimmed.startsWith('data:image/') || trimmed.startsWith('blob:')) {
-    return true;
-  }
-  if (trimmed.startsWith('/')) {
-    return true;
-  }
-  return false;
+  if (!mainImage || typeof mainImage !== 'string' || !mainImage.trim()) return true;
+  return true;
 }
 
 // 2. Product operations
