@@ -337,14 +337,18 @@ export async function importProductFromUrlAction(url: string, targetPrice: numbe
     return { success: false, error: 'A valid Selling Price is required.' };
   }
 
-  const cleanUrl = url.trim();
+  let cleanUrl = url.trim();
+  if (!cleanUrl.startsWith('http://') && !cleanUrl.startsWith('https://')) {
+    cleanUrl = 'https://' + cleanUrl;
+  }
+
   let title = '';
   let description = '';
   let mainImage = '';
   let brand = 'THE REAL';
 
-  const isAmazon = cleanUrl.includes('amazon.');
-  const isFlipkart = cleanUrl.includes('flipkart.') || cleanUrl.includes('fkrt.it') || cleanUrl.includes('flipkart.com') || cleanUrl.includes('flipkart.in');
+  const isAmazon = /amazon\.|amzn\.to|amzn\.in/i.test(cleanUrl);
+  const isFlipkart = /flipkart\.|fkrt\.it|dl\.flipkart\.com/i.test(cleanUrl);
 
   if (!isAmazon && !isFlipkart) {
     return { success: false, error: 'Only Amazon or Flipkart URLs are supported.' };
@@ -374,6 +378,8 @@ export async function importProductFromUrlAction(url: string, targetPrice: numbe
       .trim();
   };
 
+  let finalUrl = cleanUrl;
+
   try {
     // Attempt standard HTTP request to scrape with redirect follow
     const res = await fetch(cleanUrl, {
@@ -397,6 +403,7 @@ export async function importProductFromUrlAction(url: string, targetPrice: numbe
     });
 
     if (res.ok) {
+      finalUrl = res.url || cleanUrl;
       const html = await res.text();
 
       // Parse HTML with regex
@@ -479,7 +486,7 @@ export async function importProductFromUrlAction(url: string, targetPrice: numbe
   // Resilient Fallback: If scraper is blocked or returns generic values, parse the URL path!
   if (!title || title.toLowerCase().includes('robot check') || title.toLowerCase().includes('security check') || title.toLowerCase().includes('captcha')) {
     try {
-      const targetUrl = cleanUrl.split('?')[0];
+      const targetUrl = (finalUrl || cleanUrl).split('?')[0];
       const urlObj = new URL(targetUrl);
       const pathParts = urlObj.pathname.split('/').filter(Boolean);
 

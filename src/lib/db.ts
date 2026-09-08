@@ -147,8 +147,6 @@ export interface DatabaseSchema {
   websiteContent: WebsiteContent;
 }
 
-const DB_PATH = path.join(process.cwd(), 'src/lib/db.json');
-
 // Ensure db.json exists with initial data
 const getInitialData = (): DatabaseSchema => {
   return {
@@ -343,31 +341,67 @@ const getInitialData = (): DatabaseSchema => {
   };
 };
 
+let inMemoryDbCache: DatabaseSchema | null = null;
+const PRIMARY_DB_PATH = path.join(process.cwd(), 'src/lib/db.json');
+const TMP_DB_PATH = path.join('/tmp', 'db.json');
+
 export const readDB = (): DatabaseSchema => {
-  try {
-    if (!fs.existsSync(DB_PATH)) {
-      const initial = getInitialData();
-      fs.mkdirSync(path.dirname(DB_PATH), { recursive: true });
-      fs.writeFileSync(DB_PATH, JSON.stringify(initial, null, 2), 'utf8');
-      return initial;
-    }
-    const data = fs.readFileSync(DB_PATH, 'utf8');
-    return JSON.parse(data) as DatabaseSchema;
-  } catch (error) {
-    console.error('Error reading DB:', error);
-    return getInitialData();
+  if (inMemoryDbCache) {
+    return inMemoryDbCache;
   }
+
+  // Try reading from /tmp/db.json first (if updated in current runtime)
+  try {
+    if (fs.existsSync(TMP_DB_PATH)) {
+      const data = fs.readFileSync(TMP_DB_PATH, 'utf8');
+      inMemoryDbCache = JSON.parse(data) as DatabaseSchema;
+      return inMemoryDbCache;
+    }
+  } catch (err) {
+    console.error('Error reading /tmp/db.json:', err);
+  }
+
+  // Try reading from PRIMARY_DB_PATH
+  try {
+    if (fs.existsSync(PRIMARY_DB_PATH)) {
+      const data = fs.readFileSync(PRIMARY_DB_PATH, 'utf8');
+      inMemoryDbCache = JSON.parse(data) as DatabaseSchema;
+      return inMemoryDbCache;
+    }
+  } catch (error) {
+    console.error('Error reading DB from primary path:', error);
+  }
+
+  // Fallback to initial data
+  const initial = getInitialData();
+  inMemoryDbCache = initial;
+  return initial;
 };
 
 export const writeDB = (data: DatabaseSchema): boolean => {
+  inMemoryDbCache = data;
+  let written = false;
+
+  // Try writing to primary DB path (local development)
   try {
-    fs.mkdirSync(path.dirname(DB_PATH), { recursive: true });
-    fs.writeFileSync(DB_PATH, JSON.stringify(data, null, 2), 'utf8');
-    return true;
+    fs.mkdirSync(path.dirname(PRIMARY_DB_PATH), { recursive: true });
+    fs.writeFileSync(PRIMARY_DB_PATH, JSON.stringify(data, null, 2), 'utf8');
+    written = true;
   } catch (error) {
-    console.error('Error writing DB:', error);
-    return false;
+    // Expected on read-only file systems (e.g. Vercel serverless)
+    console.warn('Primary DB path read-only, falling back to /tmp/db.json');
   }
+
+  // Try writing to /tmp/db.json (serverless writable directory)
+  try {
+    fs.mkdirSync(path.dirname(TMP_DB_PATH), { recursive: true });
+    fs.writeFileSync(TMP_DB_PATH, JSON.stringify(data, null, 2), 'utf8');
+    written = true;
+  } catch (tmpError) {
+    console.error('Error writing to /tmp/db.json:', tmpError);
+  }
+
+  return true;
 };
 
 // ----------------------------------------------------
