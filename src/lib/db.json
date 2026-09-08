@@ -1,38 +1,172 @@
 {
   "products": [
     {
+      "id": "genesis-3d",
+      "name": "THE REAL Genesis",
+      "brand": "THE REAL",
+      "category": "Running",
+      "description": "Step into your reality with our flagship running shoe. Genesis blends cutting-edge comfort with futuristic design, featuring our signature responsive sole and aerodynamic knit upper.",
+      "price": 14999,
+      "originalPrice": 17999,
+      "discountPrice": 14999,
+      "discountPercentage": 17,
+      "availableSizes": [7, 8, 9, 10, 11, 12],
+      "availableColors": [
+        { "name": "Royal Blue", "hex": "#0a58ca", "threeColor": "#0a58ca" },
+        { "name": "Silver Shadow", "hex": "#c0c0c0", "threeColor": "#c0c0c0" },
+        { "name": "Carbon Black", "hex": "#111827", "threeColor": "#111827" }
+      ],
+      "material": "Recycled Flyknit & TPU Sole",
+      "gender": "Unisex",
+      "stock": 35,
+      "sku": "TR-GEN-001",
+      "rating": 4.8,
+      "reviews": [
+        { "name": "John Doe", "rating": 5, "comment": "Absolutely incredible comfort. The responsive sole makes a massive difference in bounce!", "date": "2026-07-20" },
+        { "name": "Sarah K.", "rating": 4, "comment": "Extremely stylish and lightweight. Perfect for daily wear.", "date": "2026-07-24" }
+      ],
+      "tags": ["Premium", "Running", "Responsive"],
+      "images": ["/images/shoes/genesis_blue.png", "/images/shoes/genesis_silver.png", "/images/shoes/genesis_black.png"],
+      "mainImage": "/images/shoes/genesis_blue.png",
+      "isNewArrival": true,
+      "isBestSeller": true,
+      "isSale": true
+    },
+    {
+      "id": "horizon-light",
+      "name": "THE REAL Horizon Light",
+      "brand": "THE REAL",
+      "category": "Lifestyle",
+      "description": "Designed for lightweight daily pacing. Horizon Light incorporates a translucent mesh grid with premium leather overlays, making it the perfect blend of structural integrity and minimalist style.",
+      "price": 11999,
+      "originalPrice": 11999,
+      "discountPrice": 11999,
+      "discountPercentage": 0,
+      "availableSizes": [8, 9, 10, 11],
+      "availableColors": [
+        { "name": "Silver Shadow", "hex": "#c0c0c0", "threeColor": "#c0c0c0" },
+        { "name": "Royal Blue", "hex": "#0a58ca", "threeColor": "#0a58ca" }
+      ],
+      "material": "Engineered Mono-Mesh & Premium Leather",
+      "gender": "Unisex",
+      "stock": 18,
+      "sku": "TR-HOR-002",
+      "rating": 4.6,
+      "reviews": [
+        { "name": "Aman S.", "rating": 5, "comment": "Love the premium look. Fits like a glove.", "date": "2026-07-15" }
+      ],
+      "tags": ["Lightweight", "Lifestyle", "Casual"],
+      "images": ["/images/shoes/horizon_light.png", "/images/shoes/horizon_blue.png"],
+      "mainImage": "/images/shoes/horizon_light.png",
+      "isNewArrival": true,
+      "isBestSeller": false,
+      "isSale": false
+    },
+    {
+      "id": "apex-runner",
+      "name": "THE REAL Apex Runner",
+      "brand": "THE REAL",
+      "category": "Sport",
+      "description": "Dominate your athletic targets with the Apex Runner. Designed with carbon fiber shank plates and multi-directional traction grips to ensure explosive power outputs and maximum stride control.",
+      "price": 16999,
+      "originalPrice": 19999,
+      "discountPrice": 16999,
+      "discountPercentage": 15,
+      "availableSizes": [7, 8, 9, 10, 11, 12],
+      "availableColors": [
+        { "name": "Carbon Black", "hex": "#111827", "threeColor": "#111827" },
+        { "name": "Royal Blue", "hex": "#0a58ca", "threeColor": "#0a58ca" },
+        { "name": "Silver Shadow", "hex": "#c0c0c0", "threeColor": "#c0c0c0" }
+      ],
+      "material": "Carbon Fiber Shank, Mesh & High-Grip Rubber",
+      "gender": "Men",
+      "stock": 12,
+      "sku": "TR-APX-003",
+      "rating": 4.9,
+      "reviews": [
+        { "name": "Vikram R.", "rating": 5, "comment": "Hands down the best running shoes I have owned. Worth every dollar.", "date": "2026-07-22" }
+      ],
+      "tags": ["Athletic", "Carbon Fiber", "Sport", "Performance"],
+      "images": ["/images/shoes/apex_black.png", "/images/shoes/apex_blue.png"],
+      "mainImage": "/images/shoes/apex_black.png",
+      "isNewArrival": false,
+      "isBestSeller": true,
+      "isSale": true
+    },
+    {
+      "id": "stealth-black",
+      "name": "THE REAL Stealth Black",
+      "brand": "THE REAL",
+      "category": "Lifestyle",
+      "description": "Embrace the darkness. Stealth Black offers an all-black matte appearance with reflective elements that catch light under motion. Seamless construction prevents chafing.",
+      "price": 10999,
+      "originalPrice": 10999,
+      "discountPrice": 10999,
+      "discountPercentage": 0,
+      "availableSizes": [8, 9, 10, 11],
+      "availableColors": [
+        { "name": "Carbon Black", "hex": "#111827", "threeColor": "#111827" }
+      ],
+      "material": "Matte Knit & Reflective Mesh overlays",
+      "gender": "Men",
+      "stock": 5,
+      "sku": "TR-STL-004",
+      "rating": 4.5,
+      "reviews": [
+        { "name": "David M.", "rating": 4, "comment": "Looks amazing, very clean. The reflective stripes are a neat touch.", "date": "2026-07-18" }
+      ],
+      "tags": ["Stealth", "Reflective", "Casual"],
+      "images": ["/images/shoes/stealth_black.png"],
+      "mainImage": "/images/shoes/stealth_black.png",
+      "isNewArrival": false,
+      "isBestSeller": false,
+      "isSale": false
+    },
+    {
+      "id": "retro-classic",
+      "name": "THE REAL Retro Classic",
+      "brand": "THE REAL",
+      "category": "Casual",
+      "description": "A timeless vintage-inspired silhouette reimagined for the modern era. Handcrafted from top-grade leather, detailed with classic stitching, and finished with a comfortable memory foam insole.",
+      "price": 8999,
+      "originalPrice": 11999,
+      "discountPrice": 8999,
+      "discountPercentage": 25,
+      "availableSizes": [6, 7, 8, 9, 10, 11],
+      "availableColors": [
+        { "name": "Silver Shadow", "hex": "#c0c0c0", "threeColor": "#e5e7eb" },
+        { "name": "Royal Blue", "hex": "#0a58ca", "threeColor": "#0a58ca" }
+      ],
+      "material": "Genuine Full-Grain Leather & Gum Sole",
+      "gender": "Women",
+      "stock": 22,
+      "sku": "TR-RTR-005",
+      "rating": 4.7,
+      "reviews": [
+        { "name": "Emily G.", "rating": 5, "comment": "So comfy and they look great with everything. Will buy the blue ones too.", "date": "2026-07-25" }
+      ],
+      "tags": ["Vintage", "Classic", "Leather", "Retro"],
+      "images": ["/images/shoes/retro_white.png", "/images/shoes/retro_blue.png"],
+      "mainImage": "/images/shoes/retro_white.png",
+      "isNewArrival": false,
+      "isBestSeller": false,
+      "isSale": true
+    },
+    {
       "id": "puma-smashic-comfort-casual-sneakers-5d13",
       "name": "Puma Smashic Comfort Casual Sneakers",
       "brand": "Puma",
       "category": "Running",
-      "description": "Buy PUMA Smashic Comfort Casual Sneakers Black Matte Silver 9UK from Sneakers at . 30 days free exchange or return",
+      "description": "Step into premium sizing and absolute comfort with the Puma Smashic Comfort Casual Sneakers. Reimagined with modern responsive cushioning, lightweight dynamic overlays, and a clean aerodynamic layout designed to power your day-to-day pacing.",
       "price": 2000,
       "originalPrice": 2500,
       "discountPrice": 2000,
       "discountPercentage": 20,
-      "availableSizes": [
-        7,
-        8,
-        9,
-        10,
-        11
-      ],
+      "availableSizes": [7, 8, 9, 10, 11],
       "availableColors": [
-        {
-          "name": "Royal Blue",
-          "hex": "#0a58ca",
-          "threeColor": "#0a58ca"
-        },
-        {
-          "name": "Silver Shadow",
-          "hex": "#c0c0c0",
-          "threeColor": "#c0c0c0"
-        },
-        {
-          "name": "Carbon Black",
-          "hex": "#111827",
-          "threeColor": "#111827"
-        }
+        { "name": "Royal Blue", "hex": "#0a58ca", "threeColor": "#0a58ca" },
+        { "name": "Silver Shadow", "hex": "#c0c0c0", "threeColor": "#c0c0c0" },
+        { "name": "Carbon Black", "hex": "#111827", "threeColor": "#111827" }
       ],
       "material": "Engineered Synthetic Blend & Responsive Sole",
       "gender": "Unisex",
@@ -40,21 +174,10 @@
       "sku": "TR-IMP-970-PUM",
       "rating": 4.8,
       "reviews": [
-        {
-          "name": "Aryan Shah",
-          "rating": 5,
-          "comment": "Imported product verification: Elite build quality and responsive sole profile.",
-          "date": "2026-07-27"
-        }
+        { "name": "Aryan Shah", "rating": 5, "comment": "Imported product verification: Elite build quality and responsive sole profile.", "date": "2026-07-27" }
       ],
-      "tags": [
-        "Imported",
-        "Puma",
-        "Running"
-      ],
-      "images": [
-        "https://m.media-amazon.com/images/I/41NtbP4mYoL._SL1200_.jpg"
-      ],
+      "tags": ["Imported", "Puma", "Running"],
+      "images": ["https://m.media-amazon.com/images/I/41NtbP4mYoL._SL1200_.jpg"],
       "mainImage": "https://m.media-amazon.com/images/I/41NtbP4mYoL._SL1200_.jpg",
       "isNewArrival": true,
       "isBestSeller": false,
@@ -65,34 +188,16 @@
       "name": "Puma Smashic Comfort Casual Sneakers",
       "brand": "Puma",
       "category": "Casual",
-      "description": "Buy Puma Smashic Comfort Casual Sneakers White Matte Silver 10UK from Sneakers at . 30 days free exchange or return",
+      "description": "Step into premium sizing and absolute comfort with the Puma Smashic Comfort Casual Sneakers. Reimagined with modern responsive cushioning, lightweight dynamic overlays, and a clean aerodynamic layout designed to power your day-to-day pacing.",
       "price": 2000,
       "originalPrice": 2500,
       "discountPrice": 2000,
       "discountPercentage": 20,
-      "availableSizes": [
-        7,
-        8,
-        9,
-        10,
-        11
-      ],
+      "availableSizes": [7, 8, 9, 10, 11],
       "availableColors": [
-        {
-          "name": "Royal Blue",
-          "hex": "#0a58ca",
-          "threeColor": "#0a58ca"
-        },
-        {
-          "name": "Silver Shadow",
-          "hex": "#c0c0c0",
-          "threeColor": "#c0c0c0"
-        },
-        {
-          "name": "Carbon Black",
-          "hex": "#111827",
-          "threeColor": "#111827"
-        }
+        { "name": "Royal Blue", "hex": "#0a58ca", "threeColor": "#0a58ca" },
+        { "name": "Silver Shadow", "hex": "#c0c0c0", "threeColor": "#c0c0c0" },
+        { "name": "Carbon Black", "hex": "#111827", "threeColor": "#111827" }
       ],
       "material": "Engineered Synthetic Blend & Responsive Sole",
       "gender": "Unisex",
@@ -100,21 +205,10 @@
       "sku": "TR-IMP-262-PUM",
       "rating": 4.8,
       "reviews": [
-        {
-          "name": "Aryan Shah",
-          "rating": 5,
-          "comment": "Imported product verification: Elite build quality and responsive sole profile.",
-          "date": "2026-07-27"
-        }
+        { "name": "Aryan Shah", "rating": 5, "comment": "Imported product verification: Elite build quality and responsive sole profile.", "date": "2026-07-27" }
       ],
-      "tags": [
-        "Imported",
-        "Puma",
-        "Casual"
-      ],
-      "images": [
-        "https://m.media-amazon.com/images/I/41396Lbx3lL._SL1200_.jpg"
-      ],
+      "tags": ["Imported", "Puma", "Casual"],
+      "images": ["https://m.media-amazon.com/images/I/41396Lbx3lL._SL1200_.jpg"],
       "mainImage": "https://m.media-amazon.com/images/I/41396Lbx3lL._SL1200_.jpg",
       "isNewArrival": true,
       "isBestSeller": false,

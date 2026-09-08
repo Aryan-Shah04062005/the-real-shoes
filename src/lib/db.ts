@@ -354,32 +354,48 @@ export const readDB = (): DatabaseSchema => {
     return inMemoryDbCache;
   }
 
+  let dbData: DatabaseSchema | null = null;
+
   // Try reading from /tmp/db.json first (if updated in current runtime)
   try {
     if (fs.existsSync(TMP_DB_PATH)) {
       const data = fs.readFileSync(TMP_DB_PATH, 'utf8');
-      inMemoryDbCache = JSON.parse(data) as DatabaseSchema;
-      return inMemoryDbCache;
+      dbData = JSON.parse(data) as DatabaseSchema;
     }
   } catch (err) {
     console.error('Error reading /tmp/db.json:', err);
   }
 
   // Try reading from PRIMARY_DB_PATH
-  try {
-    if (fs.existsSync(PRIMARY_DB_PATH)) {
-      const data = fs.readFileSync(PRIMARY_DB_PATH, 'utf8');
-      inMemoryDbCache = JSON.parse(data) as DatabaseSchema;
-      return inMemoryDbCache;
+  if (!dbData) {
+    try {
+      if (fs.existsSync(PRIMARY_DB_PATH)) {
+        const data = fs.readFileSync(PRIMARY_DB_PATH, 'utf8');
+        dbData = JSON.parse(data) as DatabaseSchema;
+      }
+    } catch (error) {
+      console.error('Error reading DB from primary path:', error);
     }
-  } catch (error) {
-    console.error('Error reading DB from primary path:', error);
   }
 
-  // Fallback to initial data
   const initial = getInitialData();
-  inMemoryDbCache = initial;
-  return initial;
+
+  if (!dbData) {
+    dbData = initial;
+  } else {
+    // Ensure all default flagship products exist alongside imported products
+    for (const initProd of initial.products) {
+      if (!dbData.products.some(p => p.id === initProd.id)) {
+        dbData.products.push(initProd);
+      }
+    }
+    if (!dbData.websiteContent) dbData.websiteContent = initial.websiteContent;
+    if (!dbData.customers) dbData.customers = initial.customers;
+    if (!dbData.orders) dbData.orders = initial.orders;
+  }
+
+  inMemoryDbCache = dbData;
+  return dbData;
 };
 
 export const writeDB = (data: DatabaseSchema): boolean => {
