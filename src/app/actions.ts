@@ -236,6 +236,8 @@ export async function saveProductAction(productData: Partial<Product> & { id?: s
   }
   
   revalidatePath('/', 'layout');
+  revalidatePath('/shop');
+  revalidatePath('/admin/dashboard');
   return { success: true };
 }
 
@@ -740,6 +742,7 @@ export async function importProductFromUrlAction(url: string, targetPrice: numbe
 
   revalidatePath('/', 'layout');
   revalidatePath('/shop');
+  revalidatePath('/admin/dashboard');
 
   return { success: true, product: newProduct };
 }

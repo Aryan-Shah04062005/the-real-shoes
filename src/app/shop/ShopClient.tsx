@@ -54,8 +54,8 @@ export default function ShopClient({ initialProducts }: ShopClientProps) {
   }, [searchParams]);
 
   // Unique attributes for filters
-  const uniqueCategories = useMemo(() => ['All', 'Sneakers', 'Running', 'Lifestyle'], []);
-  const uniqueBrands = useMemo(() => ['All', ...Array.from(new Set(initialProducts.map((p) => p.brand)))], [initialProducts]);
+  const uniqueCategories = useMemo(() => ['All', ...Array.from(new Set(initialProducts.map((p) => p.category).filter(Boolean)))], [initialProducts]);
+  const uniqueBrands = useMemo(() => ['All', ...Array.from(new Set(initialProducts.map((p) => p.brand).filter(Boolean)))], [initialProducts]);
   const availableSizes = [6, 7, 8, 9, 10, 11, 12];
   const filterColors = ['Royal Blue', 'Silver Shadow', 'Carbon Black', 'Red', 'White'];
 
