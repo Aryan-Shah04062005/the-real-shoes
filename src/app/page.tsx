@@ -1,6 +1,6 @@
 import React from 'react';
 import Link from 'next/link';
-import { getFullDb } from '@/lib/db';
+import { getFullDb, isValidProductImage } from '@/lib/db';
 import ProductCard from '@/components/ProductCard';
 import QuickViewModal from '@/components/QuickViewModal';
 import SizeGuideModal from '@/components/SizeGuideModal';
@@ -25,7 +25,7 @@ export default async function HomePage() {
   const { websiteContent, products } = db;
 
   const activeProducts = products.filter(
-    (p) => !p.status || p.status === 'ACTIVE' || p.status === 'OUT_OF_STOCK'
+    (p) => (!p.status || p.status === 'ACTIVE' || p.status === 'OUT_OF_STOCK') && isValidProductImage(p.mainImage)
   );
 
   const newArrivals = activeProducts.filter((p) => p.isNewArrival).slice(0, 6);
@@ -267,7 +267,7 @@ export default async function HomePage() {
             {customerReviews.map((rev) => (
               <div key={rev.name} className="glass-card rounded-2xl p-6 border border-white/10 space-y-4">
                 <div className="flex items-center gap-1 text-amber-400">
-                  {[...Array(rev.rating)].map((_, i) => (
+                  {[...Array(Math.max(1, Math.min(5, Math.floor(rev.rating || 5))))].map((_, i) => (
                     <Star key={i} className="h-4 w-4 fill-current" />
                   ))}
                 </div>

@@ -355,7 +355,7 @@ export default function ProductDetailsClient({ product }: ProductDetailsClientPr
                         <span className="text-[10px] text-slate-500">{rev.date}</span>
                       </div>
                       <div className="flex items-center gap-1 text-amber-400">
-                        {[...Array(rev.rating)].map((_, r) => (
+                        {[...Array(Math.max(1, Math.min(5, Math.floor(rev.rating || 5))))].map((_, r) => (
                           <Star key={r} className="h-3 w-3 fill-current" />
                         ))}
                       </div>
