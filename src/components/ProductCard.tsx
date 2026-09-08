@@ -88,6 +88,9 @@ export default function ProductCard({ product }: ProductCardProps) {
           <img
             src={product.mainImage || product.images?.[0] || '/images/shoes/genesis_blue.png'}
             alt={product.name}
+            onError={(e) => {
+              e.currentTarget.src = '/images/shoes/genesis_blue.png';
+            }}
             className="z-10 h-full w-full object-contain p-4 group-hover:scale-105 transition-transform duration-300 ease-out"
           />
         </div>

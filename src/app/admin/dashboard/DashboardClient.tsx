@@ -757,23 +757,26 @@ export default function DashboardClient({ initialDb }: DashboardClientProps) {
                   </div>
 
                   <div>
-                    <label className="text-[9px] font-bold uppercase tracking-widest text-slate-500 block mb-1">Product Main Image</label>
+                    <label className="text-[9px] font-bold uppercase tracking-widest text-slate-500 block mb-1">Product Main Image URL / Upload</label>
                     <div className="flex flex-col sm:flex-row gap-3 items-stretch sm:items-center">
                       <div className="flex-grow">
                         <input
                           type="text"
                           required
-                          placeholder="Paste an image URL (e.g., https://...)"
+                          placeholder="Paste an image link (e.g., https://...)"
                           value={editingProduct.mainImage || ''}
                           onChange={(e) => {
-                            const newUrl = e.target.value;
+                            let newUrl = e.target.value.trim();
+                            if (newUrl && !newUrl.startsWith('http://') && !newUrl.startsWith('https://') && !newUrl.startsWith('/')) {
+                              newUrl = 'https://' + newUrl;
+                            }
                             setEditingProduct({ 
                               ...editingProduct, 
                               mainImage: newUrl,
-                              images: [newUrl]
+                              images: [newUrl, ...(editingProduct.images?.slice(1) || [])]
                             });
                           }}
-                          className="w-full rounded-xl border border-white/10 bg-white/5 px-3 py-2.5 text-xs text-white"
+                          className="w-full rounded-xl border border-white/10 bg-white/5 px-3 py-2.5 text-xs text-white placeholder-slate-500"
                         />
                       </div>
                       <div className="flex items-center gap-2 shrink-0">
@@ -793,6 +796,26 @@ export default function DashboardClient({ initialDb }: DashboardClientProps) {
                         </label>
                       </div>
                     </div>
+
+                    {/* Live Image Preview Card */}
+                    {editingProduct.mainImage && (
+                      <div className="mt-2.5 flex items-center gap-3 p-2.5 rounded-xl bg-white/5 border border-white/10">
+                        <div className="h-16 w-16 rounded-lg bg-black/60 p-1 flex items-center justify-center overflow-hidden shrink-0 border border-white/10">
+                          <img 
+                            src={editingProduct.mainImage} 
+                            alt="Live Preview" 
+                            className="h-full w-full object-contain"
+                            onError={(e) => {
+                              e.currentTarget.src = '/images/shoes/genesis_blue.png';
+                            }}
+                          />
+                        </div>
+                        <div className="text-[11px] text-slate-300 truncate flex-grow">
+                          <span className="font-bold text-white block">Live Image Preview</span>
+                          <span className="text-slate-400 font-mono text-[10px] truncate block">{editingProduct.mainImage}</span>
+                        </div>
+                      </div>
+                    )}
                   </div>
 
                   {/* Colorways Management */}

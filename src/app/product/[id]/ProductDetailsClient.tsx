@@ -100,6 +100,9 @@ export default function ProductDetailsClient({ product }: ProductDetailsClientPr
             <img
               src={galleryImages[activeImageIndex] || galleryImages[0]}
               alt={product.name}
+              onError={(e) => {
+                e.currentTarget.src = '/images/shoes/genesis_blue.png';
+              }}
               className="h-full w-full object-contain transition-transform duration-500 group-hover:scale-105"
             />
           </div>
@@ -117,7 +120,14 @@ export default function ProductDetailsClient({ product }: ProductDetailsClientPr
                       : 'border-white/10 opacity-70 hover:opacity-100 hover:border-white/30'
                   }`}
                 >
-                  <img src={img} alt={`${product.name} thumbnail ${idx + 1}`} className="h-full w-full object-contain" />
+                  <img 
+                    src={img} 
+                    alt={`${product.name} thumbnail ${idx + 1}`} 
+                    onError={(e) => {
+                      e.currentTarget.src = '/images/shoes/genesis_blue.png';
+                    }}
+                    className="h-full w-full object-contain" 
+                  />
                 </button>
               ))}
             </div>

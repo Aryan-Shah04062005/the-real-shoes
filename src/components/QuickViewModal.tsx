@@ -46,6 +46,9 @@ export default function QuickViewModal() {
             <img
               src={quickViewProduct.mainImage || quickViewProduct.images?.[0] || '/images/shoes/genesis_blue.png'}
               alt={quickViewProduct.name}
+              onError={(e) => {
+                e.currentTarget.src = '/images/shoes/genesis_blue.png';
+              }}
               className="h-full w-full object-contain"
             />
           </div>
