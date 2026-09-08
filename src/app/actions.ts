@@ -24,7 +24,8 @@ import {
   saveCustomer,
   getCustomersList,
   getWebsiteContent,
-  saveWebsiteContent
+  saveWebsiteContent,
+  getDatabaseStatus
 } from '@/lib/db';
 import { loginAdmin, logoutAdmin, isAdminAuthenticated } from '@/lib/auth';
 import { revalidatePath } from 'next/cache';
@@ -307,6 +308,11 @@ export async function saveProductAction(productData: Partial<Product> & { id?: s
   revalidatePath('/shop');
   revalidatePath('/admin/dashboard');
   return { success: true, product: savedProd };
+}
+
+export async function getDatabaseStatusAction() {
+  await requireAdmin();
+  return await getDatabaseStatus();
 }
 
 export async function deleteProductAction(productId: string) {

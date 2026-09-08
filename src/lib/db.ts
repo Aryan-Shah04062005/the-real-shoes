@@ -415,29 +415,56 @@ export async function getProductById(id: string): Promise<Product | null> {
   }
 }
 
-export async function saveProduct(productData: Product): Promise<void> {
-  productData.updatedAt = new Date().toISOString();
-  if (!productData.status) productData.status = 'ACTIVE';
+export async function saveProduct(productData: Product): Promise<{ success: boolean; error?: string }> {
+  try {
+    productData.updatedAt = new Date().toISOString();
+    if (!productData.status) productData.status = 'ACTIVE';
 
-  const isMongo = await isMongoDBConnected();
-  if (isMongo) {
-    await seedMongoDBIfNeeded();
-    const exists = await ProductModel.findOne({ id: productData.id });
-    if (exists) {
-      await ProductModel.updateOne({ id: productData.id }, productData);
+    const isMongo = await isMongoDBConnected();
+    if (isMongo) {
+      await seedMongoDBIfNeeded();
+      const exists = await ProductModel.findOne({ id: productData.id });
+      if (exists) {
+        await ProductModel.updateOne({ id: productData.id }, productData);
+      } else {
+        await ProductModel.create(productData);
+      }
     } else {
-      await ProductModel.create(productData);
+      const db = readDB();
+      const index = db.products.findIndex(p => p.id === productData.id);
+      if (index !== -1) {
+        db.products[index] = productData;
+      } else {
+        db.products.unshift(productData);
+      }
+      writeDB(db);
     }
-  } else {
-    const db = readDB();
-    const index = db.products.findIndex(p => p.id === productData.id);
-    if (index !== -1) {
-      db.products[index] = productData;
-    } else {
-      db.products.unshift(productData);
-    }
-    writeDB(db);
+    return { success: true };
+  } catch (err: any) {
+    console.error('Database saveProduct error:', err);
+    return { success: false, error: err?.message || String(err) };
   }
+}
+
+export async function getDatabaseStatus(): Promise<{
+  backend: 'MongoDB' | 'File System (db.json)';
+  connected: boolean;
+  productCount: number;
+  lastProductCreated?: string;
+  lastOperation?: string;
+  uriConfigured: boolean;
+}> {
+  const isMongo = await isMongoDBConnected();
+  const products = await getProductsList();
+  
+  return {
+    backend: isMongo ? 'MongoDB' : 'File System (db.json)',
+    connected: true,
+    productCount: products.length,
+    lastProductCreated: products[0]?.name || 'N/A',
+    lastOperation: 'PERSISTED',
+    uriConfigured: !!process.env.MONGODB_URI
+  };
 }
 
 export async function deleteProduct(id: string): Promise<{ success: boolean; mode: 'deleted' | 'archived' | 'not_found' }> {
@@ -508,25 +535,37 @@ export async function restoreProduct(id: string): Promise<boolean> {
   }
 }
 
-export async function checkDuplicateProduct(sourceUrl?: string, sku?: string, name?: string, brand?: string, sourceProductId?: string): Promise<{ exists: boolean; existingProduct?: Product }> {
+export async function checkDuplicateProduct(
+  sourceUrlOrObj?: string | { sourceUrl?: string; sku?: string; name?: string; brand?: string; sourceProductId?: string },
+  skuArg?: string,
+  nameArg?: string,
+  brandArg?: string,
+  sourceProductIdArg?: string
+): Promise<{ exists: boolean; existingProduct?: Product }> {
+  const sourceUrl = typeof sourceUrlOrObj === 'string' ? sourceUrlOrObj : sourceUrlOrObj?.sourceUrl;
+  const sku = typeof sourceUrlOrObj === 'string' ? skuArg : sourceUrlOrObj?.sku;
+  const name = typeof sourceUrlOrObj === 'string' ? nameArg : sourceUrlOrObj?.name;
+  const brand = typeof sourceUrlOrObj === 'string' ? brandArg : sourceUrlOrObj?.brand;
+  const sourceProductId = typeof sourceUrlOrObj === 'string' ? sourceProductIdArg : sourceUrlOrObj?.sourceProductId;
+
   const products = await getProductsList();
   
-  if (sourceProductId && sourceProductId.trim()) {
+  if (sourceProductId && typeof sourceProductId === 'string' && sourceProductId.trim()) {
     const foundBySourceId = products.find(p => p.sourceProductId && p.sourceProductId.trim().toLowerCase() === sourceProductId.trim().toLowerCase());
     if (foundBySourceId) return { exists: true, existingProduct: foundBySourceId };
   }
 
-  if (sourceUrl && sourceUrl.trim()) {
+  if (sourceUrl && typeof sourceUrl === 'string' && sourceUrl.trim()) {
     const foundByUrl = products.find(p => p.sourceUrl && p.sourceUrl.trim().toLowerCase() === sourceUrl.trim().toLowerCase());
     if (foundByUrl) return { exists: true, existingProduct: foundByUrl };
   }
 
-  if (sku && sku.trim()) {
+  if (sku && typeof sku === 'string' && sku.trim()) {
     const foundBySku = products.find(p => p.sku && p.sku.trim().toLowerCase() === sku.trim().toLowerCase());
     if (foundBySku) return { exists: true, existingProduct: foundBySku };
   }
 
-  if (name && brand) {
+  if (name && brand && typeof name === 'string' && typeof brand === 'string') {
     const foundByNameBrand = products.find(p => 
       p.name.trim().toLowerCase() === name.trim().toLowerCase() && 
       p.brand.trim().toLowerCase() === brand.trim().toLowerCase()

@@ -15,7 +15,8 @@ import {
   updateWebsiteContentAction,
   logoutAdminAction,
   importProductFromUrlAction,
-  uploadProductImageAction
+  uploadProductImageAction,
+  getDatabaseStatusAction
 } from '@/app/actions';
 import {
   BarChart2,
@@ -111,6 +112,29 @@ export default function DashboardClient({ initialDb }: DashboardClientProps) {
   const [newColorName, setNewColorName] = useState('');
   const [newColorHex, setNewColorHex] = useState('#0a58ca');
 
+  // Database status state
+  const [dbStatus, setDbStatus] = useState<{
+    backend: string;
+    connected: boolean;
+    productCount: number;
+    lastProductCreated?: string;
+    lastOperation?: string;
+    uriConfigured: boolean;
+  } | null>(null);
+
+  const fetchDbStatus = async () => {
+    try {
+      const status = await getDatabaseStatusAction();
+      setDbStatus(status);
+    } catch (e) {
+      console.error('Failed to fetch DB status:', e);
+    }
+  };
+
+  useEffect(() => {
+    fetchDbStatus();
+  }, []);
+
   // Fetch audit logs when tab is selected
   useEffect(() => {
     if (activeTab === 'audit_logs') {
@@ -140,6 +164,7 @@ export default function DashboardClient({ initialDb }: DashboardClientProps) {
       ...prev,
       ...updatedSchema,
     }));
+    fetchDbStatus();
   };
 
   const handleLogout = async () => {
@@ -729,6 +754,61 @@ export default function DashboardClient({ initialDb }: DashboardClientProps) {
             <span className="text-xs font-bold uppercase tracking-wider">{statusMessage.text}</span>
           </div>
         )}
+
+        {/* DATABASE STATUS DEBUG PANEL */}
+        <div className="glass-panel rounded-2xl p-4 border border-cyan-500/20 bg-cyan-950/20 space-y-3">
+          <div className="flex flex-wrap items-center justify-between gap-3">
+            <div className="flex items-center gap-3">
+              <div className="p-2 rounded-xl bg-cyan-500/10 border border-cyan-500/30 text-cyan-400">
+                <ShieldCheck className="h-5 w-5" />
+              </div>
+              <div>
+                <div className="flex items-center gap-2">
+                  <h3 className="text-xs font-black text-white uppercase tracking-widest">Database Persistence Status</h3>
+                  <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-green-500/20 text-green-400 border border-green-500/30">
+                    <span className="w-1.5 h-1.5 rounded-full bg-green-400 animate-pulse"></span>
+                    CONNECTED
+                  </span>
+                </div>
+                <p className="text-[11px] text-slate-400">
+                  Source of Truth: <strong className="text-cyan-300 font-semibold">{dbStatus?.backend || 'File System (db.json)'}</strong>
+                </p>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-2">
+              <button
+                onClick={fetchDbStatus}
+                className="px-3 py-1.5 rounded-xl border border-white/10 bg-white/5 hover:bg-white/10 text-xs font-bold text-slate-300 flex items-center gap-1.5 transition-all"
+                title="Refresh Database Status"
+              >
+                <RefreshCw className="h-3.5 w-3.5" />
+                Refresh DB Status
+              </button>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-2 border-t border-white/5">
+            <div className="bg-black/30 rounded-xl p-2.5 border border-white/5">
+              <span className="text-[9px] font-bold text-slate-500 uppercase tracking-widest block">DB Backend</span>
+              <span className="text-xs font-bold text-white truncate block mt-0.5">{dbStatus?.backend || 'File System (db.json)'}</span>
+            </div>
+            <div className="bg-black/30 rounded-xl p-2.5 border border-white/5">
+              <span className="text-[9px] font-bold text-slate-500 uppercase tracking-widest block">Total DB Products</span>
+              <span className="text-xs font-black text-cyan-400 block mt-0.5">{dbStatus?.productCount ?? db.products.length} Items</span>
+            </div>
+            <div className="bg-black/30 rounded-xl p-2.5 border border-white/5">
+              <span className="text-[9px] font-bold text-slate-500 uppercase tracking-widest block">Last DB Product</span>
+              <span className="text-xs font-semibold text-slate-300 truncate block mt-0.5" title={dbStatus?.lastProductCreated || db.products[0]?.name}>
+                {dbStatus?.lastProductCreated || db.products[0]?.name || 'N/A'}
+              </span>
+            </div>
+            <div className="bg-black/30 rounded-xl p-2.5 border border-white/5">
+              <span className="text-[9px] font-bold text-slate-500 uppercase tracking-widest block">Last DB Operation</span>
+              <span className="text-xs font-bold text-green-400 block mt-0.5">{dbStatus?.lastOperation || 'PERSISTED'}</span>
+            </div>
+          </div>
+        </div>
 
         {/* TAB 1: OVERVIEW */}
         {activeTab === 'overview' && (
