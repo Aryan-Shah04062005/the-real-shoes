@@ -210,6 +210,22 @@
   },
   "auditLogs": [
     {
+      "id": "log-1788892280524-wiwn",
+      "admin": "Admin",
+      "action": "Deleted Product",
+      "target": "CROSS DEVICE TEST SHOE 888",
+      "details": "ID: cross-device-test-shoe-888-m5ju, Mode: deleted",
+      "timestamp": "2026-09-08T18:31:20.524Z"
+    },
+    {
+      "id": "log-1788892280521-uprb",
+      "admin": "Admin",
+      "action": "Created Product",
+      "target": "CROSS DEVICE TEST SHOE 888",
+      "details": "SKU: TR-THE-109, Price: ₹8888, Source: MANUAL",
+      "timestamp": "2026-09-08T18:31:20.521Z"
+    },
+    {
       "id": "log-1788892033658-6q00",
       "admin": "Admin",
       "action": "Deleted Product",
