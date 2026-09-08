@@ -633,59 +633,67 @@ export async function importProductFromUrlAction(url: string, targetPrice: numbe
                                  html.match(/Color:\s*<\/span>\s*<span[^>]*>\s*([^<]+)\s*<\/span>/i);
         if (amazonColorMatch) rawColorText = amazonColorMatch[1].trim();
       } else {
+        const cleanHtml = html.replace(/\\u002f/gi, '/').replace(/\\u002F/gi, '/');
+
         // Flipkart title regexes (OpenGraph, Twitter card, Class tags, H1, Title)
-        const titleMatch = html.match(/<meta property="og:title" content="([^"]+)"/i) ||
-                           html.match(/<meta name="twitter:title" content="([^"]+)"/i) ||
-                           html.match(/<meta name="title" content="([^"]+)"/i) ||
-                           html.match(/<span [^>]*class="[^"]*B_NuCI[^"]*"[^>]*>\s*([^<]+)\s*<\/span>/i) ||
-                           html.match(/<span [^>]*class="[^"]*VU-423[^"]*"[^>]*>\s*([^<]+)\s*<\/span>/i) ||
-                           html.match(/<span [^>]*class="[^"]*_2lT163[^"]*"[^>]*>\s*([^<]+)\s*<\/span>/i) ||
-                           html.match(/<h1[^>]*>\s*([^<]+)\s*<\/h1>/i) ||
-                           html.match(/<title>([^<]+)<\/title>/i);
+        const titleMatch = cleanHtml.match(/<meta [^>]*property="og:title"[^>]*content="([^"]+)"/i) ||
+                           cleanHtml.match(/<meta [^>]*content="([^"]+)"[^>]*property="og:title"/i) ||
+                           cleanHtml.match(/<meta [^>]*name="twitter:title"[^>]*content="([^"]+)"/i) ||
+                           cleanHtml.match(/<meta [^>]*content="([^"]+)"[^>]*name="twitter:title"/i) ||
+                           cleanHtml.match(/<span [^>]*class="[^"]*B_NuCI[^"]*"[^>]*>\s*([^<]+)\s*<\/span>/i) ||
+                           cleanHtml.match(/<span [^>]*class="[^"]*VU-423[^"]*"[^>]*>\s*([^<]+)\s*<\/span>/i) ||
+                           cleanHtml.match(/<span [^>]*class="[^"]*_2lT163[^"]*"[^>]*>\s*([^<]+)\s*<\/span>/i) ||
+                           cleanHtml.match(/<h1[^>]*>\s*([^<]+)\s*<\/h1>/i) ||
+                           cleanHtml.match(/<title>([^<]+)<\/title>/i);
         if (titleMatch) title = titleMatch[1].trim();
 
         // Flipkart description regexes
-        const descMatch = html.match(/<meta property="og:description" content="([^"]+)"/i) ||
-                          html.match(/<meta name="description" content="([^"]+)"/i) ||
-                          html.match(/<div [^>]*class="[^"]*_1mXERD[^"]*"[^>]*>\s*([^<]+)\s*<\/div>/i);
+        const descMatch = cleanHtml.match(/<meta [^>]*property="og:description"[^>]*content="([^"]+)"/i) ||
+                          cleanHtml.match(/<meta [^>]*content="([^"]+)"[^>]*property="og:description"/i) ||
+                          cleanHtml.match(/<meta [^>]*name="description"[^>]*content="([^"]+)"/i) ||
+                          cleanHtml.match(/<meta [^>]*content="([^"]+)"[^>]*name="description"/i) ||
+                          cleanHtml.match(/<div [^>]*class="[^"]*_1mXERD[^"]*"[^>]*>\s*([^<]+)\s*<\/div>/i);
         if (descMatch) description = descMatch[1].trim();
 
         // Flipkart main image
-        const imgMatch = html.match(/<meta property="og:image" content="([^"]+)"/i) ||
-                         html.match(/<meta name="twitter:image" content="([^"]+)"/i) ||
-                         html.match(/"image":\s*\[?"(https:\/\/rukminim[0-9]\.flixcart\.com\/image\/[^"]+)"/i) ||
-                         html.match(/<img [^>]*src="(https:\/\/rukminim[0-9]\.flixcart\.com\/image\/[^"]+)"/i) ||
-                         html.match(/<img [^>]*src="([^"]+)"[^>]*class="[^"]*_396cs4[^"]*"/i) ||
-                         html.match(/<img [^>]*class="[^"]*_396cs4[^"]*"[^>]*src="([^"]+)"/i) ||
-                         html.match(/<img [^>]*src="([^"]+)"[^>]*class="[^"]*_2r_l1t[^"]*"/i);
+        const imgMatch = cleanHtml.match(/<meta [^>]*property="og:image"[^>]*content="([^"]+)"/i) ||
+                         cleanHtml.match(/<meta [^>]*content="([^"]+)"[^>]*property="og:image"/i) ||
+                         cleanHtml.match(/<meta [^>]*name="twitter:image"[^>]*content="([^"]+)"/i) ||
+                         cleanHtml.match(/<meta [^>]*content="([^"]+)"[^>]*name="twitter:image"/i) ||
+                         cleanHtml.match(/"image":\s*\[?"(https:\/\/rukminim[0-9]\.flixcart\.com\/image\/[^"]+)"/i) ||
+                         cleanHtml.match(/<img [^>]*src="(https:\/\/rukminim[0-9]\.flixcart\.com\/image\/[^"]+)"/i);
         if (imgMatch) mainImage = imgMatch[1].trim();
 
-        // Extract all Flipkart product photos
-        const fkImgMatches = html.matchAll(/(https:\/\/rukminim[0-9]\.flixcart\.com\/image\/[^\s"'>\\]+)/gi);
-        for (const m of fkImgMatches) {
-          let imgUrl = m[1].replace(/\\"/g, '').replace(/"/g, '').replace(/'/g, '');
-          imgUrl = imgUrl.replace(/\/image\/\d+\/\d+\//, '/image/832/832/');
-          if (!imgUrl.includes('placeholder') && !imgUrl.includes('icon') && !extractedImages.includes(imgUrl)) {
+        // Extract all Flipkart product photos directly
+        const fkImgMatches = cleanHtml.match(/https?:\/\/[^"'\s<>{}]+(?:rukminim|flixcart)[^"'\s<>{}]+/gi) || [];
+        fkImgMatches.forEach(m => {
+          let imgUrl = m.split('?')[0].split('"')[0].split("'")[0].replace(/\\/g, '');
+          imgUrl = imgUrl.replace(/\/image\/\{@width\}\/\{@height\}/g, '/image/832/832');
+          imgUrl = imgUrl.replace(/\/image\/\d+\/\d+/g, '/image/832/832');
+          if ((imgUrl.includes('/image/') || imgUrl.includes('xif0q')) &&
+              !imgUrl.includes('/www/') && !imgUrl.includes('logo') && !imgUrl.includes('icon') &&
+              !imgUrl.includes('splash') && !imgUrl.includes('placeholder') && !imgUrl.endsWith('.svg') &&
+              !extractedImages.includes(imgUrl)) {
             extractedImages.push(imgUrl);
           }
-        }
+        });
 
         // Flipkart brand regex
-        const brandMatch = html.match(/<span [^>]*class="[^"]*G6XhY1[^"]*"[^>]*>\s*([^<]+)\s*<\/span>/i) ||
-                           html.match(/<span [^>]*class="[^"]*m7-21p[^"]*"[^>]*>\s*([^<]+)\s*<\/span>/i) ||
-                           html.match(/<span [^>]*class="[^"]*_2Wk1fc[^"]*"[^>]*>\s*([^<]+)\s*<\/span>/i);
+        const brandMatch = cleanHtml.match(/<span [^>]*class="[^"]*G6XhY1[^"]*"[^>]*>\s*([^<]+)\s*<\/span>/i) ||
+                           cleanHtml.match(/<span [^>]*class="[^"]*m7-21p[^"]*"[^>]*>\s*([^<]+)\s*<\/span>/i) ||
+                           cleanHtml.match(/<span [^>]*class="[^"]*_2Wk1fc[^"]*"[^>]*>\s*([^<]+)\s*<\/span>/i);
         if (brandMatch) brand = brandMatch[1].trim();
 
         // Flipkart color scraper
-        const flipkartColorMatch = html.match(/<div [^>]*class="[^"]*_2C41vz[^"]*"[^>]*>\s*([^<]+)\s*<\/div>/i) ||
-                                   html.match(/"color":\s*"([^"]+)"/i) ||
-                                   html.match(/<td>\s*Color\s*<\/td>\s*<td>\s*([^<]+)\s*<\/td>/i);
+        const flipkartColorMatch = cleanHtml.match(/<div [^>]*class="[^"]*_2C41vz[^"]*"[^>]*>\s*([^<]+)\s*<\/div>/i) ||
+                                   cleanHtml.match(/"color":\s*"([^"]+)"/i) ||
+                                   cleanHtml.match(/<td>\s*Color\s*<\/td>\s*<td>\s*([^<]+)\s*<\/td>/i);
         if (flipkartColorMatch) rawColorText = flipkartColorMatch[1].trim();
       }
 
       // Upgrade Flipkart low-res image thumbnails to high-res (e.g. 128/128 -> 832/832)
       if (mainImage && mainImage.includes('rukminim')) {
-        mainImage = mainImage.replace(/\/image\/\d+\/\d+\//, '/image/832/832/');
+        mainImage = mainImage.replace(/\/image\/\d+\/\d+/, '/image/832/832');
       }
 
       // Apply initial sanitization
@@ -695,6 +703,55 @@ export async function importProductFromUrlAction(url: string, targetPrice: numbe
     }
   } catch (scrapeErr) {
     console.error('Failed to parse URL html, invoking fallback parser:', scrapeErr);
+  }
+
+  // Resilient Search Fallback for Flipkart: If direct scrape returned no product images or blocked title, query Flipkart search endpoint!
+  if (isFlipkart && (extractedImages.length === 0 || !title || title.toLowerCase().includes('flipkart.com') || title.toLowerCase().includes('online shopping'))) {
+    try {
+      const targetUrl = (finalUrl || cleanUrl).split('?')[0];
+      const urlObj = new URL(targetUrl);
+      const pathParts = urlObj.pathname.split('/').filter(Boolean);
+      const pIdx = pathParts.indexOf('p');
+      let rawSlug = '';
+      if (pIdx > 0) {
+        rawSlug = pathParts[pIdx - 1];
+      } else {
+        rawSlug = pathParts.find(p => p.length > 5 && !p.includes('.') && p !== 'p' && !p.startsWith('itm')) || '';
+      }
+
+      if (rawSlug) {
+        const slugQuery = rawSlug.replace(/[-_]+/g, ' ').trim();
+        if (!title || title.toLowerCase().includes('flipkart.com') || title.toLowerCase().includes('online shopping')) {
+          title = slugQuery.split(' ').map(w => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase()).join(' ');
+        }
+
+        const searchUrl = `https://www.flipkart.com/search?q=${encodeURIComponent(slugQuery)}`;
+        const sRes = await fetch(searchUrl, {
+          headers: {
+            'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36',
+            'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8'
+          }
+        });
+        if (sRes.ok) {
+          const sRaw = await sRes.text();
+          const sHtml = sRaw.replace(/\\u002f/gi, '/').replace(/\\u002F/gi, '/');
+          const sMatches = sHtml.match(/https?:\/\/[^"'\s<>{}]+(?:rukminim|flixcart)[^"'\s<>{}]+/gi) || [];
+          sMatches.forEach(m => {
+            let imgUrl = m.split('?')[0].split('"')[0].split("'")[0].replace(/\\/g, '');
+            imgUrl = imgUrl.replace(/\/image\/\{@width\}\/\{@height\}/g, '/image/832/832');
+            imgUrl = imgUrl.replace(/\/image\/\d+\/\d+/g, '/image/832/832');
+            if ((imgUrl.includes('/image/') || imgUrl.includes('xif0q')) &&
+                !imgUrl.includes('/www/') && !imgUrl.includes('logo') && !imgUrl.includes('icon') &&
+                !imgUrl.includes('splash') && !imgUrl.includes('placeholder') && !imgUrl.endsWith('.svg') &&
+                !extractedImages.includes(imgUrl)) {
+              extractedImages.push(imgUrl);
+            }
+          });
+        }
+      }
+    } catch (searchErr) {
+      console.error('Flipkart search fallback error:', searchErr);
+    }
   }
 
   // Resilient Fallback: If scraper is blocked or returns generic values, parse the URL path!
