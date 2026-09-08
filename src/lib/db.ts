@@ -4,6 +4,7 @@ import { exec } from 'child_process';
 import util from 'util';
 import { connectToDatabase } from './mongodb';
 import { ProductModel, OrderModel, CustomerModel, WebsiteContentModel, CouponModel, CustomShoeModel, AuditLogModel } from './models';
+import defaultDbData from './db.json';
 
 const execAsync = util.promisify(exec);
 
@@ -169,196 +170,7 @@ export interface DatabaseSchema {
 
 // Ensure db.json exists with initial data
 const getInitialData = (): DatabaseSchema => {
-  return {
-    products: [
-      {
-        id: 'genesis-3d',
-        name: 'THE REAL Genesis',
-        brand: 'THE REAL',
-        category: 'Running',
-        description: 'Step into your reality with our flagship running shoe. Genesis blends cutting-edge comfort with futuristic design, featuring our signature responsive sole and aerodynamic knit upper.',
-        price: 14999,
-        originalPrice: 17999,
-        discountPrice: 14999,
-        discountPercentage: 17,
-        availableSizes: [7, 8, 9, 10, 11, 12],
-        availableColors: [
-          { name: 'Royal Blue', hex: '#0a58ca', threeColor: '#0a58ca' },
-          { name: 'Silver Shadow', hex: '#c0c0c0', threeColor: '#c0c0c0' },
-          { name: 'Carbon Black', hex: '#111827', threeColor: '#111827' }
-        ],
-        material: 'Recycled Flyknit & TPU Sole',
-        gender: 'Unisex',
-        stock: 35,
-        sku: 'TR-GEN-001',
-        rating: 4.8,
-        reviews: [
-          { name: 'John Doe', rating: 5, comment: 'Absolutely incredible comfort. The responsive sole makes a massive difference in bounce!', date: '2026-07-20' },
-          { name: 'Sarah K.', rating: 4, comment: 'Extremely stylish and lightweight. Perfect for daily wear.', date: '2026-07-24' }
-        ],
-        tags: ['Premium', 'Running', 'Responsive'],
-        images: ['/images/shoes/genesis_blue.png', '/images/shoes/genesis_silver.png', '/images/shoes/genesis_black.png'],
-        mainImage: '/images/shoes/genesis_blue.png',
-        isNewArrival: true,
-        isBestSeller: true,
-        isSale: true
-      },
-      {
-        id: 'horizon-light',
-        name: 'THE REAL Horizon Light',
-        brand: 'THE REAL',
-        category: 'Lifestyle',
-        description: 'Designed for lightweight daily pacing. Horizon Light incorporates a translucent mesh grid with premium leather overlays, making it the perfect blend of structural integrity and minimalist style.',
-        price: 11999,
-        originalPrice: 11999,
-        discountPrice: 11999,
-        discountPercentage: 0,
-        availableSizes: [8, 9, 10, 11],
-        availableColors: [
-          { name: 'Silver Shadow', hex: '#c0c0c0', threeColor: '#c0c0c0' },
-          { name: 'Royal Blue', hex: '#0a58ca', threeColor: '#0a58ca' }
-        ],
-        material: 'Engineered Mono-Mesh & Premium Leather',
-        gender: 'Unisex',
-        stock: 18,
-        sku: 'TR-HOR-002',
-        rating: 4.6,
-        reviews: [
-          { name: 'Aman S.', rating: 5, comment: 'Love the premium look. Fits like a glove.', date: '2026-07-15' }
-        ],
-        tags: ['Lightweight', 'Lifestyle', 'Casual'],
-        images: ['/images/shoes/horizon_light.png', '/images/shoes/horizon_blue.png'],
-        mainImage: '/images/shoes/horizon_light.png',
-        isNewArrival: true,
-        isBestSeller: false,
-        isSale: false
-      },
-      {
-        id: 'apex-runner',
-        name: 'THE REAL Apex Runner',
-        brand: 'THE REAL',
-        category: 'Sport',
-        description: 'Dominate your athletic targets with the Apex Runner. Designed with carbon fiber shank plates and multi-directional traction grips to ensure explosive power outputs and maximum stride control.',
-        price: 16999,
-        originalPrice: 19999,
-        discountPrice: 16999,
-        discountPercentage: 15,
-        availableSizes: [7, 8, 9, 10, 11, 12],
-        availableColors: [
-          { name: 'Carbon Black', hex: '#111827', threeColor: '#111827' },
-          { name: 'Royal Blue', hex: '#0a58ca', threeColor: '#0a58ca' },
-          { name: 'Silver Shadow', hex: '#c0c0c0', threeColor: '#c0c0c0' }
-        ],
-        material: 'Carbon Fiber Shank, Mesh & High-Grip Rubber',
-        gender: 'Men',
-        stock: 12,
-        sku: 'TR-APX-003',
-        rating: 4.9,
-        reviews: [
-          { name: 'Vikram R.', rating: 5, comment: 'Hands down the best running shoes I have owned. Worth every dollar.', date: '2026-07-22' }
-        ],
-        tags: ['Athletic', 'Carbon Fiber', 'Sport', 'Performance'],
-        images: ['/images/shoes/apex_black.png', '/images/shoes/apex_blue.png'],
-        mainImage: '/images/shoes/apex_black.png',
-        isNewArrival: false,
-        isBestSeller: true,
-        isSale: true
-      },
-      {
-        id: 'stealth-black',
-        name: 'THE REAL Stealth Black',
-        brand: 'THE REAL',
-        category: 'Lifestyle',
-        description: 'Embrace the darkness. Stealth Black offers an all-black matte appearance with reflective elements that catch light under motion. Seamless construction prevents chafing.',
-        price: 10999,
-        originalPrice: 10999,
-        discountPrice: 10999,
-        discountPercentage: 0,
-        availableSizes: [8, 9, 10, 11],
-        availableColors: [
-          { name: 'Carbon Black', hex: '#111827', threeColor: '#111827' }
-        ],
-        material: 'Matte Knit & Reflective Mesh overlays',
-        gender: 'Men',
-        stock: 5, // Low stock on purpose to test alerts!
-        sku: 'TR-STL-004',
-        rating: 4.5,
-        reviews: [
-          { name: 'David M.', rating: 4, comment: 'Looks amazing, very clean. The reflective stripes are a neat touch.', date: '2026-07-18' }
-        ],
-        tags: ['Stealth', 'Reflective', 'Casual'],
-        images: ['/images/shoes/stealth_black.png'],
-        mainImage: '/images/shoes/stealth_black.png',
-        isNewArrival: false,
-        isBestSeller: false,
-        isSale: false
-      },
-      {
-        id: 'retro-classic',
-        name: 'THE REAL Retro Classic',
-        brand: 'THE REAL',
-        category: 'Casual',
-        description: 'A timeless vintage-inspired silhouette reimagined for the modern era. Handcrafted from top-grade leather, detailed with classic stitching, and finished with a comfortable memory foam insole.',
-        price: 8999,
-        originalPrice: 11999,
-        discountPrice: 8999,
-        discountPercentage: 25,
-        availableSizes: [6, 7, 8, 9, 10, 11],
-        availableColors: [
-          { name: 'Silver Shadow', hex: '#c0c0c0', threeColor: '#e5e7eb' }, // Off-white style
-          { name: 'Royal Blue', hex: '#0a58ca', threeColor: '#0a58ca' }
-        ],
-        material: 'Genuine Full-Grain Leather & Gum Sole',
-        gender: 'Women',
-        stock: 22,
-        sku: 'TR-RTR-005',
-        rating: 4.7,
-        reviews: [
-          { name: 'Emily G.', rating: 5, comment: 'So comfy and they look great with everything. Will buy the blue ones too.', date: '2026-07-25' }
-        ],
-        tags: ['Vintage', 'Classic', 'Leather', 'Retro'],
-        images: ['/images/shoes/retro_white.png', '/images/shoes/retro_blue.png'],
-        mainImage: '/images/shoes/retro_white.png',
-        isNewArrival: false,
-        isBestSeller: false,
-        isSale: true
-      }
-    ],
-    orders: [],
-    customers: [
-      {
-        name: 'Aryan Shah',
-        email: 'aryan@thereal.com',
-        phone: '+919999999999',
-        address: {
-          flat: 'Penthouse A',
-          street: 'Premium Skyline Heights',
-          city: 'Mumbai',
-          state: 'Maharashtra',
-          zip: '400001',
-          country: 'India'
-        },
-        totalOrders: 0,
-        totalSpending: 0,
-        registrationDate: '2026-07-27'
-      }
-    ],
-    websiteContent: {
-      heroTitle: 'THE REAL',
-      heroSubtitle: 'Step Into Your Reality',
-      heroTagline: 'Experience footwear engineered with premium aesthetics, responsive cushioning, and modern layouts.',
-      aboutText: 'THE REAL was founded in 2026 by Aryan Shah to disrupt the sneaker space. We believe in providing premium design, extreme structural comfort, and a digital visual experience that brings the shoes to you. Our focus is quality, technology, and style.',
-      contactEmail: 'aryan@thereal.com',
-      contactPhone: '+919876543210',
-      contactAddress: 'Skyline Premium Tower, Level 15, BKC, Mumbai, MH, India',
-      policies: {
-        shipping: 'We offer free premium shipping on all orders over ₹10,000 nationwide. Otherwise, a standard delivery fee of ₹299 applies. Orders are dispatched within 24-48 hours and typically arrive within 3-5 business days. Express shipping options are available at checkout.',
-        returns: 'If you are not completely satisfied with your purchase, you may return the unworn shoes in their original packaging within 30 days of receipt for a full refund or exchange.',
-        privacy: 'Your privacy is paramount. We encrypt all payment details, protect personal shipping info, and never share customer data with third parties.',
-        terms: 'By purchasing from THE REAL, you agree to our terms of service, which include using our sizing guides, confirming address details before ordering, and agreeing to our return conditions.'
-      }
-    }
-  };
+  return defaultDbData as unknown as DatabaseSchema;
 };
 
 let inMemoryDbCache: DatabaseSchema | null = null;
@@ -550,15 +362,18 @@ export async function getFullDb(): Promise<DatabaseSchema> {
 export function isValidProductImage(mainImage?: string): boolean {
   if (!mainImage || typeof mainImage !== 'string' || !mainImage.trim()) return false;
   const trimmed = mainImage.trim();
-  if (trimmed === '/images/placeholder.png' || trimmed.includes('/images/shoes/') || trimmed === 'placeholder') {
+  if (trimmed === '/images/placeholder.png' || trimmed === 'placeholder') {
     return false;
   }
   if (trimmed.startsWith('http://') || trimmed.startsWith('https://')) {
     return true;
   }
   if (trimmed.startsWith('/')) {
-    const localPath = path.join(process.cwd(), 'public', trimmed);
-    return fs.existsSync(localPath);
+    return !trimmed.includes('/images/shoes/genesis_') && 
+           !trimmed.includes('/images/shoes/horizon_') && 
+           !trimmed.includes('/images/shoes/apex_') && 
+           !trimmed.includes('/images/shoes/stealth_') && 
+           !trimmed.includes('/images/shoes/retro_');
   }
   return false;
 }
