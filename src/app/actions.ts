@@ -1040,5 +1040,26 @@ export async function saveCustomShoeAction(customData: {
   return { success: true, customizationId, record };
 }
 
+// 12. Validate Cart & Wishlist Product States against Live Database
+export async function validateCartProductsAction(productIds: string[]): Promise<{ success: boolean; productsMap: Record<string, Product | null>; error?: string }> {
+  const productsMap: Record<string, Product | null> = {};
+  if (!productIds || productIds.length === 0) {
+    return { success: true, productsMap };
+  }
+
+  try {
+    const allProducts = await getProductsList();
+    for (const id of productIds) {
+      const found = allProducts.find(p => p.id === id);
+      productsMap[id] = found || null;
+    }
+
+    return { success: true, productsMap };
+  } catch (err: any) {
+    console.error('Error validating cart products:', err);
+    return { success: false, productsMap, error: err.message };
+  }
+}
+
 
 

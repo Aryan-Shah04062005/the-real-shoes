@@ -2,7 +2,7 @@
 
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { Product } from '@/lib/db';
-import { validateCouponAction } from '@/app/actions';
+import { validateCouponAction, validateCartProductsAction } from '@/app/actions';
 
 export interface CartItem {
   product: Product;
@@ -63,20 +63,115 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
   const [isSizeGuideOpen, setSizeGuideOpen] = useState(false);
   const [loaded, setLoaded] = useState(false);
 
+  // Validate and sync cart/wishlist against live database
+  const validateCartAndWishlist = async (currentCart: CartItem[], currentWishlist: Product[]) => {
+    const allIds = Array.from(new Set([
+      ...currentCart.map(i => i.product.id),
+      ...currentWishlist.map(p => p.id)
+    ]));
+
+    if (allIds.length === 0) return;
+
+    try {
+      const res = await validateCartProductsAction(allIds);
+      if (!res.success || !res.productsMap) return;
+
+      const map = res.productsMap;
+
+      // Filter/Update Cart
+      let cartChanged = false;
+      const updatedCart: CartItem[] = [];
+
+      for (const item of currentCart) {
+        const liveProd = map[item.product.id];
+        if (!liveProd) {
+          // Hard deleted product from database -> automatically remove from shopping cart!
+          cartChanged = true;
+          continue;
+        }
+
+        // Update product snapshot in cart with live status/price/images/stock
+        if (
+          liveProd.status !== item.product.status ||
+          liveProd.price !== item.product.price ||
+          liveProd.mainImage !== item.product.mainImage ||
+          liveProd.stock !== item.product.stock
+        ) {
+          cartChanged = true;
+          updatedCart.push({
+            ...item,
+            product: liveProd
+          });
+        } else {
+          updatedCart.push(item);
+        }
+      }
+
+      if (cartChanged) {
+        setCart(updatedCart);
+      }
+
+      // Filter/Update Wishlist
+      let wishChanged = false;
+      const updatedWishlist: Product[] = [];
+
+      for (const prod of currentWishlist) {
+        const liveProd = map[prod.id];
+        if (!liveProd || liveProd.status === 'ARCHIVED' || liveProd.status === 'HIDDEN' || liveProd.status === 'DRAFT') {
+          // Hard deleted or unavailable -> remove from wishlist!
+          wishChanged = true;
+          continue;
+        }
+
+        if (JSON.stringify(liveProd) !== JSON.stringify(prod)) {
+          wishChanged = true;
+          updatedWishlist.push(liveProd);
+        } else {
+          updatedWishlist.push(prod);
+        }
+      }
+
+      if (wishChanged) {
+        setWishlist(updatedWishlist);
+      }
+    } catch (e) {
+      console.error('Error validating cart items against database:', e);
+    }
+  };
+
   // Load cart/wishlist/coupon from localStorage on mount
   useEffect(() => {
+    let parsedCart: CartItem[] = [];
+    let parsedWish: Product[] = [];
+
     try {
       const savedCart = localStorage.getItem('thereal_cart');
       const savedWish = localStorage.getItem('thereal_wishlist');
       const savedCoupon = localStorage.getItem('thereal_coupon');
-      if (savedCart) setCart(JSON.parse(savedCart));
-      if (savedWish) setWishlist(JSON.parse(savedWish));
+
+      if (savedCart) parsedCart = JSON.parse(savedCart);
+      if (savedWish) parsedWish = JSON.parse(savedWish);
       if (savedCoupon) setAppliedCoupon(JSON.parse(savedCoupon));
+
+      setCart(parsedCart);
+      setWishlist(parsedWish);
     } catch (e) {
       console.error('Error loading cart state:', e);
     }
+
     setLoaded(true);
+
+    if (parsedCart.length > 0 || parsedWish.length > 0) {
+      validateCartAndWishlist(parsedCart, parsedWish);
+    }
   }, []);
+
+  // Validate cart again whenever Cart Drawer is opened
+  useEffect(() => {
+    if (isCartOpen && loaded && (cart.length > 0 || wishlist.length > 0)) {
+      validateCartAndWishlist(cart, wishlist);
+    }
+  }, [isCartOpen]);
 
   // Save to localStorage when cart/wishlist/coupon changes
   useEffect(() => {
