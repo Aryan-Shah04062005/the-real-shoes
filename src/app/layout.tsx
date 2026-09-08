@@ -106,13 +106,11 @@ export default function RootLayout({
       lang="en"
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased dark`}
     >
-      <head>
+      <body className="min-h-full flex flex-col bg-premium-black text-premium-light font-sans selection:bg-royal-blue selection:text-white">
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
         />
-      </head>
-      <body className="min-h-full flex flex-col bg-premium-black text-premium-light font-sans selection:bg-royal-blue selection:text-white">
         <RegisterSW />
         <CartProvider>
           <Navbar />
