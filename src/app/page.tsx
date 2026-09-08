@@ -1,6 +1,6 @@
 import React from 'react';
 import Link from 'next/link';
-import { getFullDb, isValidProductImage } from '@/lib/db';
+import { getProductsList, isValidProductImage } from '@/lib/db';
 import ProductCard from '@/components/ProductCard';
 import { 
   ArrowRight, 
@@ -19,8 +19,7 @@ export const dynamic = 'force-dynamic';
 export const revalidate = 0;
 
 export default async function HomePage() {
-  const db = await getFullDb();
-  const { websiteContent, products } = db;
+  const products = await getProductsList();
 
   const activeProducts = products.filter(
     (p) => (!p.status || p.status === 'ACTIVE' || p.status === 'OUT_OF_STOCK') && isValidProductImage(p.mainImage)
