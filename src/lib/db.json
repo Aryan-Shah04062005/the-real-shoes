@@ -1,59 +1,6 @@
 {
   "products": [
     {
-      "id": "manual-test-sneaker-777-r3pk",
-      "name": "MANUAL TEST SNEAKER 777",
-      "brand": "THE REAL",
-      "category": "Running",
-      "description": "Manual creation verification test sneaker",
-      "price": 7777,
-      "originalPrice": 8999,
-      "discountPrice": 7777,
-      "discountPercentage": 14,
-      "availableSizes": [
-        7,
-        8,
-        9,
-        10,
-        11
-      ],
-      "availableColors": [
-        {
-          "name": "Royal Blue",
-          "hex": "#0a58ca",
-          "threeColor": "#0a58ca"
-        }
-      ],
-      "material": "Knit",
-      "gender": "Unisex",
-      "stock": 15,
-      "sizeStock": {
-        "7": 2,
-        "8": 3,
-        "9": 3,
-        "10": 2
-      },
-      "sku": "TR-THE-749",
-      "rating": 5,
-      "reviews": [],
-      "tags": [],
-      "images": [
-        "https://images.unsplash.com/photo-1600185365483-26d7a4cc7519?w=1000&q=80"
-      ],
-      "mainImage": "https://images.unsplash.com/photo-1600185365483-26d7a4cc7519?w=1000&q=80",
-      "isNewArrival": true,
-      "isBestSeller": false,
-      "isTrending": false,
-      "isFeatured": false,
-      "isSale": false,
-      "status": "ACTIVE",
-      "sourcePlatform": "MANUAL",
-      "sourceUrl": "",
-      "sourceProductId": "",
-      "sourcePrice": 7777,
-      "updatedAt": "2026-09-08T18:27:00.024Z"
-    },
-    {
       "id": "puma-smashic-comfort-casual-sneakers-5d13",
       "name": "Puma Smashic Comfort Casual Sneakers",
       "brand": "Puma",
