@@ -210,6 +210,22 @@
   },
   "auditLogs": [
     {
+      "id": "log-1788892033658-6q00",
+      "admin": "Admin",
+      "action": "Deleted Product",
+      "target": "MANUAL TEST SNEAKER 777",
+      "details": "ID: manual-test-sneaker-777-u68q, Mode: deleted",
+      "timestamp": "2026-09-08T18:27:13.658Z"
+    },
+    {
+      "id": "log-1788892033655-aagb",
+      "admin": "Admin",
+      "action": "Created Product",
+      "target": "MANUAL TEST SNEAKER 777",
+      "details": "SKU: TR-THE-753, Price: ₹7777, Source: MANUAL",
+      "timestamp": "2026-09-08T18:27:13.655Z"
+    },
+    {
       "id": "log-1788892020026-mpyy",
       "admin": "Admin",
       "action": "Created Product",
