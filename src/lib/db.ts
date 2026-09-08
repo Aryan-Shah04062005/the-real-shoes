@@ -1,7 +1,11 @@
 import fs from 'fs';
 import path from 'path';
+import { exec } from 'child_process';
+import util from 'util';
 import { connectToDatabase } from './mongodb';
 import { ProductModel, OrderModel, CustomerModel, WebsiteContentModel, CouponModel, CustomShoeModel } from './models';
+
+const execAsync = util.promisify(exec);
 
 // Define DB Types
 export interface Review {
@@ -401,8 +405,75 @@ export const writeDB = (data: DatabaseSchema): boolean => {
     console.error('Error writing to /tmp/db.json:', tmpError);
   }
 
+  // Automatically sync updated db.json to GitHub repository in background
+  syncDbToGitHub().catch((err) => console.warn('Background GitHub sync bypassed:', err));
+
   return true;
 };
+
+export async function syncDbToGitHub(): Promise<boolean> {
+  // 1. Local environment git commit & push
+  try {
+    const gitDir = path.join(process.cwd(), '.git');
+    if (fs.existsSync(gitDir)) {
+      await execAsync(`git add "${PRIMARY_DB_PATH}" && git commit -m "Admin live update product catalog" && git push origin main`);
+      console.log('Successfully committed and pushed db.json live to GitHub repository!');
+      return true;
+    }
+  } catch (err) {
+    console.warn('Local git commit/push bypassed or not supported:', err);
+  }
+
+  // 2. GitHub REST API commit (for Vercel serverless environment)
+  const token = process.env.GITHUB_TOKEN || process.env.GITHUB_PAT;
+  if (token) {
+    try {
+      const repo = 'Aryan-Shah04062005/the-real-shoes';
+      const filePath = 'src/lib/db.json';
+      const url = `https://api.github.com/repos/${repo}/contents/${filePath}`;
+
+      const getRes = await fetch(url, {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'User-Agent': 'TheRealShoes-App',
+          'Accept': 'application/vnd.github.v3+json'
+        }
+      });
+
+      if (getRes.ok) {
+        const fileData = await getRes.json();
+        const sha = fileData.sha;
+        const currentDb = readDB();
+        const contentBase64 = Buffer.from(JSON.stringify(currentDb, null, 2)).toString('base64');
+
+        const putRes = await fetch(url, {
+          method: 'PUT',
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'User-Agent': 'TheRealShoes-App',
+            'Accept': 'application/vnd.github.v3+json',
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            message: 'Admin live update product catalog via Admin Panel',
+            content: contentBase64,
+            sha: sha,
+            branch: 'main'
+          })
+        });
+
+        if (putRes.ok) {
+          console.log('Successfully updated db.json on GitHub via REST API!');
+          return true;
+        }
+      }
+    } catch (apiErr) {
+      console.error('Failed to update db.json via GitHub REST API:', apiErr);
+    }
+  }
+
+  return false;
+}
 
 // ----------------------------------------------------
 // HYBRID DATABASE ADAPTER INTERFACES
