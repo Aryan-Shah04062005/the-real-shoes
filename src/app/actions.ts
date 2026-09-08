@@ -360,10 +360,17 @@ export async function importProductFromUrlAction(url: string, targetPrice: numbe
     return text
       .replace(/amazon\.in/gi, '')
       .replace(/amazon\.com/gi, '')
+      .replace(/amazon\s+fashion/gi, '')
       .replace(/amazon/gi, '')
+      .replace(/amzn\.to/gi, '')
+      .replace(/amzn\.in/gi, '')
+      .replace(/amzn/gi, '')
       .replace(/flipkart\.com/gi, '')
+      .replace(/flipkart\.in/gi, '')
       .replace(/flipkart assured/gi, '')
       .replace(/flipkart/gi, '')
+      .replace(/fkrt\.it/gi, '')
+      .replace(/fkrt/gi, '')
       .replace(/buy\s+online\s+at\s+low\s+prices\s+in\s+india/gi, '')
       .replace(/at\s+low\s+prices/gi, '')
       .replace(/visit\s+the\s+store/gi, '')
@@ -371,6 +378,8 @@ export async function importProductFromUrlAction(url: string, targetPrice: numbe
       .replace(/only\s+on/gi, '')
       .replace(/on\s+our\s+website/gi, '')
       .replace(/assured\s+quality/gi, '')
+      .replace(/online\s+shopping/gi, '')
+      .replace(/best\s+price\s+in\s+india/gi, '')
       .replace(/\s*\|\s*/g, ' ')
       .replace(/\s*-\s*/g, ' ')
       .replace(/\s*:\s*/g, ' ')
@@ -379,6 +388,8 @@ export async function importProductFromUrlAction(url: string, targetPrice: numbe
   };
 
   let finalUrl = cleanUrl;
+  const extractedImages: string[] = [];
+  let rawColorText = '';
 
   try {
     // Attempt standard HTTP request to scrape with redirect follow
@@ -421,7 +432,7 @@ export async function importProductFromUrlAction(url: string, targetPrice: numbe
                           html.match(/<div id="productDescription"[^>]*>\s*<p>\s*([^<]+)\s*<\/p>/i);
         if (descMatch) description = descMatch[1].trim();
 
-        // Amazon image regexes (including landingImage and zoom/dynamic image parsing)
+        // Amazon image regexes & extraction of all high-res photos
         const imgMatch = html.match(/id="landingImage"[^>]*src="([^"]+)"/i) ||
                          html.match(/id="main-image"[^>]*src="([^"]+)"/i) ||
                          html.match(/data-old-hires="([^"]+)"/i) ||
@@ -430,10 +441,25 @@ export async function importProductFromUrlAction(url: string, targetPrice: numbe
                          html.match(/"large":"([^"]+)"/i);
         if (imgMatch) mainImage = imgMatch[1].trim();
         
+        // Extract all Amazon product photos
+        const amazonImgMatches = html.matchAll(/"(https:\/\/(?:m\.media-amazon\.com|images-na\.ssl-images-amazon\.com)\/images\/I\/[^"]+\.(?:jpg|png|jpeg|webp))"/gi);
+        for (const m of amazonImgMatches) {
+          const imgUrl = m[1];
+          if (!imgUrl.includes('icon') && !imgUrl.includes('sprite') && !imgUrl.includes('SS40') && !imgUrl.includes('SX38') && !extractedImages.includes(imgUrl)) {
+            extractedImages.push(imgUrl);
+          }
+        }
+        
         // Amazon brand regex
         const brandMatch = html.match(/<a id="bylineInfo"[^>]*>\s*Brand:\s*([^<]+)\s*<\/a>/i) ||
                            html.match(/Brand:\s*([^<]+)/i);
         if (brandMatch) brand = brandMatch[1].trim();
+
+        // Amazon color scraper
+        const amazonColorMatch = html.match(/<span class="selection">\s*([^<]+)\s*<\/span>/i) ||
+                                 html.match(/"color_name":\s*"([^"]+)"/i) ||
+                                 html.match(/Color:\s*<\/span>\s*<span[^>]*>\s*([^<]+)\s*<\/span>/i);
+        if (amazonColorMatch) rawColorText = amazonColorMatch[1].trim();
       } else {
         // Flipkart title regexes (OpenGraph, Twitter card, Class tags, H1, Title)
         const titleMatch = html.match(/<meta property="og:title" content="([^"]+)"/i) ||
@@ -452,7 +478,7 @@ export async function importProductFromUrlAction(url: string, targetPrice: numbe
                           html.match(/<div [^>]*class="[^"]*_1mXERD[^"]*"[^>]*>\s*([^<]+)\s*<\/div>/i);
         if (descMatch) description = descMatch[1].trim();
 
-        // Flipkart image regexes (OpenGraph, Twitter card, JSON-LD, Rukminim CDN)
+        // Flipkart main image
         const imgMatch = html.match(/<meta property="og:image" content="([^"]+)"/i) ||
                          html.match(/<meta name="twitter:image" content="([^"]+)"/i) ||
                          html.match(/"image":\s*\[?"(https:\/\/rukminim[0-9]\.flixcart\.com\/image\/[^"]+)"/i) ||
@@ -462,11 +488,27 @@ export async function importProductFromUrlAction(url: string, targetPrice: numbe
                          html.match(/<img [^>]*src="([^"]+)"[^>]*class="[^"]*_2r_l1t[^"]*"/i);
         if (imgMatch) mainImage = imgMatch[1].trim();
 
+        // Extract all Flipkart product photos
+        const fkImgMatches = html.matchAll(/(https:\/\/rukminim[0-9]\.flixcart\.com\/image\/[^\s"'>\\]+)/gi);
+        for (const m of fkImgMatches) {
+          let imgUrl = m[1].replace(/\\"/g, '').replace(/"/g, '').replace(/'/g, '');
+          imgUrl = imgUrl.replace(/\/image\/\d+\/\d+\//, '/image/832/832/');
+          if (!imgUrl.includes('placeholder') && !imgUrl.includes('icon') && !extractedImages.includes(imgUrl)) {
+            extractedImages.push(imgUrl);
+          }
+        }
+
         // Flipkart brand regex
         const brandMatch = html.match(/<span [^>]*class="[^"]*G6XhY1[^"]*"[^>]*>\s*([^<]+)\s*<\/span>/i) ||
                            html.match(/<span [^>]*class="[^"]*m7-21p[^"]*"[^>]*>\s*([^<]+)\s*<\/span>/i) ||
                            html.match(/<span [^>]*class="[^"]*_2Wk1fc[^"]*"[^>]*>\s*([^<]+)\s*<\/span>/i);
         if (brandMatch) brand = brandMatch[1].trim();
+
+        // Flipkart color scraper
+        const flipkartColorMatch = html.match(/<div [^>]*class="[^"]*_2C41vz[^"]*"[^>]*>\s*([^<]+)\s*<\/div>/i) ||
+                                   html.match(/"color":\s*"([^"]+)"/i) ||
+                                   html.match(/<td>\s*Color\s*<\/td>\s*<td>\s*([^<]+)\s*<\/td>/i);
+        if (flipkartColorMatch) rawColorText = flipkartColorMatch[1].trim();
       }
 
       // Upgrade Flipkart low-res image thumbnails to high-res (e.g. 128/128 -> 832/832)
@@ -575,17 +617,96 @@ export async function importProductFromUrlAction(url: string, targetPrice: numbe
     }
   }
 
+  // Build full images list
+  const allImages = extractedImages.length > 0 ? extractedImages.slice(0, 6) : [mainImage];
+  if (!allImages.includes(mainImage) && mainImage.startsWith('http')) {
+    allImages.unshift(mainImage);
+  }
+  const finalMainImage = allImages[0] || mainImage;
+
+  // Process and Map extracted colors
+  const colorMap: Record<string, string> = {
+    'black': '#111827',
+    'white': '#ffffff',
+    'off white': '#f3f4f6',
+    'blue': '#0a58ca',
+    'navy': '#1e3a8a',
+    'red': '#dc2626',
+    'green': '#16a34a',
+    'grey': '#6b7280',
+    'gray': '#6b7280',
+    'silver': '#c0c0c0',
+    'yellow': '#eab308',
+    'orange': '#f97316',
+    'pink': '#ec4899',
+    'brown': '#78350f',
+    'tan': '#d97706',
+    'beige': '#fef3c7',
+    'gold': '#d97706',
+    'multicolor': '#8b5cf6',
+    'teal': '#0d9488',
+    'maroon': '#881337',
+    'purple': '#7e22ce'
+  };
+
+  const parsedColors: { name: string; hex: string; threeColor: string }[] = [];
+  const cleanColorText = sanitizeTextOfStoreBrands(rawColorText);
+
+  if (cleanColorText) {
+    const parts = cleanColorText.split(/[\/,]/);
+    for (const rawPart of parts) {
+      const cleaned = rawPart.trim().replace(/[^a-zA-Z0-9\s-]/g, '');
+      if (cleaned && cleaned.length >= 3) {
+        const lower = cleaned.toLowerCase();
+        let matchedHex = '#0a58ca';
+        for (const [key, hex] of Object.entries(colorMap)) {
+          if (lower.includes(key)) {
+            matchedHex = hex;
+            break;
+          }
+        }
+        const formattedName = cleaned.split(' ').map(w => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase()).join(' ');
+        if (!parsedColors.some(c => c.name.toLowerCase() === formattedName.toLowerCase())) {
+          parsedColors.push({
+            name: formattedName,
+            hex: matchedHex,
+            threeColor: matchedHex
+          });
+        }
+      }
+    }
+  }
+
+  // Search title/description for color keywords if direct scraper didn't return valid colors
+  if (parsedColors.length === 0) {
+    const combinedText = (title + ' ' + description).toLowerCase();
+    for (const [key, hex] of Object.entries(colorMap)) {
+      if (combinedText.includes(key) && key !== 'multi') {
+        const formattedName = key.charAt(0).toUpperCase() + key.slice(1);
+        if (!parsedColors.some(c => c.name.toLowerCase() === formattedName.toLowerCase())) {
+          parsedColors.push({
+            name: formattedName,
+            hex: hex,
+            threeColor: hex
+          });
+        }
+      }
+    }
+  }
+
+  // Fallback defaults if no colors discovered
+  if (parsedColors.length === 0) {
+    parsedColors.push(
+      { name: 'Royal Blue', hex: '#0a58ca', threeColor: '#0a58ca' },
+      { name: 'Silver Shadow', hex: '#c0c0c0', threeColor: '#c0c0c0' },
+      { name: 'Carbon Black', hex: '#111827', threeColor: '#111827' }
+    );
+  }
+
   // Create the new product object
   const id = title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '') + '-' + Math.random().toString(36).substring(2, 6);
   const originalPrice = Math.round(targetPrice * 1.25);
   const discountPercentage = 20;
-
-  // Derive available colors
-  const availableColors = [
-    { name: 'Royal Blue', hex: '#0a58ca', threeColor: '#0a58ca' },
-    { name: 'Silver Shadow', hex: '#c0c0c0', threeColor: '#c0c0c0' },
-    { name: 'Carbon Black', hex: '#111827', threeColor: '#111827' }
-  ];
 
   const newProduct: Product = {
     id,
@@ -598,7 +719,7 @@ export async function importProductFromUrlAction(url: string, targetPrice: numbe
     discountPrice: targetPrice,
     discountPercentage: discountPercentage,
     availableSizes: [7, 8, 9, 10, 11],
-    availableColors: availableColors,
+    availableColors: parsedColors,
     material: 'Engineered Synthetic Blend & Responsive Sole',
     gender: 'Unisex',
     stock: 20,
@@ -608,8 +729,8 @@ export async function importProductFromUrlAction(url: string, targetPrice: numbe
       { name: 'Aryan Shah', rating: 5, comment: 'Imported product verification: Elite build quality and responsive sole profile.', date: new Date().toISOString().split('T')[0] }
     ],
     tags: ['Imported', brand, category],
-    images: [mainImage],
-    mainImage: mainImage,
+    images: allImages,
+    mainImage: finalMainImage,
     isNewArrival: true,
     isBestSeller: false,
     isSale: true
