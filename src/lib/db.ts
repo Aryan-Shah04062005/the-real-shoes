@@ -399,12 +399,7 @@ export const readDB = (): DatabaseSchema => {
   if (!dbData) {
     dbData = initial;
   } else {
-    // Ensure all default flagship products exist alongside imported products
-    for (const initProd of initial.products) {
-      if (!dbData.products.some(p => p.id === initProd.id)) {
-        dbData.products.push(initProd);
-      }
-    }
+    if (!dbData.products) dbData.products = [];
     if (!dbData.websiteContent) dbData.websiteContent = initial.websiteContent;
     if (!dbData.customers) dbData.customers = initial.customers;
     if (!dbData.orders) dbData.orders = initial.orders;

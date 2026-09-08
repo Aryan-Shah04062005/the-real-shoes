@@ -903,7 +903,7 @@ export async function importProductFromUrlAction(url: string, targetPrice: numbe
     isTrending: true,
     isFeatured: false,
     isSale: true,
-    status: 'DRAFT',
+    status: 'ACTIVE',
     sourcePlatform: sourcePlatform as any,
     sourceUrl: cleanUrl,
     updatedAt: new Date().toISOString()

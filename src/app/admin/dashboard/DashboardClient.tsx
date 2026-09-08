@@ -294,7 +294,7 @@ export default function DashboardClient({ initialDb }: DashboardClientProps) {
 
     const res = await saveProductAction({
       ...importPreviewProduct,
-      status: importPreviewProduct.status || 'ACTIVE'
+      status: 'ACTIVE'
     });
     setIsSubmitting(false);
 

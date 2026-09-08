@@ -13,7 +13,7 @@ export default async function ProductPage({ params }: PageProps) {
   const { id } = await params;
   const product = await getProductById(id);
 
-  if (!product) {
+  if (!product || product.status === 'ARCHIVED' || product.status === 'DRAFT') {
     notFound();
   }
 
