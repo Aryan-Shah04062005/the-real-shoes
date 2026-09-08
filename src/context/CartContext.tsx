@@ -65,9 +65,12 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
 
   // Validate and sync cart/wishlist against live database
   const validateCartAndWishlist = async (currentCart: CartItem[], currentWishlist: Product[]) => {
+    const validCartItems = (currentCart || []).filter(i => i && i.product && i.product.id);
+    const validWishlistProds = (currentWishlist || []).filter(p => p && p.id);
+
     const allIds = Array.from(new Set([
-      ...currentCart.map(i => i.product.id),
-      ...currentWishlist.map(p => p.id)
+      ...validCartItems.map(i => i.product.id),
+      ...validWishlistProds.map(p => p.id)
     ]));
 
     if (allIds.length === 0) return;
@@ -82,7 +85,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
       let cartChanged = false;
       const updatedCart: CartItem[] = [];
 
-      for (const item of currentCart) {
+      for (const item of validCartItems) {
         const liveProd = map[item.product.id];
         if (!liveProd) {
           // Hard deleted product from database -> automatically remove from shopping cart!
@@ -115,7 +118,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
       let wishChanged = false;
       const updatedWishlist: Product[] = [];
 
-      for (const prod of currentWishlist) {
+      for (const prod of validWishlistProds) {
         const liveProd = map[prod.id];
         if (!liveProd || liveProd.status === 'ARCHIVED' || liveProd.status === 'HIDDEN' || liveProd.status === 'DRAFT') {
           // Hard deleted or unavailable -> remove from wishlist!
