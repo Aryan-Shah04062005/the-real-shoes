@@ -300,13 +300,19 @@ export default function DashboardClient({ initialDb }: DashboardClientProps) {
 
     if (res.success && res.product) {
       triggerStatus('success', `Product "${res.product.name}" imported and published successfully!`);
-      setDb(prev => ({
-        ...prev,
-        products: [res.product, ...prev.products]
-      }));
+      const nextProducts = [...db.products];
+      const idx = nextProducts.findIndex(p => p.id === res.product.id);
+      if (idx > -1) {
+        nextProducts[idx] = res.product;
+      } else {
+        nextProducts.unshift(res.product);
+      }
+      syncLocalState({ products: nextProducts });
       setImportPreviewProduct(null);
       setImportUrl('');
       setImportPrice('');
+      setImportStatus('idle');
+      setImportMessage('');
     } else {
       triggerStatus('error', res.error || 'Failed to publish product.');
     }

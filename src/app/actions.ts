@@ -227,11 +227,10 @@ export async function saveProductAction(productData: Partial<Product> & { id?: s
   
   let savedProd: Product;
 
-  if (productData.id) {
-    // Edit existing product
-    const existing = await getProductById(productData.id);
-    if (!existing) return { success: false, error: 'Product not found.' };
-    
+  const existing = productData.id ? await getProductById(productData.id) : null;
+
+  if (existing) {
+    // Edit existing product in database
     const totalStock = productData.stock ?? existing.stock;
     const status = totalStock === 0 ? 'OUT_OF_STOCK' : (productData.status || existing.status || 'ACTIVE');
 
@@ -250,16 +249,18 @@ export async function saveProductAction(productData: Partial<Product> & { id?: s
     await saveProduct(savedProd);
     await addAuditLog('Admin', 'Updated Product', savedProd.name, `Price: ₹${price}, Stock: ${totalStock}, Status: ${status}`);
   } else {
-    // Add new product
-    const id = (productData.name || 'product').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '') + '-' + Math.random().toString(36).substring(2, 6);
+    // Add new product (including preview products imported from Amazon/Flipkart)
+    const id = productData.id || ((productData.name || 'product').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '') + '-' + Math.random().toString(36).substring(2, 6));
     const sku = productData.sku || ('TR-' + (productData.brand || 'REAL').substring(0, 3).toUpperCase() + '-' + Math.floor(100 + Math.random() * 900));
     const totalStock = productData.stock ?? 10;
     const status = totalStock === 0 ? 'OUT_OF_STOCK' : (productData.status || 'ACTIVE');
     
     // Check duplicates
-    const dupCheck = await checkDuplicateProduct(productData.sourceUrl, sku, productData.name, productData.brand);
-    if (dupCheck.exists && dupCheck.existingProduct) {
-      return { success: false, isDuplicate: true, existingProduct: dupCheck.existingProduct, error: 'This product has already been imported or created.' };
+    if (productData.sourceUrl) {
+      const dupCheck = await checkDuplicateProduct(productData.sourceUrl, sku, productData.name, productData.brand);
+      if (dupCheck.exists && dupCheck.existingProduct && dupCheck.existingProduct.id !== id) {
+        return { success: false, isDuplicate: true, existingProduct: dupCheck.existingProduct, error: 'This product has already been imported or created.' };
+      }
     }
 
     savedProd = {
@@ -279,8 +280,8 @@ export async function saveProductAction(productData: Partial<Product> & { id?: s
       stock: totalStock,
       sizeStock: productData.sizeStock || { 7: 2, 8: 3, 9: 3, 10: 2 },
       sku: sku,
-      rating: 5.0,
-      reviews: [],
+      rating: productData.rating || 5.0,
+      reviews: productData.reviews || [],
       tags: productData.tags || [],
       images: (productData.images && productData.images.length > 0) ? productData.images : [mainImg],
       mainImage: mainImg,
