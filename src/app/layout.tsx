@@ -1,10 +1,12 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { CartProvider } from "@/context/CartContext";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import CartDrawer from "@/components/CartDrawer";
+
+import RegisterSW from "@/components/RegisterSW";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -16,10 +18,24 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
+export const viewport: Viewport = {
+  themeColor: "#0a58ca",
+};
+
 export const metadata: Metadata = {
   metadataBase: new URL("https://the-real-shoes.vercel.app"),
   title: "The Real Shoes | Premium Sneakers by Aryan Shah",
   description: "Official store for The Real Shoes. Step Into Your Reality with the ultimate luxury shoe shopping platform founded and owned by Aryan Shah.",
+  manifest: "/manifest.webmanifest",
+  icons: {
+    icon: "/images/icon-192.png",
+    apple: "/images/icon-180.png"
+  },
+  appleWebApp: {
+    capable: true,
+    title: "THE REAL",
+    statusBarStyle: "black-translucent"
+  },
   keywords: [
     "The Real Shoes",
     "the real shoes",
@@ -96,6 +112,7 @@ export default function RootLayout({
         />
       </head>
       <body className="min-h-full flex flex-col bg-premium-black text-premium-light font-sans selection:bg-royal-blue selection:text-white">
+        <RegisterSW />
         <CartProvider>
           <Navbar />
           <CartDrawer />
