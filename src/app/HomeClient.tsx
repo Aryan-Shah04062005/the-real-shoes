@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { Product } from '@/lib/db';
 import ProductCard from '@/components/ProductCard';
@@ -20,7 +20,44 @@ interface HomeClientProps {
 }
 
 export default function HomeClient({ initialProducts }: HomeClientProps) {
-  const activeProducts = (initialProducts || []).filter(
+  const [productsList, setProductsList] = useState<Product[]>(initialProducts || []);
+
+  useEffect(() => {
+    setProductsList(initialProducts || []);
+  }, [initialProducts]);
+
+  // Real-time live product sync across devices
+  useEffect(() => {
+    const fetchLatest = async () => {
+      try {
+        const res = await fetch('/api/products?t=' + Date.now(), { cache: 'no-store' });
+        if (res.ok) {
+          const data = await res.json();
+          if (data.success && Array.isArray(data.products)) {
+            setProductsList(data.products);
+          }
+        }
+      } catch (e) {
+        // Ignore fetch error
+      }
+    };
+
+    const handleSync = () => fetchLatest();
+    window.addEventListener('focus', handleSync);
+    const onVisChange = () => {
+      if (document.visibilityState === 'visible') handleSync();
+    };
+    document.addEventListener('visibilitychange', onVisChange);
+
+    const interval = setInterval(fetchLatest, 6000);
+    return () => {
+      window.removeEventListener('focus', handleSync);
+      document.removeEventListener('visibilitychange', onVisChange);
+      clearInterval(interval);
+    };
+  }, []);
+
+  const activeProducts = (productsList || []).filter(
     (p) => !p.status || p.status === 'ACTIVE' || p.status === 'OUT_OF_STOCK'
   );
 

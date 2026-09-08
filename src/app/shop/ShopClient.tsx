@@ -53,15 +53,53 @@ export default function ShopClient({ initialProducts }: ShopClientProps) {
     }
   }, [searchParams]);
 
+  // Live products state synced with server
+  const [productsList, setProductsList] = useState<Product[]>(initialProducts);
+
+  useEffect(() => {
+    setProductsList(initialProducts);
+  }, [initialProducts]);
+
+  // Real-time live product sync across devices (e.g. phone <-> desktop)
+  useEffect(() => {
+    const fetchLatest = async () => {
+      try {
+        const res = await fetch('/api/products?t=' + Date.now(), { cache: 'no-store' });
+        if (res.ok) {
+          const data = await res.json();
+          if (data.success && Array.isArray(data.products)) {
+            setProductsList(data.products);
+          }
+        }
+      } catch (e) {
+        // Ignore fetch error
+      }
+    };
+
+    const handleSync = () => fetchLatest();
+    window.addEventListener('focus', handleSync);
+    const onVisChange = () => {
+      if (document.visibilityState === 'visible') handleSync();
+    };
+    document.addEventListener('visibilitychange', onVisChange);
+
+    const interval = setInterval(fetchLatest, 6000);
+    return () => {
+      window.removeEventListener('focus', handleSync);
+      document.removeEventListener('visibilitychange', onVisChange);
+      clearInterval(interval);
+    };
+  }, []);
+
   // Unique attributes for filters
-  const uniqueCategories = useMemo(() => ['All', ...Array.from(new Set(initialProducts.map((p) => p.category).filter(Boolean)))], [initialProducts]);
-  const uniqueBrands = useMemo(() => ['All', ...Array.from(new Set(initialProducts.map((p) => p.brand).filter(Boolean)))], [initialProducts]);
+  const uniqueCategories = useMemo(() => ['All', ...Array.from(new Set(productsList.map((p) => p.category).filter(Boolean)))], [productsList]);
+  const uniqueBrands = useMemo(() => ['All', ...Array.from(new Set(productsList.map((p) => p.brand).filter(Boolean)))], [productsList]);
   const availableSizes = [6, 7, 8, 9, 10, 11, 12];
   const filterColors = ['Royal Blue', 'Silver Shadow', 'Carbon Black', 'Red', 'White'];
 
   // Filter & Sort computation
   const filteredProducts = useMemo(() => {
-    let result = initialProducts.filter(
+    let result = productsList.filter(
       (p) => !p.status || p.status === 'ACTIVE' || p.status === 'OUT_OF_STOCK'
     );
 

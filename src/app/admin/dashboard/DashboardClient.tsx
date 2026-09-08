@@ -133,6 +133,35 @@ export default function DashboardClient({ initialDb }: DashboardClientProps) {
 
   useEffect(() => {
     fetchDbStatus();
+
+    const fetchLatest = async () => {
+      try {
+        const res = await fetch('/api/products?all=true&t=' + Date.now(), { cache: 'no-store' });
+        if (res.ok) {
+          const data = await res.json();
+          if (data.success && Array.isArray(data.products)) {
+            setDb(prev => ({ ...prev, products: data.products }));
+            fetchDbStatus();
+          }
+        }
+      } catch (e) {
+        // Ignore fetch error
+      }
+    };
+
+    const handleSync = () => fetchLatest();
+    window.addEventListener('focus', handleSync);
+    const onVisChange = () => {
+      if (document.visibilityState === 'visible') handleSync();
+    };
+    document.addEventListener('visibilitychange', onVisChange);
+
+    const interval = setInterval(fetchLatest, 6000);
+    return () => {
+      window.removeEventListener('focus', handleSync);
+      document.removeEventListener('visibilitychange', onVisChange);
+      clearInterval(interval);
+    };
   }, []);
 
   // Fetch audit logs when tab is selected

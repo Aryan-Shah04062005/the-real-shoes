@@ -13,25 +13,31 @@ export async function GET(request: Request) {
     const id = searchParams.get('id');
     const all = searchParams.get('all') === 'true';
 
+    const responseHeaders = {
+      'Cache-Control': 'no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0',
+      'Pragma': 'no-cache',
+      'Expires': '0'
+    };
+
     if (id) {
       const product = await getProductById(id);
       if (!product) {
-        return NextResponse.json({ success: false, error: 'Product not found' }, { status: 404 });
+        return NextResponse.json({ success: false, error: 'Product not found' }, { status: 404, headers: responseHeaders });
       }
-      return NextResponse.json({ success: true, product });
+      return NextResponse.json({ success: true, product }, { headers: responseHeaders });
     }
 
     const isAdmin = await isAdminAuthenticated();
 
     if (all && isAdmin) {
       const fullDb = await getFullDb();
-      return NextResponse.json({ success: true, products: fullDb.products });
+      return NextResponse.json({ success: true, products: fullDb.products }, { headers: responseHeaders });
     }
 
     const products = await getProductsList();
     const activeProducts = products.filter(p => !p.status || p.status === 'ACTIVE' || p.status === 'OUT_OF_STOCK');
 
-    return NextResponse.json({ success: true, products: activeProducts });
+    return NextResponse.json({ success: true, products: activeProducts }, { headers: responseHeaders });
   } catch (error: any) {
     console.error('API GET /api/products error:', error);
     return NextResponse.json({ success: false, error: error?.message || 'Failed to fetch products' }, { status: 500 });
