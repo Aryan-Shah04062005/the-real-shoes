@@ -180,26 +180,34 @@ const TMP_DB_PATH = path.join('/tmp', 'db.json');
 export const readDB = (): DatabaseSchema => {
   let dbData: DatabaseSchema | null = null;
 
-  // Try reading from /tmp/db.json first (if updated in current runtime)
+  let primaryData: DatabaseSchema | null = null;
+  let primaryMtime = 0;
+  try {
+    if (fs.existsSync(PRIMARY_DB_PATH)) {
+      const stat = fs.statSync(PRIMARY_DB_PATH);
+      primaryMtime = stat.mtimeMs;
+      primaryData = JSON.parse(fs.readFileSync(PRIMARY_DB_PATH, 'utf8')) as DatabaseSchema;
+    }
+  } catch (error) {
+    console.error('Error reading DB from primary path:', error);
+  }
+
+  let tmpData: DatabaseSchema | null = null;
+  let tmpMtime = 0;
   try {
     if (fs.existsSync(TMP_DB_PATH)) {
-      const data = fs.readFileSync(TMP_DB_PATH, 'utf8');
-      dbData = JSON.parse(data) as DatabaseSchema;
+      const stat = fs.statSync(TMP_DB_PATH);
+      tmpMtime = stat.mtimeMs;
+      tmpData = JSON.parse(fs.readFileSync(TMP_DB_PATH, 'utf8')) as DatabaseSchema;
     }
   } catch (err) {
     console.error('Error reading /tmp/db.json:', err);
   }
 
-  // Try reading from PRIMARY_DB_PATH
-  if (!dbData) {
-    try {
-      if (fs.existsSync(PRIMARY_DB_PATH)) {
-        const data = fs.readFileSync(PRIMARY_DB_PATH, 'utf8');
-        dbData = JSON.parse(data) as DatabaseSchema;
-      }
-    } catch (error) {
-      console.error('Error reading DB from primary path:', error);
-    }
+  if (primaryData && tmpData) {
+    dbData = tmpMtime > primaryMtime ? tmpData : primaryData;
+  } else {
+    dbData = primaryData || tmpData;
   }
 
   const initial = getInitialData();

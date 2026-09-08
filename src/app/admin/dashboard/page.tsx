@@ -4,6 +4,7 @@ import { getFullDb } from '@/lib/db';
 import { redirect } from 'next/navigation';
 import DashboardClient from './DashboardClient';
 
+export const dynamic = 'force-dynamic';
 export const revalidate = 0; // Fresh DB state is critical for dashboard admin actions
 
 export default async function AdminDashboardPage() {
