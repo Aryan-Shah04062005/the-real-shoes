@@ -261,7 +261,13 @@ export async function syncDbToGitHub(): Promise<boolean> {
   try {
     const gitDir = path.join(process.cwd(), '.git');
     if (fs.existsSync(gitDir)) {
-      await execAsync(`git add "${PRIMARY_DB_PATH}" && git commit -m "Admin live update product catalog" && git push origin main`);
+      await execAsync(`git add "${PRIMARY_DB_PATH}"`);
+      try {
+        await execAsync(`git -c user.name="The Real Admin" -c user.email="admin@thereal.com" commit -m "Admin live update product catalog"`);
+      } catch (commitErr) {
+        // Safe to continue if no new file changes to commit
+      }
+      await execAsync(`git push origin main`);
       console.log('Successfully committed and pushed db.json live to GitHub repository!');
       return true;
     }

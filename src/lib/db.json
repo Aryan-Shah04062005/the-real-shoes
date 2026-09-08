@@ -157,6 +157,22 @@
   },
   "auditLogs": [
     {
+      "id": "log-1788893076864-6eoq",
+      "admin": "Admin",
+      "action": "Deleted Product",
+      "target": "MOBILE LIVE SYNC SHOE 999",
+      "details": "ID: mobile-live-sync-shoe-999-31w2, Mode: deleted",
+      "timestamp": "2026-09-08T18:44:36.864Z"
+    },
+    {
+      "id": "log-1788893076861-3y9w",
+      "admin": "Admin",
+      "action": "Created Product",
+      "target": "MOBILE LIVE SYNC SHOE 999",
+      "details": "SKU: TR-THE-791, Price: ₹9999, Source: MANUAL",
+      "timestamp": "2026-09-08T18:44:36.861Z"
+    },
+    {
       "id": "log-1788892280524-wiwn",
       "admin": "Admin",
       "action": "Deleted Product",
