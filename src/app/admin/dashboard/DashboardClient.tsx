@@ -479,7 +479,7 @@ export default function DashboardClient({ initialDb }: DashboardClientProps) {
     if (selectedProductIds.length === 0) return;
 
     if (action === 'delete') {
-      if (!confirm(`Are you sure you want to delete ${selectedProductIds.length} selected products?`)) return;
+      if (!confirm(`Are you sure you want to permanently delete ${selectedProductIds.length} selected products? This action cannot be undone.`)) return;
     }
 
     // Clean up local storage client cache for deleted or archived products immediately
