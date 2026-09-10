@@ -61,6 +61,364 @@
       "isSale": true
     },
     {
+      "id": "reebok-voyager-m-running-shoes-men",
+      "name": "Reebok Voyager M Running Shoes",
+      "brand": "Reebok",
+      "category": "Running",
+      "description": "Dominate your daily distance with the Reebok Voyager M Running Shoes. Built with high-energy return cushioning, breathable mesh weave, and durable rubber traction outsoles.",
+      "price": 1310,
+      "originalPrice": 2499,
+      "discountPrice": 1310,
+      "discountPercentage": 47,
+      "availableSizes": [
+        7,
+        8,
+        9,
+        10,
+        11
+      ],
+      "availableColors": [
+        {
+          "name": "Royal Blue",
+          "hex": "#0a58ca",
+          "threeColor": "#0a58ca"
+        },
+        {
+          "name": "Carbon Black",
+          "hex": "#111827",
+          "threeColor": "#111827"
+        }
+      ],
+      "material": "Breathable Mesh & Lightweight EVA",
+      "gender": "Men",
+      "stock": 15,
+      "sku": "TR-IMP-110-REB",
+      "rating": 4.7,
+      "reviews": [],
+      "tags": [
+        "Reebok",
+        "Running",
+        "Popular"
+      ],
+      "images": [
+        "https://images.unsplash.com/photo-1595950653106-6c9ebd614d3a?q=80&w=1000"
+      ],
+      "mainImage": "https://images.unsplash.com/photo-1595950653106-6c9ebd614d3a?q=80&w=1000",
+      "isNewArrival": true,
+      "isBestSeller": false,
+      "isTrending": true,
+      "isFeatured": true,
+      "isSale": true,
+      "status": "ACTIVE",
+      "sourcePlatform": "FLIPKART",
+      "sourceProductId": "itm1afa34e955059",
+      "updatedAt": "2026-09-10T18:30:00.000Z"
+    },
+    {
+      "id": "nike-air-apex-quantum-01",
+      "name": "Nike Air Apex Quantum",
+      "brand": "Nike",
+      "category": "Basketball",
+      "description": "Unleash high-flying performance with Nike Air Apex Quantum. Features encapsulated Zoom Air cushioning, anatomical lockdown straps, and multidirectional grip patterns.",
+      "price": 4999,
+      "originalPrice": 7999,
+      "discountPrice": 4999,
+      "discountPercentage": 37,
+      "availableSizes": [
+        8,
+        9,
+        10,
+        11,
+        12
+      ],
+      "availableColors": [
+        {
+          "name": "Royal Blue",
+          "hex": "#0a58ca",
+          "threeColor": "#0a58ca"
+        },
+        {
+          "name": "Silver Shadow",
+          "hex": "#c0c0c0",
+          "threeColor": "#c0c0c0"
+        }
+      ],
+      "material": "Flyknit Upper & Zoom Air Unit",
+      "gender": "Men",
+      "stock": 18,
+      "sku": "TR-NIK-881",
+      "rating": 4.9,
+      "reviews": [],
+      "tags": [
+        "Nike",
+        "Basketball",
+        "Top Rated"
+      ],
+      "images": [
+        "https://images.unsplash.com/photo-1600185365483-26d7a4cc7519?q=80&w=1000"
+      ],
+      "mainImage": "https://images.unsplash.com/photo-1600185365483-26d7a4cc7519?q=80&w=1000",
+      "isNewArrival": true,
+      "isBestSeller": true,
+      "isTrending": true,
+      "isFeatured": true,
+      "isSale": true,
+      "status": "ACTIVE",
+      "sourcePlatform": "THE_REAL",
+      "updatedAt": "2026-09-10T18:00:00.000Z"
+    },
+    {
+      "id": "adidas-ultraboost-velocity-02",
+      "name": "Adidas Ultraboost Velocity",
+      "brand": "Adidas",
+      "category": "Running",
+      "description": "Experience infinite energy return with Adidas Ultraboost Velocity. Engineered Primeknit uppers mold naturally to your foot for dynamic support on long road runs.",
+      "price": 5499,
+      "originalPrice": 8999,
+      "discountPrice": 5499,
+      "discountPercentage": 38,
+      "availableSizes": [
+        7,
+        8,
+        9,
+        10,
+        11
+      ],
+      "availableColors": [
+        {
+          "name": "Carbon Black",
+          "hex": "#111827",
+          "threeColor": "#111827"
+        },
+        {
+          "name": "Silver Shadow",
+          "hex": "#c0c0c0",
+          "threeColor": "#c0c0c0"
+        }
+      ],
+      "material": "Primeknit & Continental Rubber",
+      "gender": "Unisex",
+      "stock": 12,
+      "sku": "TR-ADI-772",
+      "rating": 4.9,
+      "reviews": [],
+      "tags": [
+        "Adidas",
+        "Running",
+        "Ultraboost"
+      ],
+      "images": [
+        "https://images.unsplash.com/photo-1584735935682-2f2b69dff9d2?q=80&w=1000"
+      ],
+      "mainImage": "https://images.unsplash.com/photo-1584735935682-2f2b69dff9d2?q=80&w=1000",
+      "isNewArrival": true,
+      "isBestSeller": true,
+      "isTrending": true,
+      "isFeatured": true,
+      "isSale": true,
+      "status": "ACTIVE",
+      "sourcePlatform": "THE_REAL",
+      "updatedAt": "2026-09-10T17:30:00.000Z"
+    },
+    {
+      "id": "asics-gel-nimbus-pro-03",
+      "name": "Asics Gel-Nimbus Pro",
+      "brand": "Asics",
+      "category": "Training",
+      "description": "Maximum shock absorption meets targeted support in the Asics Gel-Nimbus Pro. GEL technology in forefoot and rearfoot attenuates impact during stance and toe-off phases.",
+      "price": 3899,
+      "originalPrice": 5999,
+      "discountPrice": 3899,
+      "discountPercentage": 35,
+      "availableSizes": [
+        7,
+        8,
+        9,
+        10
+      ],
+      "availableColors": [
+        {
+          "name": "Royal Blue",
+          "hex": "#0a58ca",
+          "threeColor": "#0a58ca"
+        }
+      ],
+      "material": "AHAR Rubber & GEL Cushioning",
+      "gender": "Unisex",
+      "stock": 14,
+      "sku": "TR-ASI-663",
+      "rating": 4.8,
+      "reviews": [],
+      "tags": [
+        "Asics",
+        "Training"
+      ],
+      "images": [
+        "https://images.unsplash.com/photo-1539185441755-769473a23570?q=80&w=1000"
+      ],
+      "mainImage": "https://images.unsplash.com/photo-1539185441755-769473a23570?q=80&w=1000",
+      "isNewArrival": false,
+      "isBestSeller": false,
+      "isTrending": true,
+      "isFeatured": true,
+      "isSale": true,
+      "status": "ACTIVE",
+      "sourcePlatform": "THE_REAL",
+      "updatedAt": "2026-09-10T17:00:00.000Z"
+    },
+    {
+      "id": "the-real-genesis-carbon-stealth-04",
+      "name": "THE REAL Genesis Carbon Stealth",
+      "brand": "THE REAL",
+      "category": "Performance",
+      "description": "The flagship sneaker designed by Aryan Shah. Features full-length carbon fiber propulsion plates, responsive nitrogen-infused foam, and custom aesthetic line wraps.",
+      "price": 6499,
+      "originalPrice": 9999,
+      "discountPrice": 6499,
+      "discountPercentage": 35,
+      "availableSizes": [
+        8,
+        9,
+        10,
+        11
+      ],
+      "availableColors": [
+        {
+          "name": "Carbon Black",
+          "hex": "#111827",
+          "threeColor": "#111827"
+        },
+        {
+          "name": "Royal Blue",
+          "hex": "#0a58ca",
+          "threeColor": "#0a58ca"
+        }
+      ],
+      "material": "Carbon Fiber & Micro-Knit",
+      "gender": "Unisex",
+      "stock": 25,
+      "sku": "TR-REAL-994",
+      "rating": 5,
+      "reviews": [],
+      "tags": [
+        "THE REAL",
+        "Flagship",
+        "Carbon"
+      ],
+      "images": [
+        "https://images.unsplash.com/photo-1606107557195-0e29a4b5b4aa?q=80&w=1000"
+      ],
+      "mainImage": "https://images.unsplash.com/photo-1606107557195-0e29a4b5b4aa?q=80&w=1000",
+      "isNewArrival": true,
+      "isBestSeller": true,
+      "isTrending": true,
+      "isFeatured": true,
+      "isSale": false,
+      "status": "ACTIVE",
+      "sourcePlatform": "THE_REAL",
+      "updatedAt": "2026-09-10T16:30:00.000Z"
+    },
+    {
+      "id": "skechers-max-cushioning-elite-05",
+      "name": "Skechers Max Cushioning Elite",
+      "brand": "Skechers",
+      "category": "Casual",
+      "description": "All-day plush comfort with Skechers Max Cushioning Elite. ULTRA GO cushioning platform paired with Goga Mat insoles delivers an effortless stride.",
+      "price": 2799,
+      "originalPrice": 4299,
+      "discountPrice": 2799,
+      "discountPercentage": 34,
+      "availableSizes": [
+        6,
+        7,
+        8,
+        9,
+        10
+      ],
+      "availableColors": [
+        {
+          "name": "Silver Shadow",
+          "hex": "#c0c0c0",
+          "threeColor": "#c0c0c0"
+        }
+      ],
+      "material": "Air-Cooled Memory Foam",
+      "gender": "Unisex",
+      "stock": 16,
+      "sku": "TR-SKE-445",
+      "rating": 4.6,
+      "reviews": [],
+      "tags": [
+        "Skechers",
+        "Comfort"
+      ],
+      "images": [
+        "https://images.unsplash.com/photo-1560769629-975ec94e6a86?q=80&w=1000"
+      ],
+      "mainImage": "https://images.unsplash.com/photo-1560769629-975ec94e6a86?q=80&w=1000",
+      "isNewArrival": false,
+      "isBestSeller": false,
+      "isTrending": true,
+      "isFeatured": false,
+      "isSale": true,
+      "status": "ACTIVE",
+      "sourcePlatform": "THE_REAL",
+      "updatedAt": "2026-09-10T16:00:00.000Z"
+    },
+    {
+      "id": "puma-nitro-power-surge-06",
+      "name": "Puma Nitro Power Surge",
+      "brand": "Puma",
+      "category": "Running",
+      "description": "Ignite your speed with Puma Nitro Power Surge. Packed with NITRO foam technology for ultra-light responsiveness and explosive toe-offs.",
+      "price": 3299,
+      "originalPrice": 4999,
+      "discountPrice": 3299,
+      "discountPercentage": 34,
+      "availableSizes": [
+        7,
+        8,
+        9,
+        10,
+        11
+      ],
+      "availableColors": [
+        {
+          "name": "Royal Blue",
+          "hex": "#0a58ca",
+          "threeColor": "#0a58ca"
+        },
+        {
+          "name": "Carbon Black",
+          "hex": "#111827",
+          "threeColor": "#111827"
+        }
+      ],
+      "material": "PUMAGRIP Rubber & NITRO Foam",
+      "gender": "Men",
+      "stock": 10,
+      "sku": "TR-PUM-336",
+      "rating": 4.8,
+      "reviews": [],
+      "tags": [
+        "Puma",
+        "Nitro",
+        "Running"
+      ],
+      "images": [
+        "https://images.unsplash.com/photo-1608231387042-66d1773070a5?q=80&w=1000"
+      ],
+      "mainImage": "https://images.unsplash.com/photo-1608231387042-66d1773070a5?q=80&w=1000",
+      "isNewArrival": true,
+      "isBestSeller": true,
+      "isTrending": true,
+      "isFeatured": true,
+      "isSale": true,
+      "status": "ACTIVE",
+      "sourcePlatform": "THE_REAL",
+      "updatedAt": "2026-09-10T15:30:00.000Z"
+    },
+    {
       "id": "puma-smashic-comfort-casual-sneakers-kj8a",
       "name": "Puma Smashic Comfort Casual Sneakers",
       "brand": "Puma",
@@ -155,94 +513,5 @@
       "terms": "By purchasing from THE REAL, you agree to our terms of service, which include using our sizing guides, confirming address details before ordering, and agreeing to our return conditions."
     }
   },
-  "auditLogs": [
-    {
-      "id": "log-1789050712060-tf8q",
-      "admin": "Admin",
-      "action": "Deleted Product",
-      "target": "MOBILE LIVE SYNC SHOE 999",
-      "details": "ID: mobile-live-sync-shoe-999-sg50, Mode: deleted",
-      "timestamp": "2026-09-10T14:31:52.060Z"
-    },
-    {
-      "id": "log-1789050712056-yhxe",
-      "admin": "Admin",
-      "action": "Created Product",
-      "target": "MOBILE LIVE SYNC SHOE 999",
-      "details": "SKU: TR-THE-328, Price: ₹9999, Source: MANUAL",
-      "timestamp": "2026-09-10T14:31:52.056Z"
-    },
-    {
-      "id": "log-1789049920022-fhho",
-      "admin": "Admin",
-      "action": "Deleted Product",
-      "target": "MOBILE LIVE SYNC SHOE 999",
-      "details": "ID: mobile-live-sync-shoe-999-kksi, Mode: deleted",
-      "timestamp": "2026-09-10T14:18:40.022Z"
-    },
-    {
-      "id": "log-1789049920020-gp34",
-      "admin": "Admin",
-      "action": "Created Product",
-      "target": "MOBILE LIVE SYNC SHOE 999",
-      "details": "SKU: TR-THE-181, Price: ₹9999, Source: MANUAL",
-      "timestamp": "2026-09-10T14:18:40.020Z"
-    },
-    {
-      "id": "log-1788893076864-6eoq",
-      "admin": "Admin",
-      "action": "Deleted Product",
-      "target": "MOBILE LIVE SYNC SHOE 999",
-      "details": "ID: mobile-live-sync-shoe-999-31w2, Mode: deleted",
-      "timestamp": "2026-09-08T18:44:36.864Z"
-    },
-    {
-      "id": "log-1788893076861-3y9w",
-      "admin": "Admin",
-      "action": "Created Product",
-      "target": "MOBILE LIVE SYNC SHOE 999",
-      "details": "SKU: TR-THE-791, Price: ₹9999, Source: MANUAL",
-      "timestamp": "2026-09-08T18:44:36.861Z"
-    },
-    {
-      "id": "log-1788892280524-wiwn",
-      "admin": "Admin",
-      "action": "Deleted Product",
-      "target": "CROSS DEVICE TEST SHOE 888",
-      "details": "ID: cross-device-test-shoe-888-m5ju, Mode: deleted",
-      "timestamp": "2026-09-08T18:31:20.524Z"
-    },
-    {
-      "id": "log-1788892280521-uprb",
-      "admin": "Admin",
-      "action": "Created Product",
-      "target": "CROSS DEVICE TEST SHOE 888",
-      "details": "SKU: TR-THE-109, Price: ₹8888, Source: MANUAL",
-      "timestamp": "2026-09-08T18:31:20.521Z"
-    },
-    {
-      "id": "log-1788892033658-6q00",
-      "admin": "Admin",
-      "action": "Deleted Product",
-      "target": "MANUAL TEST SNEAKER 777",
-      "details": "ID: manual-test-sneaker-777-u68q, Mode: deleted",
-      "timestamp": "2026-09-08T18:27:13.658Z"
-    },
-    {
-      "id": "log-1788892033655-aagb",
-      "admin": "Admin",
-      "action": "Created Product",
-      "target": "MANUAL TEST SNEAKER 777",
-      "details": "SKU: TR-THE-753, Price: ₹7777, Source: MANUAL",
-      "timestamp": "2026-09-08T18:27:13.655Z"
-    },
-    {
-      "id": "log-1788892020026-mpyy",
-      "admin": "Admin",
-      "action": "Created Product",
-      "target": "MANUAL TEST SNEAKER 777",
-      "details": "SKU: TR-THE-749, Price: ₹7777, Source: MANUAL",
-      "timestamp": "2026-09-08T18:27:00.026Z"
-    }
-  ]
+  "auditLogs": []
 }
