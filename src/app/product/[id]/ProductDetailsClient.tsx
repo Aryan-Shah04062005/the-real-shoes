@@ -97,18 +97,26 @@ export default function ProductDetailsClient({ id, initialProduct, product: prod
     return (
       <div className="min-h-[60vh] flex flex-col items-center justify-center text-center px-4 py-20">
         <div className="w-16 h-16 rounded-full bg-slate-900 border border-slate-800 flex items-center justify-center mb-6">
-          <ArrowLeft className="w-8 h-8 text-slate-400" />
+          <ArrowLeft className="w-8 h-8 text-royal-blue" />
         </div>
-        <h1 className="text-2xl font-black text-white uppercase tracking-wider mb-2">Product Not Found</h1>
+        <h1 className="text-3xl font-black text-white uppercase tracking-wider mb-2">Product Not Found</h1>
         <p className="text-sm text-slate-400 max-w-md mb-8">
-          The shoe you are looking for may have been updated, moved, or is currently unavailable.
+          The product you're looking for may have been removed or is no longer available.
         </p>
-        <Link
-          href="/shop"
-          className="rounded-xl bg-royal-blue px-8 py-3.5 text-xs font-bold uppercase tracking-wider text-white hover:bg-royal-blue-hover transition-colors shadow-lg shadow-royal-blue/20"
-        >
-          Explore All Shoes in Shop
-        </Link>
+        <div className="flex flex-wrap gap-4 justify-center">
+          <Link
+            href="/shop"
+            className="rounded-xl bg-royal-blue px-8 py-3.5 text-xs font-bold uppercase tracking-wider text-white hover:bg-royal-blue-hover transition-colors shadow-lg shadow-royal-blue/20"
+          >
+            BACK TO SHOP
+          </Link>
+          <Link
+            href="/"
+            className="rounded-xl border border-white/15 bg-white/5 px-8 py-3.5 text-xs font-bold uppercase tracking-wider text-slate-300 hover:text-white hover:bg-white/10 transition-colors"
+          >
+            GO TO HOME
+          </Link>
+        </div>
       </div>
     );
   }
