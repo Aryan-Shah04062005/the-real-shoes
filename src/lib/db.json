@@ -515,6 +515,54 @@
   },
   "auditLogs": [
     {
+      "id": "log-1789051916137-76lj",
+      "admin": "Admin",
+      "action": "Bulk Delete",
+      "target": "TEST SHOE 3",
+      "details": "Mode: deleted",
+      "timestamp": "2026-09-10T14:51:56.137Z"
+    },
+    {
+      "id": "log-1789051916132-usq8",
+      "admin": "Admin",
+      "action": "Bulk Delete",
+      "target": "TEST SHOE 2",
+      "details": "Mode: deleted",
+      "timestamp": "2026-09-10T14:51:56.132Z"
+    },
+    {
+      "id": "log-1789051916126-0zee",
+      "admin": "Admin",
+      "action": "Bulk Delete",
+      "target": "TEST SHOE 1",
+      "details": "Mode: deleted",
+      "timestamp": "2026-09-10T14:51:56.126Z"
+    },
+    {
+      "id": "log-1789051907835-jmxi",
+      "admin": "Admin",
+      "action": "Bulk Delete",
+      "target": "TEST SHOE 3",
+      "details": "Mode: deleted",
+      "timestamp": "2026-09-10T14:51:47.835Z"
+    },
+    {
+      "id": "log-1789051907831-1z1x",
+      "admin": "Admin",
+      "action": "Bulk Delete",
+      "target": "TEST SHOE 2",
+      "details": "Mode: deleted",
+      "timestamp": "2026-09-10T14:51:47.831Z"
+    },
+    {
+      "id": "log-1789051907829-3bjr",
+      "admin": "Admin",
+      "action": "Bulk Delete",
+      "target": "TEST SHOE 1",
+      "details": "Mode: deleted",
+      "timestamp": "2026-09-10T14:51:47.829Z"
+    },
+    {
       "id": "log-1789051762606-rbox",
       "admin": "Admin",
       "action": "Bulk Delete",
