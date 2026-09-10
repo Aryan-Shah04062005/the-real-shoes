@@ -1,7 +1,7 @@
 {
   "products": [
     {
-      "id": "test-del-1789052299685",
+      "id": "test-del-1789052419580",
       "name": "Test Resurrection Shoe Single",
       "brand": "TEST",
       "category": "Casual",
@@ -37,7 +37,7 @@
       "isBestSeller": false,
       "isSale": false,
       "status": "ACTIVE",
-      "updatedAt": "2026-09-10T14:58:19.685Z"
+      "updatedAt": "2026-09-10T15:00:19.580Z"
     },
     {
       "id": "puma-smashic-comfort-casual-sneakers-5d13",
