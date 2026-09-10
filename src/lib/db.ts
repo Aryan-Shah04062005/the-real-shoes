@@ -209,13 +209,27 @@ export const readDB = (): DatabaseSchema => {
   const initial = getInitialData();
   const productMap = new Map<string, Product>();
 
-  // Merge products from initial, primary, and tmp data so no added product is lost
-  (initial.products || []).forEach(p => { if (p && p.id) productMap.set(p.id, p); });
-  if (primaryData?.products) {
-    primaryData.products.forEach(p => { if (p && p.id) productMap.set(p.id, p); });
-  }
-  if (tmpData?.products) {
-    tmpData.products.forEach(p => { if (p && p.id) productMap.set(p.id, p); });
+  const hasPrimary = !!(primaryData && Array.isArray(primaryData.products));
+  const hasTmp = !!(tmpData && Array.isArray(tmpData.products));
+
+  if (!hasPrimary && !hasTmp) {
+    // Fresh setup: populate from initial seed data
+    (initial.products || []).forEach(p => { if (p && p.id) productMap.set(p.id, p); });
+  } else {
+    // Existing DB on disk: load products strictly from primaryData and tmpData (newest timestamp wins per product)
+    if (primaryData?.products) {
+      primaryData.products.forEach(p => { if (p && p.id) productMap.set(p.id, p); });
+    }
+    if (tmpData?.products) {
+      tmpData.products.forEach(p => {
+        if (p && p.id) {
+          const existing = productMap.get(p.id);
+          if (!existing || (p.updatedAt && existing.updatedAt && new Date(p.updatedAt).getTime() >= new Date(existing.updatedAt).getTime())) {
+            productMap.set(p.id, p);
+          }
+        }
+      });
+    }
   }
 
   const mergedProducts = Array.from(productMap.values());

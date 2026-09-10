@@ -70,20 +70,17 @@ export function removeLocalAddedProduct(productIdOrName: string): void {
 export function getMergedClientProducts(fetchedProducts: Product[] = [], initialProducts: Product[] = []): Product[] {
   const mergedMap = new Map<string, Product>();
 
-  // 1. Initial server products
-  (initialProducts || []).forEach((p) => {
-    if (p && p.id) mergedMap.set(p.id, p);
+  // Use fresh API fetched products if available, fallback to initial server products
+  const baseList = (fetchedProducts && fetchedProducts.length > 0) ? fetchedProducts : initialProducts;
+
+  (baseList || []).forEach((p) => {
+    if (p && p.id && p.status !== 'ARCHIVED') mergedMap.set(p.id, p);
   });
 
-  // 2. Fetched API products
-  (fetchedProducts || []).forEach((p) => {
-    if (p && p.id) mergedMap.set(p.id, p);
-  });
-
-  // 3. Local added products (takes priority for freshly created items)
+  // Local added products (takes priority for freshly created items)
   const localAdded = getLocalAddedProducts();
   localAdded.forEach((p) => {
-    if (p && p.id) {
+    if (p && p.id && p.status !== 'ARCHIVED') {
       const existing = mergedMap.get(p.id);
       if (!existing || (p.updatedAt && existing.updatedAt && new Date(p.updatedAt).getTime() >= new Date(existing.updatedAt).getTime())) {
         mergedMap.set(p.id, p);
@@ -91,17 +88,15 @@ export function getMergedClientProducts(fetchedProducts: Product[] = [], initial
     }
   });
 
-  // 4. Remove local deleted product IDs
+  // Remove local deleted product IDs & ARCHIVED products
   const deletedIds = getLocalDeletedProductIds().map((id) => id.toLowerCase().trim());
-  if (deletedIds.length > 0) {
-    Array.from(mergedMap.entries()).forEach(([id, p]) => {
-      const pId = (p.id || '').toLowerCase().trim();
-      const pName = (p.name || '').toLowerCase().trim();
-      if (deletedIds.includes(pId) || deletedIds.includes(pName)) {
-        mergedMap.delete(id);
-      }
-    });
-  }
+  Array.from(mergedMap.entries()).forEach(([id, p]) => {
+    const pId = (p.id || '').toLowerCase().trim();
+    const pName = (p.name || '').toLowerCase().trim();
+    if (deletedIds.includes(pId) || deletedIds.includes(pName) || p.status === 'ARCHIVED') {
+      mergedMap.delete(id);
+    }
+  });
 
   return Array.from(mergedMap.values()).sort((a, b) => {
     const timeA = new Date(a.updatedAt || 0).getTime();
