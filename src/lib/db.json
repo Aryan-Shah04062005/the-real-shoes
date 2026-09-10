@@ -515,6 +515,30 @@
   },
   "auditLogs": [
     {
+      "id": "log-1789051762606-rbox",
+      "admin": "Admin",
+      "action": "Bulk Delete",
+      "target": "TEST SHOE 3",
+      "details": "Mode: deleted",
+      "timestamp": "2026-09-10T14:49:22.606Z"
+    },
+    {
+      "id": "log-1789051762601-1b5i",
+      "admin": "Admin",
+      "action": "Bulk Delete",
+      "target": "TEST SHOE 2",
+      "details": "Mode: deleted",
+      "timestamp": "2026-09-10T14:49:22.601Z"
+    },
+    {
+      "id": "log-1789051762598-lpbc",
+      "admin": "Admin",
+      "action": "Bulk Delete",
+      "target": "TEST SHOE 1",
+      "details": "Mode: deleted",
+      "timestamp": "2026-09-10T14:49:22.598Z"
+    },
+    {
       "id": "log-1789051639669-j5ii",
       "admin": "Admin",
       "action": "Bulk Delete",
