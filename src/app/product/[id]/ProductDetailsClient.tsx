@@ -30,33 +30,12 @@ export default function ProductDetailsClient({ id, initialProduct, product: prod
     const fetchProductClient = async () => {
       try {
         setLoading(true);
-        // 1. Check localStorage first
-        const localData = localStorage.getItem('the_real_shoes_added_products');
-        if (localData) {
-          try {
-            const addedProds: Product[] = JSON.parse(localData);
-            const targetId = (id || '').toLowerCase();
-            const foundInLocal = addedProds.find(p => {
-              if (!p) return false;
-              const pIdLower = (p.id || '').toLowerCase();
-              const pSkuLower = (p.sku || '').toLowerCase();
-              const pNameLower = (p.name || '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
-              return p.id === id || pIdLower === targetId || pSkuLower === targetId || pNameLower === targetId || (p.sourceProductId && p.sourceProductId.toLowerCase() === targetId);
-            });
-            if (foundInLocal) {
-              setProduct(foundInLocal);
-              setLoading(false);
-              return;
-            }
-          } catch (e) {
-            console.error('Error parsing localStorage products:', e);
-          }
-        }
 
-        // 2. Fetch from API
+        // Fetch fresh product data from API
         const res = await fetch(`/api/products?t=${Date.now()}`, { cache: 'no-store' });
         if (res.ok) {
-          const list: Product[] = await res.json();
+          const data = await res.json();
+          const list: Product[] = Array.isArray(data) ? data : (data.products || (data.product ? [data.product] : []));
           const targetId = (id || '').toLowerCase();
           const foundInApi = list.find(p => {
             if (!p) return false;

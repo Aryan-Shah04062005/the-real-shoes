@@ -168,6 +168,7 @@ export interface DatabaseSchema {
   customShoes?: CustomShoe[];
   websiteContent: WebsiteContent;
   auditLogs?: AuditLog[];
+  deletedProductIds?: string[];
 }
 
 // Ensure db.json exists with initial data
@@ -206,41 +207,57 @@ export const readDB = (): DatabaseSchema => {
     console.error('Error reading /tmp/db.json:', err);
   }
 
+  const DELETED_IDS_PATH = path.join('/tmp', 'deleted_product_ids.json');
+  let diskDeletedIds: string[] = [];
+  try {
+    if (fs.existsSync(DELETED_IDS_PATH)) {
+      diskDeletedIds = JSON.parse(fs.readFileSync(DELETED_IDS_PATH, 'utf8'));
+    }
+  } catch (e) {}
+
   const initial = getInitialData();
-  const productMap = new Map<string, Product>();
+
+  // Consolidate deleted IDs set across all storage locations
+  const deletedSet = new Set<string>([
+    ...(initial.deletedProductIds || []),
+    ...(primaryData?.deletedProductIds || []),
+    ...(tmpData?.deletedProductIds || []),
+    ...diskDeletedIds
+  ]);
 
   const hasPrimary = !!(primaryData && Array.isArray(primaryData.products));
   const hasTmp = !!(tmpData && Array.isArray(tmpData.products));
 
-  if (!hasPrimary && !hasTmp) {
-    // Fresh setup: populate from initial seed data
-    (initial.products || []).forEach(p => { if (p && p.id) productMap.set(p.id, p); });
+  let rawProducts: Product[] = [];
+
+  if (hasTmp && tmpMtime >= primaryMtime) {
+    // /tmp/db.json is newer or equal: it is the source of truth for file-based DB
+    rawProducts = tmpData!.products;
+  } else if (hasPrimary) {
+    // primary db.json is source of truth
+    rawProducts = primaryData!.products;
   } else {
-    // Existing DB on disk: load products strictly from primaryData and tmpData (newest timestamp wins per product)
-    if (primaryData?.products) {
-      primaryData.products.forEach(p => { if (p && p.id) productMap.set(p.id, p); });
-    }
-    if (tmpData?.products) {
-      tmpData.products.forEach(p => {
-        if (p && p.id) {
-          const existing = productMap.get(p.id);
-          if (!existing || (p.updatedAt && existing.updatedAt && new Date(p.updatedAt).getTime() >= new Date(existing.updatedAt).getTime())) {
-            productMap.set(p.id, p);
-          }
-        }
-      });
-    }
+    // Fallback to initial seed
+    rawProducts = initial.products || [];
   }
 
-  const mergedProducts = Array.from(productMap.values());
+  // Filter out any deleted products by ID, lowercased ID, or slug
+  const activeProducts = rawProducts.filter(p => {
+    if (!p || !p.id) return false;
+    const pIdLower = p.id.toLowerCase();
+    const pSlug = (p.name || '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+    return !deletedSet.has(p.id) && !deletedSet.has(pIdLower) && !deletedSet.has(pSlug);
+  });
+
   const baseData = (tmpMtime > primaryMtime ? tmpData : primaryData) || primaryData || tmpData || initial;
 
   dbData = {
     ...baseData,
-    products: mergedProducts,
+    products: activeProducts,
     orders: baseData.orders || initial.orders || [],
     customers: baseData.customers || initial.customers || [],
-    websiteContent: baseData.websiteContent || initial.websiteContent
+    websiteContent: baseData.websiteContent || initial.websiteContent,
+    deletedProductIds: Array.from(deletedSet)
   };
 
   inMemoryDbCache = dbData;
@@ -270,6 +287,14 @@ export const writeDB = (data: DatabaseSchema): boolean => {
     console.error('Error writing to /tmp/db.json:', tmpError);
   }
 
+  // Write deleted_product_ids.json to /tmp as secondary backup
+  if (data.deletedProductIds && Array.isArray(data.deletedProductIds)) {
+    try {
+      const DELETED_IDS_PATH = path.join('/tmp', 'deleted_product_ids.json');
+      fs.writeFileSync(DELETED_IDS_PATH, JSON.stringify(data.deletedProductIds, null, 2), 'utf8');
+    } catch (e) {}
+  }
+
   // Automatically sync updated db.json to GitHub repository in background
   syncDbToGitHub().catch((err) => console.warn('Background GitHub sync bypassed:', err));
 
@@ -281,13 +306,13 @@ export async function syncDbToGitHub(): Promise<boolean> {
   try {
     const gitDir = path.join(process.cwd(), '.git');
     if (fs.existsSync(gitDir)) {
-      await execAsync(`git add "${PRIMARY_DB_PATH}"`);
+      await execAsync(`git add "${PRIMARY_DB_PATH}"`, { timeout: 3000 });
       try {
-        await execAsync(`git -c user.name="The Real Admin" -c user.email="admin@thereal.com" commit -m "Admin live update product catalog"`);
+        await execAsync(`git -c user.name="The Real Admin" -c user.email="admin@thereal.com" commit -m "Admin live update product catalog"`, { timeout: 3000 });
       } catch (commitErr) {
         // Safe to continue if no new file changes to commit
       }
-      await execAsync(`git push origin main`);
+      await execAsync(`git push origin main`, { timeout: 4000 });
       console.log('Successfully committed and pushed db.json live to GitHub repository!');
       return true;
     }
@@ -303,12 +328,16 @@ export async function syncDbToGitHub(): Promise<boolean> {
       const filePath = 'src/lib/db.json';
       const url = `https://api.github.com/repos/${repo}/contents/${filePath}`;
 
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 4000);
+
       const getRes = await fetch(url, {
         headers: {
           'Authorization': `Bearer ${token}`,
           'User-Agent': 'TheRealShoes-App',
           'Accept': 'application/vnd.github.v3+json'
-        }
+        },
+        signal: controller.signal
       });
 
       if (getRes.ok) {
@@ -316,6 +345,9 @@ export async function syncDbToGitHub(): Promise<boolean> {
         const sha = fileData.sha;
         const currentDb = readDB();
         const contentBase64 = Buffer.from(JSON.stringify(currentDb, null, 2)).toString('base64');
+
+        const putController = new AbortController();
+        const putTimeoutId = setTimeout(() => putController.abort(), 5000);
 
         const putRes = await fetch(url, {
           method: 'PUT',
@@ -330,14 +362,19 @@ export async function syncDbToGitHub(): Promise<boolean> {
             content: contentBase64,
             sha: sha,
             branch: 'main'
-          })
+          }),
+          signal: putController.signal
         });
+
+        clearTimeout(putTimeoutId);
+        clearTimeout(timeoutId);
 
         if (putRes.ok) {
           console.log('Successfully updated db.json on GitHub via REST API!');
           return true;
         }
       }
+      clearTimeout(timeoutId);
     } catch (apiErr) {
       console.error('Failed to update db.json via GitHub REST API:', apiErr);
     }
@@ -473,6 +510,9 @@ export async function saveProduct(productData: Product): Promise<{ success: bool
       }
     } else {
       const db = readDB();
+      if (!db.deletedProductIds) db.deletedProductIds = [];
+      const lowerId = productData.id.toLowerCase();
+      db.deletedProductIds = db.deletedProductIds.filter(id => id !== productData.id && id !== lowerId);
       const index = db.products.findIndex(p => p.id === productData.id);
       if (index !== -1) {
         db.products[index] = productData;
@@ -539,6 +579,7 @@ export async function deleteProduct(idOrName: string): Promise<{ success: boolea
     return { success: true, mode };
   } else {
     const db = readDB();
+    if (!db.deletedProductIds) db.deletedProductIds = [];
     const matchingIndices: number[] = [];
 
     db.products.forEach((p, idx) => {
@@ -565,6 +606,17 @@ export async function deleteProduct(idOrName: string): Promise<{ success: boolea
         targetProd.updatedAt = new Date().toISOString();
         mode = 'archived';
       } else {
+        if (!db.deletedProductIds.includes(targetProd.id)) {
+          db.deletedProductIds.push(targetProd.id);
+        }
+        const lowerId = targetProd.id.toLowerCase();
+        if (!db.deletedProductIds.includes(lowerId)) {
+          db.deletedProductIds.push(lowerId);
+        }
+        const slug = (targetProd.name || '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+        if (slug && !db.deletedProductIds.includes(slug)) {
+          db.deletedProductIds.push(slug);
+        }
         db.products.splice(idx, 1);
       }
     }
@@ -597,6 +649,9 @@ export async function restoreProduct(id: string): Promise<boolean> {
     return res.modifiedCount > 0;
   } else {
     const db = readDB();
+    if (db.deletedProductIds) {
+      db.deletedProductIds = db.deletedProductIds.filter(dId => dId !== id && dId !== id.toLowerCase());
+    }
     const p = db.products.find(prod => prod.id === id);
     if (!p) return false;
     p.status = 'ACTIVE';
