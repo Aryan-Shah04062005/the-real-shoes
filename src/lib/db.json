@@ -513,5 +513,38 @@
       "terms": "By purchasing from THE REAL, you agree to our terms of service, which include using our sizing guides, confirming address details before ordering, and agreeing to our return conditions."
     }
   },
-  "auditLogs": []
+  "auditLogs": [
+    {
+      "id": "log-1789051639669-j5ii",
+      "admin": "Admin",
+      "action": "Bulk Delete",
+      "target": "BULK TEST SHOE 2",
+      "details": "Mode: deleted",
+      "timestamp": "2026-09-10T14:47:19.669Z"
+    },
+    {
+      "id": "log-1789051639665-y3e8",
+      "admin": "Admin",
+      "action": "Bulk Delete",
+      "target": "BULK TEST SHOE 1",
+      "details": "Mode: deleted",
+      "timestamp": "2026-09-10T14:47:19.665Z"
+    },
+    {
+      "id": "log-1789051633098-ik50",
+      "admin": "Admin",
+      "action": "Bulk Delete",
+      "target": "BULK TEST SHOE 2",
+      "details": "Mode: deleted",
+      "timestamp": "2026-09-10T14:47:13.098Z"
+    },
+    {
+      "id": "log-1789051633094-dv8b",
+      "admin": "Admin",
+      "action": "Bulk Delete",
+      "target": "BULK TEST SHOE 1",
+      "details": "Mode: deleted",
+      "timestamp": "2026-09-10T14:47:13.094Z"
+    }
+  ]
 }
