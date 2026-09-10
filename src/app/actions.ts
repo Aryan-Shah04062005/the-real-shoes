@@ -320,6 +320,7 @@ export async function saveProductAction(productData: Partial<Product> & { id?: s
   safeRevalidatePath('/', 'layout');
   safeRevalidatePath('/shop');
   safeRevalidatePath('/admin/dashboard');
+  safeRevalidatePath('/product/' + savedProd.id);
   return { success: true, product: savedProd };
 }
 

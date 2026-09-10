@@ -400,14 +400,40 @@ export async function getProductsList(): Promise<Product[]> {
 }
 
 export async function getProductById(id: string): Promise<Product | null> {
+  if (!id) return null;
+  const decodedId = decodeURIComponent(id).trim();
+  const lowerId = decodedId.toLowerCase();
+  const slugId = lowerId.replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+
   const isMongo = await isMongoDBConnected();
   if (isMongo) {
     await seedMongoDBIfNeeded();
-    const p = await ProductModel.findOne({ id }).lean();
+    let p = await ProductModel.findOne({ id: decodedId }).lean();
+    if (!p) {
+      p = await ProductModel.findOne({
+        $or: [
+          { id: { $regex: new RegExp('^' + decodedId.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, '\\$&') + '$', 'i') } },
+          { sku: { $regex: new RegExp('^' + decodedId.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, '\\$&') + '$', 'i') } }
+        ]
+      }).lean();
+    }
     return p ? (p as unknown as Product) : null;
   } else {
-    const products = readDB().products;
-    return products.find(p => p.id === id) || null;
+    const products = await getProductsList();
+    return products.find(p => {
+      if (!p || !p.id) return false;
+      const pIdLower = (p.id || '').toLowerCase();
+      const pSkuLower = (p.sku || '').toLowerCase();
+      const pNameLower = (p.name || '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+      return (
+        p.id === id ||
+        p.id === decodedId ||
+        pIdLower === lowerId ||
+        pSkuLower === lowerId ||
+        (slugId.length > 3 && pNameLower === slugId) ||
+        (p.sourceProductId && p.sourceProductId.toLowerCase() === lowerId)
+      );
+    }) || null;
   }
 }
 
