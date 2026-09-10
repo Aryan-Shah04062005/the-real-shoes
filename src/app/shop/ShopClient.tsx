@@ -4,6 +4,7 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { useCart } from '@/context/CartContext';
 import { Product } from '@/lib/db';
+import { getMergedClientProducts } from '@/lib/clientCatalog';
 import ProductCard from '@/components/ProductCard';
 import QuickViewModal from '@/components/QuickViewModal';
 import SizeGuideModal from '@/components/SizeGuideModal';
@@ -18,7 +19,7 @@ export default function ShopClient({ initialProducts }: ShopClientProps) {
   const { wishlist } = useCart();
 
   // Search state
-  const [searchQuery, setSearchQuery] = useState('');
+  const [searchQuery, setSearchQuery] = useState<string>('');
   const [selectedCategory, setSelectedCategory] = useState<string>('All');
   const [selectedBrand, setSelectedBrand] = useState<string>('All');
   const [selectedSizes, setSelectedSizes] = useState<number[]>([]);
@@ -54,10 +55,10 @@ export default function ShopClient({ initialProducts }: ShopClientProps) {
   }, [searchParams]);
 
   // Live products state synced with server
-  const [productsList, setProductsList] = useState<Product[]>(initialProducts);
+  const [productsList, setProductsList] = useState<Product[]>(() => getMergedClientProducts([], initialProducts || []));
 
   useEffect(() => {
-    setProductsList(initialProducts);
+    setProductsList(getMergedClientProducts([], initialProducts || []));
   }, [initialProducts]);
 
   // Real-time live product sync across devices (e.g. phone <-> desktop)
@@ -68,7 +69,7 @@ export default function ShopClient({ initialProducts }: ShopClientProps) {
         if (res.ok) {
           const data = await res.json();
           if (data.success && Array.isArray(data.products)) {
-            setProductsList(data.products);
+            setProductsList(getMergedClientProducts(data.products, initialProducts || []));
           }
         }
       } catch (e) {

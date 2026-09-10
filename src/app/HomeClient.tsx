@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { Product } from '@/lib/db';
+import { getMergedClientProducts } from '@/lib/clientCatalog';
 import ProductCard from '@/components/ProductCard';
 import { 
   ArrowRight, 
@@ -20,10 +21,10 @@ interface HomeClientProps {
 }
 
 export default function HomeClient({ initialProducts }: HomeClientProps) {
-  const [productsList, setProductsList] = useState<Product[]>(initialProducts || []);
+  const [productsList, setProductsList] = useState<Product[]>(() => getMergedClientProducts([], initialProducts || []));
 
   useEffect(() => {
-    setProductsList(initialProducts || []);
+    setProductsList(getMergedClientProducts([], initialProducts || []));
   }, [initialProducts]);
 
   // Real-time live product sync across devices
@@ -34,7 +35,7 @@ export default function HomeClient({ initialProducts }: HomeClientProps) {
         if (res.ok) {
           const data = await res.json();
           if (data.success && Array.isArray(data.products)) {
-            setProductsList(data.products);
+            setProductsList(getMergedClientProducts(data.products, initialProducts || []));
           }
         }
       } catch (e) {

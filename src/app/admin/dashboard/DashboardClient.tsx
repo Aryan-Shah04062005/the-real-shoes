@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect, useMemo } from 'react';
 import { DatabaseSchema, Product, Order, Customer, WebsiteContent, AuditLog } from '@/lib/db';
+import { addLocalAddedProduct, removeLocalAddedProduct, getMergedClientProducts } from '@/lib/clientCatalog';
 import {
   saveProductAction,
   deleteProductAction,
@@ -140,7 +141,7 @@ export default function DashboardClient({ initialDb }: DashboardClientProps) {
         if (res.ok) {
           const data = await res.json();
           if (data.success && Array.isArray(data.products)) {
-            setDb(prev => ({ ...prev, products: data.products }));
+            setDb(prev => ({ ...prev, products: getMergedClientProducts(data.products, prev.products) }));
             fetchDbStatus();
           }
         }
@@ -382,7 +383,7 @@ export default function DashboardClient({ initialDb }: DashboardClientProps) {
         nextProducts.unshift(res.product);
       }
       syncLocalState({ products: nextProducts });
-      saveToLocalStorageProducts(res.product);
+      addLocalAddedProduct(res.product);
       const published = res.product;
       setImportPreviewProduct(null);
       setImportUrl('');
@@ -415,7 +416,7 @@ export default function DashboardClient({ initialDb }: DashboardClientProps) {
         nextProducts.unshift(res.product);
       }
       syncLocalState({ products: nextProducts });
-      saveToLocalStorageProducts(res.product);
+      addLocalAddedProduct(res.product);
       setEditingProduct(null);
       setIsAddingNew(false);
       setSuccessModalProduct(res.product);
@@ -428,6 +429,9 @@ export default function DashboardClient({ initialDb }: DashboardClientProps) {
   const handleConfirmDeleteProduct = async () => {
     if (!deleteModalProduct) return;
     setIsSubmitting(true);
+
+    removeLocalAddedProduct(deleteModalProduct.id);
+    if (deleteModalProduct.name) removeLocalAddedProduct(deleteModalProduct.name);
 
     const res = await deleteProductAction(deleteModalProduct.id);
     setIsSubmitting(false);
