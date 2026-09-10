@@ -420,9 +420,9 @@ export async function bulkProductAction(action: 'archive' | 'delete' | 'status' 
     }
   }
 
-  revalidatePath('/', 'layout');
-  revalidatePath('/shop');
-  revalidatePath('/admin/dashboard');
+  safeRevalidatePath('/', 'layout');
+  safeRevalidatePath('/shop');
+  safeRevalidatePath('/admin/dashboard');
 
   return { success: true, count };
 }

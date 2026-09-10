@@ -482,6 +482,15 @@ export default function DashboardClient({ initialDb }: DashboardClientProps) {
       if (!confirm(`Are you sure you want to delete ${selectedProductIds.length} selected products?`)) return;
     }
 
+    // Clean up local storage client cache for deleted or archived products immediately
+    if (action === 'delete' || action === 'archive') {
+      selectedProductIds.forEach(id => {
+        removeLocalAddedProduct(id);
+        const p = db.products.find(prod => prod.id === id);
+        if (p && p.name) removeLocalAddedProduct(p.name);
+      });
+    }
+
     setIsSubmitting(true);
     const res = await bulkProductAction(action, selectedProductIds, payload);
     setIsSubmitting(false);
