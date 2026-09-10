@@ -14,9 +14,9 @@ export default async function ProductPage({ params }: PageProps) {
   const { id } = await params;
   const product = await getProductById(id);
 
-  if (!product || product.status === 'ARCHIVED') {
+  if (product && product.status === 'ARCHIVED') {
     notFound();
   }
 
-  return <ProductDetailsClient product={product} />;
+  return <ProductDetailsClient id={id} initialProduct={product} />;
 }

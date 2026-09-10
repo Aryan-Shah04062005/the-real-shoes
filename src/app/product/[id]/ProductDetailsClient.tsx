@@ -1,19 +1,117 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Product } from '@/lib/db';
 import { useCart } from '@/context/CartContext';
 import SizeGuideModal from '@/components/SizeGuideModal';
 import { submitReviewAction } from '@/app/actions';
-import { Star, Heart, ShoppingBag, Truck, RotateCcw, ShieldCheck, Plus, Minus, Send, Check, Ruler } from 'lucide-react';
+import { Star, Heart, ShoppingBag, Truck, RotateCcw, ShieldCheck, Plus, Minus, Send, Check, Ruler, ArrowLeft, Loader2 } from 'lucide-react';
 import Link from 'next/link';
 
 interface ProductDetailsClientProps {
-  product: Product;
+  id?: string;
+  initialProduct?: Product | null;
+  product?: Product;
 }
 
-export default function ProductDetailsClient({ product }: ProductDetailsClientProps) {
+export default function ProductDetailsClient({ id, initialProduct, product: productProp }: ProductDetailsClientProps) {
   const { addToCart, wishlist, addToWishlist, removeFromWishlist, setSizeGuideOpen } = useCart();
+
+  const [product, setProduct] = useState<Product | null>(initialProduct || productProp || null);
+  const [loading, setLoading] = useState<boolean>(!initialProduct && !productProp);
+  const [notFoundState, setNotFoundState] = useState<boolean>(false);
+
+  useEffect(() => {
+    if (product) {
+      setLoading(false);
+      return;
+    }
+
+    const fetchProductClient = async () => {
+      try {
+        setLoading(true);
+        // 1. Check localStorage first
+        const localData = localStorage.getItem('the_real_shoes_added_products');
+        if (localData) {
+          try {
+            const addedProds: Product[] = JSON.parse(localData);
+            const targetId = (id || '').toLowerCase();
+            const foundInLocal = addedProds.find(p => {
+              if (!p) return false;
+              const pIdLower = (p.id || '').toLowerCase();
+              const pSkuLower = (p.sku || '').toLowerCase();
+              const pNameLower = (p.name || '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+              return p.id === id || pIdLower === targetId || pSkuLower === targetId || pNameLower === targetId || (p.sourceProductId && p.sourceProductId.toLowerCase() === targetId);
+            });
+            if (foundInLocal) {
+              setProduct(foundInLocal);
+              setLoading(false);
+              return;
+            }
+          } catch (e) {
+            console.error('Error parsing localStorage products:', e);
+          }
+        }
+
+        // 2. Fetch from API
+        const res = await fetch(`/api/products?t=${Date.now()}`, { cache: 'no-store' });
+        if (res.ok) {
+          const list: Product[] = await res.json();
+          const targetId = (id || '').toLowerCase();
+          const foundInApi = list.find(p => {
+            if (!p) return false;
+            const pIdLower = (p.id || '').toLowerCase();
+            const pSkuLower = (p.sku || '').toLowerCase();
+            const pNameLower = (p.name || '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+            return p.id === id || pIdLower === targetId || pSkuLower === targetId || pNameLower === targetId || (p.sourceProductId && p.sourceProductId.toLowerCase() === targetId);
+          });
+
+          if (foundInApi) {
+            setProduct(foundInApi);
+            setLoading(false);
+            return;
+          }
+        }
+      } catch (err) {
+        console.error('Error fetching product client side:', err);
+      } finally {
+        setLoading(false);
+      }
+
+      setNotFoundState(true);
+    };
+
+    fetchProductClient();
+  }, [id, product]);
+
+  if (loading) {
+    return (
+      <div className="min-h-[60vh] flex flex-col items-center justify-center text-center px-4">
+        <Loader2 className="h-10 w-10 text-royal-blue animate-spin mb-4" />
+        <p className="text-sm text-slate-400 font-mono uppercase tracking-wider">Loading product details...</p>
+      </div>
+    );
+  }
+
+  if (!product) {
+    return (
+      <div className="min-h-[60vh] flex flex-col items-center justify-center text-center px-4 py-20">
+        <div className="w-16 h-16 rounded-full bg-slate-900 border border-slate-800 flex items-center justify-center mb-6">
+          <ArrowLeft className="w-8 h-8 text-slate-400" />
+        </div>
+        <h1 className="text-2xl font-black text-white uppercase tracking-wider mb-2">Product Not Found</h1>
+        <p className="text-sm text-slate-400 max-w-md mb-8">
+          The shoe you are looking for may have been updated, moved, or is currently unavailable.
+        </p>
+        <Link
+          href="/shop"
+          className="rounded-xl bg-royal-blue px-8 py-3.5 text-xs font-bold uppercase tracking-wider text-white hover:bg-royal-blue-hover transition-colors shadow-lg shadow-royal-blue/20"
+        >
+          Explore All Shoes in Shop
+        </Link>
+      </div>
+    );
+  }
 
   // Product Gallery Images
   const galleryImages = (product.images && product.images.length > 0)
@@ -23,8 +121,8 @@ export default function ProductDetailsClient({ product }: ProductDetailsClientPr
   const [activeImageIndex, setActiveImageIndex] = useState<number>(0);
 
   // Active configurations
-  const [selectedSize, setSelectedSize] = useState<number>(product.availableSizes[0] || 8);
-  const [selectedColor, setSelectedColor] = useState(product.availableColors[0] || { name: 'Royal Blue', hex: '#0a58ca', threeColor: '#0a58ca' });
+  const [selectedSize, setSelectedSize] = useState<number>(product.availableSizes?.[0] || 8);
+  const [selectedColor, setSelectedColor] = useState(product.availableColors?.[0] || { name: 'Royal Blue', hex: '#0a58ca', threeColor: '#0a58ca' });
   const [quantity, setQuantity] = useState<number>(1);
   const [activeTab, setActiveTab] = useState<'desc' | 'specs' | 'reviews' | 'policies'>('desc');
 

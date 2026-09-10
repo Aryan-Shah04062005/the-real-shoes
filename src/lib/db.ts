@@ -206,22 +206,28 @@ export const readDB = (): DatabaseSchema => {
     console.error('Error reading /tmp/db.json:', err);
   }
 
-  if (primaryData && tmpData) {
-    dbData = tmpMtime > primaryMtime ? tmpData : primaryData;
-  } else {
-    dbData = primaryData || tmpData;
-  }
-
   const initial = getInitialData();
+  const productMap = new Map<string, Product>();
 
-  if (!dbData) {
-    dbData = initial;
-  } else {
-    if (!dbData.products) dbData.products = [];
-    if (!dbData.websiteContent) dbData.websiteContent = initial.websiteContent;
-    if (!dbData.customers) dbData.customers = initial.customers;
-    if (!dbData.orders) dbData.orders = initial.orders;
+  // Merge products from initial, primary, and tmp data so no added product is lost
+  (initial.products || []).forEach(p => { if (p && p.id) productMap.set(p.id, p); });
+  if (primaryData?.products) {
+    primaryData.products.forEach(p => { if (p && p.id) productMap.set(p.id, p); });
   }
+  if (tmpData?.products) {
+    tmpData.products.forEach(p => { if (p && p.id) productMap.set(p.id, p); });
+  }
+
+  const mergedProducts = Array.from(productMap.values());
+  const baseData = (tmpMtime > primaryMtime ? tmpData : primaryData) || primaryData || tmpData || initial;
+
+  dbData = {
+    ...baseData,
+    products: mergedProducts,
+    orders: baseData.orders || initial.orders || [],
+    customers: baseData.customers || initial.customers || [],
+    websiteContent: baseData.websiteContent || initial.websiteContent
+  };
 
   inMemoryDbCache = dbData;
   return dbData;

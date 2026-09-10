@@ -342,6 +342,25 @@ export default function DashboardClient({ initialDb }: DashboardClientProps) {
     }
   };
 
+  const saveToLocalStorageProducts = (prod: Product) => {
+    try {
+      const existingStr = localStorage.getItem('the_real_shoes_added_products');
+      let existingList: Product[] = [];
+      if (existingStr) {
+        existingList = JSON.parse(existingStr);
+      }
+      const idx = existingList.findIndex(p => p.id === prod.id);
+      if (idx > -1) {
+        existingList[idx] = prod;
+      } else {
+        existingList.unshift(prod);
+      }
+      localStorage.setItem('the_real_shoes_added_products', JSON.stringify(existingList));
+    } catch (e) {
+      console.error('Error saving to local storage:', e);
+    }
+  };
+
   // Publish imported product from preview modal
   const handlePublishImportPreview = async () => {
     if (!importPreviewProduct) return;
@@ -363,6 +382,7 @@ export default function DashboardClient({ initialDb }: DashboardClientProps) {
         nextProducts.unshift(res.product);
       }
       syncLocalState({ products: nextProducts });
+      saveToLocalStorageProducts(res.product);
       const published = res.product;
       setImportPreviewProduct(null);
       setImportUrl('');
@@ -395,6 +415,7 @@ export default function DashboardClient({ initialDb }: DashboardClientProps) {
         nextProducts.unshift(res.product);
       }
       syncLocalState({ products: nextProducts });
+      saveToLocalStorageProducts(res.product);
       setEditingProduct(null);
       setIsAddingNew(false);
       setSuccessModalProduct(res.product);
