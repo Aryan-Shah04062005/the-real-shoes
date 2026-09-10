@@ -1,6 +1,45 @@
 {
   "products": [
     {
+      "id": "test-del-1789052299685",
+      "name": "Test Resurrection Shoe Single",
+      "brand": "TEST",
+      "category": "Casual",
+      "description": "Testing single delete",
+      "price": 1999,
+      "originalPrice": 2499,
+      "discountPrice": 1999,
+      "discountPercentage": 20,
+      "availableSizes": [
+        7,
+        8,
+        9
+      ],
+      "availableColors": [
+        {
+          "name": "Black",
+          "hex": "#000000",
+          "threeColor": "#000000"
+        }
+      ],
+      "material": "Leather",
+      "gender": "Unisex",
+      "stock": 5,
+      "sku": "TR-TEST-1",
+      "rating": 5,
+      "reviews": [],
+      "tags": [],
+      "images": [
+        "https://example.com/shoe.jpg"
+      ],
+      "mainImage": "https://example.com/shoe.jpg",
+      "isNewArrival": true,
+      "isBestSeller": false,
+      "isSale": false,
+      "status": "ACTIVE",
+      "updatedAt": "2026-09-10T14:58:19.685Z"
+    },
+    {
       "id": "puma-smashic-comfort-casual-sneakers-5d13",
       "name": "Puma Smashic Comfort Casual Sneakers",
       "brand": "Puma",
