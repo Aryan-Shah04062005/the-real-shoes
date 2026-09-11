@@ -397,9 +397,12 @@ async function isMongoDBConnected(): Promise<boolean> {
 
 // Seed helper if database is fresh
 async function seedMongoDBIfNeeded() {
-  const count = await ProductModel.countDocuments();
-  if (count === 0) {
-    console.log('MongoDB is empty. Seeding with default product sets and CMS structures...');
+  const contentCount = await WebsiteContentModel.countDocuments();
+  const productCount = await ProductModel.countDocuments();
+
+  // Only seed on initial database setup, never re-seed when admin clears inventory
+  if (contentCount === 0 && productCount === 0) {
+    console.log('MongoDB is empty. Seeding initial CMS structures and default product sets...');
     const initial = getInitialData();
     
     // Insert products
