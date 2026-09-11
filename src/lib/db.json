@@ -1,6 +1,47 @@
 {
   "products": [
     {
+      "id": "test-del-1789115307350",
+      "name": "Test Deletion Sneaker",
+      "brand": "TEST_BRAND",
+      "category": "Running",
+      "description": "Test product for deletion verification",
+      "price": 4999,
+      "originalPrice": 7999,
+      "discountPrice": 4999,
+      "discountPercentage": 37,
+      "availableSizes": [
+        7,
+        8,
+        9
+      ],
+      "availableColors": [
+        {
+          "name": "Black",
+          "hex": "#000000",
+          "threeColor": "#000000"
+        }
+      ],
+      "material": "Mesh",
+      "gender": "Unisex",
+      "stock": 20,
+      "sku": "SKU-test-del-1789115307350",
+      "rating": 4.5,
+      "reviews": [],
+      "tags": [
+        "test"
+      ],
+      "isNewArrival": true,
+      "isBestSeller": false,
+      "isSale": false,
+      "images": [
+        "https://example.com/test.jpg"
+      ],
+      "mainImage": "https://example.com/test.jpg",
+      "status": "ACTIVE",
+      "updatedAt": "2026-09-11T08:28:27.350Z"
+    },
+    {
       "id": "puma-smashic-comfort-casual-sneakers-5d13",
       "name": "Puma Smashic Comfort Casual Sneakers",
       "brand": "Puma",
@@ -738,7 +779,11 @@
     "bulk-2-1789115071371",
     "bulk-test-bulk-2-1789115071371",
     "bulk-3-1789115071371",
-    "bulk-test-bulk-3-1789115071371"
+    "bulk-test-bulk-3-1789115071371",
+    "test-del-1789115321761",
+    "bulk-1-1789115321768",
+    "bulk-2-1789115321768",
+    "bulk-3-1789115321768"
   ],
   "coupons": [
     {

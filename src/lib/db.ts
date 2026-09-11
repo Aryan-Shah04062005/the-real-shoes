@@ -222,6 +222,7 @@ export const readDB = (): DatabaseSchema => {
     ...(initial.deletedProductIds || []),
     ...(primaryData?.deletedProductIds || []),
     ...(tmpData?.deletedProductIds || []),
+    ...(inMemoryDbCache?.deletedProductIds || []),
     ...diskDeletedIds
   ]);
 
@@ -241,12 +242,13 @@ export const readDB = (): DatabaseSchema => {
     rawProducts = initial.products || [];
   }
 
-  // Filter out any deleted products by ID, lowercased ID, or slug
+  // Filter out any deleted or archived products by ID, lowercased ID, or name
   const activeProducts = rawProducts.filter(p => {
     if (!p || !p.id) return false;
+    if (p.status === 'ARCHIVED' || p.status === 'HIDDEN' || p.status === 'DRAFT') return false;
     const pIdLower = p.id.toLowerCase();
-    const pSlug = (p.name || '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
-    return !deletedSet.has(p.id) && !deletedSet.has(pIdLower) && !deletedSet.has(pSlug);
+    const pNameLower = (p.name || '').toLowerCase().trim();
+    return !deletedSet.has(p.id) && !deletedSet.has(pIdLower) && !deletedSet.has(pNameLower);
   });
 
   const baseData = (tmpMtime > primaryMtime ? tmpData : primaryData) || primaryData || tmpData || initial;
@@ -517,10 +519,13 @@ export async function saveProduct(productData: Product): Promise<{ success: bool
     } else {
       const db = readDB();
       const lowerId = productData.id.toLowerCase();
+      const nameLower = (productData.name || '').toLowerCase().trim();
 
       // Ensure re-saved product is un-deleted
       if (db.deletedProductIds) {
-        db.deletedProductIds = db.deletedProductIds.filter(id => id !== productData.id && id !== lowerId);
+        db.deletedProductIds = db.deletedProductIds.filter(
+          id => id !== productData.id && id !== lowerId && id !== nameLower
+        );
       }
 
       const index = db.products.findIndex(p => p.id === productData.id || p.id.toLowerCase() === lowerId);
@@ -612,10 +617,6 @@ export async function deleteProduct(idOrName: string): Promise<{ success: boolea
       const lowerId = targetProd.id.toLowerCase();
       if (!db.deletedProductIds.includes(lowerId)) {
         db.deletedProductIds.push(lowerId);
-      }
-      const slug = (targetProd.name || '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
-      if (slug && !db.deletedProductIds.includes(slug)) {
-        db.deletedProductIds.push(slug);
       }
       db.products.splice(idx, 1);
     }

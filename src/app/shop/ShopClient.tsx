@@ -55,10 +55,10 @@ export default function ShopClient({ initialProducts }: ShopClientProps) {
   }, [searchParams]);
 
   // Live products state synced with server
-  const [productsList, setProductsList] = useState<Product[]>(() => getMergedClientProducts([], initialProducts || []));
+  const [productsList, setProductsList] = useState<Product[]>(() => initialProducts || []);
 
   useEffect(() => {
-    setProductsList(getMergedClientProducts([], initialProducts || []));
+    setProductsList(initialProducts || []);
   }, [initialProducts]);
 
   // Real-time live product sync across devices (e.g. phone <-> desktop)
@@ -69,7 +69,7 @@ export default function ShopClient({ initialProducts }: ShopClientProps) {
         if (res.ok) {
           const data = await res.json();
           if (data.success && Array.isArray(data.products)) {
-            setProductsList(getMergedClientProducts(data.products, initialProducts || []));
+            setProductsList(data.products);
           }
         }
       } catch (e) {

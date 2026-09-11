@@ -21,10 +21,10 @@ interface HomeClientProps {
 }
 
 export default function HomeClient({ initialProducts }: HomeClientProps) {
-  const [productsList, setProductsList] = useState<Product[]>(() => getMergedClientProducts([], initialProducts || []));
+  const [productsList, setProductsList] = useState<Product[]>(() => initialProducts || []);
 
   useEffect(() => {
-    setProductsList(getMergedClientProducts([], initialProducts || []));
+    setProductsList(initialProducts || []);
   }, [initialProducts]);
 
   // Real-time live product sync across devices
@@ -35,7 +35,7 @@ export default function HomeClient({ initialProducts }: HomeClientProps) {
         if (res.ok) {
           const data = await res.json();
           if (data.success && Array.isArray(data.products)) {
-            setProductsList(getMergedClientProducts(data.products, initialProducts || []));
+            setProductsList(data.products);
           }
         }
       } catch (e) {
