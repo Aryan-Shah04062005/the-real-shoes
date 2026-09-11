@@ -236,7 +236,9 @@ export default async function OrderConfirmationPage({ params }: PageProps) {
                   <span className="block text-[9px] font-bold uppercase tracking-widest text-slate-500">Payment Option</span>
                   <span className="flex items-center gap-1.5 text-slate-400">
                     <Landmark className="h-3.5 w-3.5 text-royal-blue" />
-                    Cash on Delivery
+                    {order.paymentMethod === 'UPI' ? 'UPI (GPay / PhonePe / Paytm)' :
+                     order.paymentMethod === 'CARD' ? 'Credit / Debit Card' :
+                     order.paymentMethod === 'NETBANKING' ? 'Net Banking' : 'Cash on Delivery'}
                   </span>
                 </div>
               </div>

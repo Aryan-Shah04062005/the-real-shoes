@@ -1,17 +1,26 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect, Suspense } from 'react';
+import { useSearchParams } from 'next/navigation';
 import { trackOrderAction } from '@/app/actions';
 import { Order } from '@/lib/db';
 import { Search, Package, CheckCircle2, Truck, Clock, MapPin, AlertCircle, ArrowLeft } from 'lucide-react';
 import Link from 'next/link';
 
-export default function TrackOrderPage() {
+function TrackOrderContent() {
+  const searchParams = useSearchParams();
   const [orderId, setOrderId] = useState('');
   const [emailOrPhone, setEmailOrPhone] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [trackedOrder, setTrackedOrder] = useState<Order | null>(null);
+
+  useEffect(() => {
+    const queryId = searchParams.get('id') || searchParams.get('orderId');
+    const queryContact = searchParams.get('email') || searchParams.get('phone');
+    if (queryId) setOrderId(queryId);
+    if (queryContact) setEmailOrPhone(queryContact);
+  }, [searchParams]);
 
   const handleTrack = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -193,5 +202,17 @@ export default function TrackOrderPage() {
         )}
       </div>
     </div>
+  );
+}
+
+export default function TrackOrderPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen bg-premium-black flex items-center justify-center text-slate-400">
+        Loading order tracker...
+      </div>
+    }>
+      <TrackOrderContent />
+    </Suspense>
   );
 }

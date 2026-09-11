@@ -61,7 +61,7 @@ export async function loginAdminAction(formData: FormData) {
   const success = await loginAdmin(username, password);
   if (success) {
     await addAuditLog(username || 'Admin', 'Admin Login', 'Dashboard Session', 'Successfully logged in to Admin Dashboard');
-    revalidatePath('/', 'layout');
+    safeRevalidatePath('/', 'layout');
     return { success: true };
   }
   return { success: false, error: 'Invalid username or password.' };
@@ -70,7 +70,7 @@ export async function loginAdminAction(formData: FormData) {
 export async function logoutAdminAction() {
   await addAuditLog('Admin', 'Admin Logout', 'Dashboard Session', 'Logged out of Admin Dashboard');
   await logoutAdmin();
-  revalidatePath('/', 'layout');
+  safeRevalidatePath('/', 'layout');
   return { success: true };
 }
 
@@ -209,7 +209,7 @@ export async function placeOrderAction(customerData: {
       });
     }
     
-    revalidatePath('/', 'layout');
+    safeRevalidatePath('/', 'layout');
     
     return { success: true, orderId };
   } catch (error: any) {
@@ -356,9 +356,9 @@ export async function archiveProductAction(productId: string) {
 
   await addAuditLog('Admin', 'Archived Product', product.name, `ID: ${productId}`);
 
-  revalidatePath('/', 'layout');
-  revalidatePath('/shop');
-  revalidatePath('/admin/dashboard');
+  safeRevalidatePath('/', 'layout');
+  safeRevalidatePath('/shop');
+  safeRevalidatePath('/admin/dashboard');
   return { success: true };
 }
 
@@ -372,9 +372,9 @@ export async function restoreProductAction(productId: string) {
 
   await addAuditLog('Admin', 'Restored Product', product.name, `ID: ${productId}`);
 
-  revalidatePath('/', 'layout');
-  revalidatePath('/shop');
-  revalidatePath('/admin/dashboard');
+  safeRevalidatePath('/', 'layout');
+  safeRevalidatePath('/shop');
+  safeRevalidatePath('/admin/dashboard');
   return { success: true };
 }
 
@@ -442,7 +442,7 @@ export async function updateOrderStatusAction(orderId: string, status: Order['st
   order.status = status;
   await saveOrder(order);
   
-  revalidatePath('/', 'layout');
+  safeRevalidatePath('/', 'layout');
   return { success: true };
 }
 
@@ -451,7 +451,7 @@ export async function deleteOrderAction(orderId: string) {
   const success = await deleteOrder(orderId);
   if (!success) return { success: false, error: 'Order not found.' };
   
-  revalidatePath('/', 'layout');
+  safeRevalidatePath('/', 'layout');
   return { success: true };
 }
 
@@ -464,7 +464,7 @@ export async function adjustStockAction(productId: string, quantityChange: numbe
   product.stock = Math.max(0, product.stock + quantityChange);
   await saveProduct(product);
   
-  revalidatePath('/', 'layout');
+  safeRevalidatePath('/', 'layout');
   return { success: true };
 }
 
@@ -479,7 +479,7 @@ export async function updateWebsiteContentAction(contentData: Partial<WebsiteCon
   } as WebsiteContent;
   
   await saveWebsiteContent(updated);
-  revalidatePath('/', 'layout');
+  safeRevalidatePath('/', 'layout');
   return { success: true };
 }
 
@@ -502,7 +502,7 @@ export async function addProductReviewAction(productId: string, review: { name: 
   product.rating = parseFloat((totalRating / product.reviews.length).toFixed(1));
   
   await saveProduct(product);
-  revalidatePath('/', 'layout');
+  safeRevalidatePath('/', 'layout');
   return { success: true };
 }
 
@@ -1079,7 +1079,7 @@ export async function saveCouponAction(couponData: any) {
   await requireAdmin();
   const { saveCoupon } = await import('@/lib/db');
   await saveCoupon(couponData);
-  revalidatePath('/', 'layout');
+  safeRevalidatePath('/', 'layout');
   return { success: true };
 }
 
@@ -1087,7 +1087,7 @@ export async function deleteCouponAction(code: string) {
   await requireAdmin();
   const { deleteCoupon } = await import('@/lib/db');
   const success = await deleteCoupon(code);
-  revalidatePath('/', 'layout');
+  safeRevalidatePath('/', 'layout');
   return { success };
 }
 
@@ -1129,8 +1129,8 @@ export async function submitReviewAction(productId: string, reviewData: { name: 
     return { success: false, error: 'Product not found.' };
   }
 
-  revalidatePath('/product/' + productId);
-  revalidatePath('/shop');
+  safeRevalidatePath('/product/' + productId);
+  safeRevalidatePath('/shop');
   return { success: true, product: updatedProduct };
 }
 
