@@ -1,45 +1,6 @@
 {
   "products": [
     {
-      "id": "test-del-1789052419580",
-      "name": "Test Resurrection Shoe Single",
-      "brand": "TEST",
-      "category": "Casual",
-      "description": "Testing single delete",
-      "price": 1999,
-      "originalPrice": 2499,
-      "discountPrice": 1999,
-      "discountPercentage": 20,
-      "availableSizes": [
-        7,
-        8,
-        9
-      ],
-      "availableColors": [
-        {
-          "name": "Black",
-          "hex": "#000000",
-          "threeColor": "#000000"
-        }
-      ],
-      "material": "Leather",
-      "gender": "Unisex",
-      "stock": 5,
-      "sku": "TR-TEST-1",
-      "rating": 5,
-      "reviews": [],
-      "tags": [],
-      "images": [
-        "https://example.com/shoe.jpg"
-      ],
-      "mainImage": "https://example.com/shoe.jpg",
-      "isNewArrival": true,
-      "isBestSeller": false,
-      "isSale": false,
-      "status": "ACTIVE",
-      "updatedAt": "2026-09-10T15:00:19.580Z"
-    },
-    {
       "id": "puma-smashic-comfort-casual-sneakers-5d13",
       "name": "Puma Smashic Comfort Casual Sneakers",
       "brand": "Puma",
@@ -130,10 +91,19 @@
       ],
       "material": "Breathable Mesh & Lightweight EVA",
       "gender": "Men",
-      "stock": 15,
+      "stock": 13,
       "sku": "TR-IMP-110-REB",
-      "rating": 4.7,
-      "reviews": [],
+      "rating": 5,
+      "reviews": [
+        {
+          "id": "rev-1789114031628",
+          "name": "E2E Reviewer",
+          "rating": 5,
+          "comment": "Awesome quality and lightning fast delivery!",
+          "date": "2026-09-11",
+          "verifiedPurchase": true
+        }
+      ],
       "tags": [
         "Reebok",
         "Running",
@@ -151,7 +121,14 @@
       "status": "ACTIVE",
       "sourcePlatform": "FLIPKART",
       "sourceProductId": "itm1afa34e955059",
-      "updatedAt": "2026-09-10T18:30:00.000Z"
+      "updatedAt": "2026-09-11T08:07:11.628Z",
+      "sizeStock": {
+        "7": 1,
+        "8": 3,
+        "9": 3,
+        "10": 3,
+        "11": 3
+      }
     },
     {
       "id": "nike-air-apex-quantum-01",
@@ -518,7 +495,78 @@
       "isSale": true
     }
   ],
-  "orders": [],
+  "orders": [
+    {
+      "id": "TR-2026-48708",
+      "customerName": "E2E Test Customer",
+      "email": "e2etest@thereal.com",
+      "phone": "9876543210",
+      "address": {
+        "flat": "Flat 101, Test Tower",
+        "street": "Main Street",
+        "city": "Mumbai",
+        "state": "Maharashtra",
+        "zip": "400001",
+        "country": "India"
+      },
+      "items": [
+        {
+          "productId": "reebok-voyager-m-running-shoes-men",
+          "name": "Reebok Voyager M Running Shoes",
+          "brand": "Reebok",
+          "size": 7,
+          "color": "Royal Blue",
+          "colorHex": "#0a58ca",
+          "quantity": 1,
+          "price": 1310
+        }
+      ],
+      "subtotal": 1310,
+      "discount": 500,
+      "couponCode": "REAL10",
+      "deliveryCharges": 99,
+      "total": 909,
+      "paymentMethod": "UPI",
+      "paymentStatus": "Paid",
+      "status": "Confirmed",
+      "date": "2026-09-11"
+    },
+    {
+      "id": "TR-2026-94900",
+      "customerName": "E2E Test Customer",
+      "email": "e2etest@thereal.com",
+      "phone": "9876543210",
+      "address": {
+        "flat": "Flat 101, Test Tower",
+        "street": "Main Street",
+        "city": "Mumbai",
+        "state": "Maharashtra",
+        "zip": "400001",
+        "country": "India"
+      },
+      "items": [
+        {
+          "productId": "reebok-voyager-m-running-shoes-men",
+          "name": "Reebok Voyager M Running Shoes",
+          "brand": "Reebok",
+          "size": 7,
+          "color": "Royal Blue",
+          "colorHex": "#0a58ca",
+          "quantity": 1,
+          "price": 1310
+        }
+      ],
+      "subtotal": 1310,
+      "discount": 500,
+      "couponCode": "REAL10",
+      "deliveryCharges": 99,
+      "total": 909,
+      "paymentMethod": "UPI",
+      "paymentStatus": "Paid",
+      "status": "Confirmed",
+      "date": "2026-09-11"
+    }
+  ],
   "customers": [
     {
       "name": "Aryan Shah",
@@ -535,6 +583,22 @@
       "totalOrders": 0,
       "totalSpending": 0,
       "registrationDate": "2026-07-27"
+    },
+    {
+      "name": "E2E Test Customer",
+      "email": "e2etest@thereal.com",
+      "phone": "9876543210",
+      "address": {
+        "flat": "Flat 101, Test Tower",
+        "street": "Main Street",
+        "city": "Mumbai",
+        "state": "Maharashtra",
+        "zip": "400001",
+        "country": "India"
+      },
+      "totalOrders": 2,
+      "totalSpending": 1818,
+      "registrationDate": "2026-09-11"
     }
   ],
   "websiteContent": {
@@ -667,5 +731,21 @@
     "bulk-test-shoe-2",
     "bulk-3-1789052288374",
     "bulk-test-shoe-3"
+  ],
+  "coupons": [
+    {
+      "code": "REAL10",
+      "discountType": "percentage",
+      "discountValue": 10,
+      "minOrderValue": 1000,
+      "isActive": true
+    },
+    {
+      "code": "WELCOME100",
+      "discountType": "fixed",
+      "discountValue": 500,
+      "minOrderValue": 2000,
+      "isActive": true
+    }
   ]
 }
