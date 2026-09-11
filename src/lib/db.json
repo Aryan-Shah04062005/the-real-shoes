@@ -659,6 +659,14 @@
   },
   "auditLogs": [
     {
+      "id": "log-1789116079743-lsd3",
+      "admin": "Admin",
+      "action": "Bulk DELETE",
+      "target": "3 products",
+      "details": "IDs: sa-bulk-1-1789116079731, sa-bulk-2-1789116079731, sa-bulk-3-1789116079731",
+      "timestamp": "2026-09-11T08:41:19.743Z"
+    },
+    {
       "id": "log-1789115931115-fm43",
       "admin": "Admin",
       "action": "Bulk DELETE",
@@ -807,7 +815,10 @@
     "test-outofstock-1789115922830",
     "sa-bulk-1-1789115931086",
     "sa-bulk-2-1789115931086",
-    "sa-bulk-3-1789115931086"
+    "sa-bulk-3-1789115931086",
+    "sa-bulk-1-1789116079731",
+    "sa-bulk-2-1789116079731",
+    "sa-bulk-3-1789116079731"
   ],
   "coupons": [
     {

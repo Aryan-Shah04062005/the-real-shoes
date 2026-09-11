@@ -141,7 +141,7 @@ export default function DashboardClient({ initialDb }: DashboardClientProps) {
         if (res.ok) {
           const data = await res.json();
           if (data.success && Array.isArray(data.products)) {
-            setDb(prev => ({ ...prev, products: getMergedClientProducts(data.products, prev.products) }));
+            setDb(prev => ({ ...prev, products: data.products }));
             fetchDbStatus();
           }
         }
