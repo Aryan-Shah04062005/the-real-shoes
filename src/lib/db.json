@@ -1,47 +1,6 @@
 {
   "products": [
     {
-      "id": "test-del-1789115307350",
-      "name": "Test Deletion Sneaker",
-      "brand": "TEST_BRAND",
-      "category": "Running",
-      "description": "Test product for deletion verification",
-      "price": 4999,
-      "originalPrice": 7999,
-      "discountPrice": 4999,
-      "discountPercentage": 37,
-      "availableSizes": [
-        7,
-        8,
-        9
-      ],
-      "availableColors": [
-        {
-          "name": "Black",
-          "hex": "#000000",
-          "threeColor": "#000000"
-        }
-      ],
-      "material": "Mesh",
-      "gender": "Unisex",
-      "stock": 20,
-      "sku": "SKU-test-del-1789115307350",
-      "rating": 4.5,
-      "reviews": [],
-      "tags": [
-        "test"
-      ],
-      "isNewArrival": true,
-      "isBestSeller": false,
-      "isSale": false,
-      "images": [
-        "https://example.com/test.jpg"
-      ],
-      "mainImage": "https://example.com/test.jpg",
-      "status": "ACTIVE",
-      "updatedAt": "2026-09-11T08:28:27.350Z"
-    },
-    {
       "id": "puma-smashic-comfort-casual-sneakers-5d13",
       "name": "Puma Smashic Comfort Casual Sneakers",
       "brand": "Puma",
@@ -474,66 +433,6 @@
       "status": "ACTIVE",
       "sourcePlatform": "THE_REAL",
       "updatedAt": "2026-09-10T15:30:00.000Z"
-    },
-    {
-      "id": "puma-smashic-comfort-casual-sneakers-kj8a",
-      "name": "Puma Smashic Comfort Casual Sneakers",
-      "brand": "Puma",
-      "category": "Casual",
-      "description": "Step into premium sizing and absolute comfort with the Puma Smashic Comfort Casual Sneakers. Reimagined with modern responsive cushioning, lightweight dynamic overlays, and a clean aerodynamic layout designed to power your day-to-day pacing.",
-      "price": 2000,
-      "originalPrice": 2500,
-      "discountPrice": 2000,
-      "discountPercentage": 20,
-      "availableSizes": [
-        7,
-        8,
-        9,
-        10,
-        11
-      ],
-      "availableColors": [
-        {
-          "name": "Royal Blue",
-          "hex": "#0a58ca",
-          "threeColor": "#0a58ca"
-        },
-        {
-          "name": "Silver Shadow",
-          "hex": "#c0c0c0",
-          "threeColor": "#c0c0c0"
-        },
-        {
-          "name": "Carbon Black",
-          "hex": "#111827",
-          "threeColor": "#111827"
-        }
-      ],
-      "material": "Engineered Synthetic Blend & Responsive Sole",
-      "gender": "Unisex",
-      "stock": 20,
-      "sku": "TR-IMP-262-PUM",
-      "rating": 4.8,
-      "reviews": [
-        {
-          "name": "Aryan Shah",
-          "rating": 5,
-          "comment": "Imported product verification: Elite build quality and responsive sole profile.",
-          "date": "2026-07-27"
-        }
-      ],
-      "tags": [
-        "Imported",
-        "Puma",
-        "Casual"
-      ],
-      "images": [
-        "https://m.media-amazon.com/images/I/41396Lbx3lL._SL1200_.jpg"
-      ],
-      "mainImage": "https://m.media-amazon.com/images/I/41396Lbx3lL._SL1200_.jpg",
-      "isNewArrival": true,
-      "isBestSeller": false,
-      "isSale": true
     }
   ],
   "orders": [
@@ -779,47 +678,7 @@
       "timestamp": "2026-09-10T14:47:13.094Z"
     }
   ],
-  "deletedProductIds": [
-    "test-del-1789052288369",
-    "test-resurrection-shoe-single",
-    "bulk-1-1789052288374",
-    "bulk-test-shoe-1",
-    "bulk-2-1789052288374",
-    "bulk-test-shoe-2",
-    "bulk-3-1789052288374",
-    "bulk-test-shoe-3",
-    "test-del-1789115071364",
-    "test-deletion-sneaker",
-    "bulk-1-1789115071371",
-    "bulk-test-bulk-1-1789115071371",
-    "bulk-2-1789115071371",
-    "bulk-test-bulk-2-1789115071371",
-    "bulk-3-1789115071371",
-    "bulk-test-bulk-3-1789115071371",
-    "test-del-1789115321761",
-    "bulk-1-1789115321768",
-    "bulk-2-1789115321768",
-    "bulk-3-1789115321768",
-    "test-del-1789115582880",
-    "bulk-1-1789115582888",
-    "bulk-2-1789115582888",
-    "bulk-3-1789115582888",
-    "test-del-1789115900266",
-    "bulk-1-1789115900273",
-    "bulk-2-1789115900273",
-    "bulk-3-1789115900273",
-    "test-active-1789115922830",
-    "test-draft-1789115922830",
-    "test-hidden-1789115922830",
-    "test-archived-1789115922830",
-    "test-outofstock-1789115922830",
-    "sa-bulk-1-1789115931086",
-    "sa-bulk-2-1789115931086",
-    "sa-bulk-3-1789115931086",
-    "sa-bulk-1-1789116079731",
-    "sa-bulk-2-1789116079731",
-    "sa-bulk-3-1789116079731"
-  ],
+  "deletedProductIds": [],
   "coupons": [
     {
       "code": "REAL10",
