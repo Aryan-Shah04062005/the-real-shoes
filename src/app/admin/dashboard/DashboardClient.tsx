@@ -437,19 +437,11 @@ export default function DashboardClient({ initialDb }: DashboardClientProps) {
     setIsSubmitting(false);
 
     if (res.success) {
-      if (res.mode === 'archived') {
-        triggerStatus('success', 'Product deleted from storefront. (Safely ARCHIVED in Admin as it was referenced in customer orders).');
-        setDb(prev => ({
-          ...prev,
-          products: prev.products.map(p => p.id === deleteModalProduct.id ? { ...p, status: 'ARCHIVED' } : p)
-        }));
-      } else {
-        triggerStatus('success', 'Product deleted successfully.');
-        setDb(prev => ({
-          ...prev,
-          products: prev.products.filter(p => p.id !== deleteModalProduct.id)
-        }));
-      }
+      triggerStatus('success', 'Product deleted permanently from database.');
+      setDb(prev => ({
+        ...prev,
+        products: prev.products.filter(p => p.id !== deleteModalProduct.id)
+      }));
       setDeleteModalProduct(null);
       setSelectedProductIds(prev => prev.filter(id => id !== deleteModalProduct.id));
     } else {

@@ -443,7 +443,7 @@ export async function getProductsList(): Promise<Product[]> {
   const isMongo = await isMongoDBConnected();
   if (isMongo) {
     await seedMongoDBIfNeeded();
-    products = await ProductModel.find({}).sort({ updatedAt: -1, createdAt: -1 }).lean() as unknown as Product[];
+    products = await ProductModel.find({ status: { $ne: 'ARCHIVED' } }).sort({ updatedAt: -1, createdAt: -1 }).lean() as unknown as Product[];
   } else {
     products = readDB().products;
     products = [...products].sort((a, b) => {
@@ -453,7 +453,10 @@ export async function getProductsList(): Promise<Product[]> {
     });
   }
 
-  return products.filter(p => isValidProductImage(p.mainImage) || (p.images && p.images.some(img => isValidProductImage(img))));
+  return products.filter(p =>
+    (!p.status || p.status === 'ACTIVE' || p.status === 'OUT_OF_STOCK') &&
+    (isValidProductImage(p.mainImage) || (p.images && p.images.some(img => isValidProductImage(img))))
+  );
 }
 
 export async function getProductById(id: string): Promise<Product | null> {
@@ -501,30 +504,37 @@ export async function saveProduct(productData: Product): Promise<{ success: bool
 
     const isMongo = await isMongoDBConnected();
     if (isMongo) {
-      await seedMongoDBIfNeeded();
-      const exists = await ProductModel.findOne({ id: productData.id });
-      if (exists) {
-        await ProductModel.updateOne({ id: productData.id }, productData);
-      } else {
-        await ProductModel.create(productData);
-      }
+      const lowerId = productData.id.toLowerCase();
+      await ProductModel.deleteOne({
+        $or: [
+          { id: productData.id },
+          { id: lowerId }
+        ]
+      });
+
+      await ProductModel.create(productData);
+      return { success: true };
     } else {
       const db = readDB();
-      if (!db.deletedProductIds) db.deletedProductIds = [];
       const lowerId = productData.id.toLowerCase();
-      db.deletedProductIds = db.deletedProductIds.filter(id => id !== productData.id && id !== lowerId);
-      const index = db.products.findIndex(p => p.id === productData.id);
+
+      // Ensure re-saved product is un-deleted
+      if (db.deletedProductIds) {
+        db.deletedProductIds = db.deletedProductIds.filter(id => id !== productData.id && id !== lowerId);
+      }
+
+      const index = db.products.findIndex(p => p.id === productData.id || p.id.toLowerCase() === lowerId);
       if (index !== -1) {
         db.products[index] = productData;
       } else {
         db.products.unshift(productData);
       }
       writeDB(db);
+      return { success: true };
     }
-    return { success: true };
-  } catch (err: any) {
-    console.error('Database saveProduct error:', err);
-    return { success: false, error: err?.message || String(err) };
+  } catch (error: any) {
+    console.error('Error saving product:', error);
+    return { success: false, error: error?.message || 'Database write error' };
   }
 }
 
@@ -550,7 +560,6 @@ export async function getDatabaseStatus(): Promise<{
 }
 
 export async function deleteProduct(idOrName: string): Promise<{ success: boolean; mode: 'deleted' | 'archived' | 'not_found' }> {
-  const orders = await getOrdersList();
   const isMongo = await isMongoDBConnected();
   const targetQuery = idOrName.trim().toLowerCase();
 
@@ -565,18 +574,11 @@ export async function deleteProduct(idOrName: string): Promise<{ success: boolea
 
     if (prods.length === 0) return { success: false, mode: 'not_found' };
 
-    let mode: 'deleted' | 'archived' = 'deleted';
     for (const prod of prods) {
-      const hasOrders = orders.some(o => o.items && o.items.some(i => i.productId === prod.id));
-      if (hasOrders) {
-        await ProductModel.updateOne({ id: prod.id }, { status: 'ARCHIVED', updatedAt: new Date().toISOString() });
-        mode = 'archived';
-      } else {
-        await ProductModel.deleteOne({ id: prod.id });
-      }
+      await ProductModel.deleteOne({ id: prod.id });
     }
 
-    return { success: true, mode };
+    return { success: true, mode: 'deleted' };
   } else {
     const db = readDB();
     if (!db.deletedProductIds) db.deletedProductIds = [];
@@ -593,36 +595,33 @@ export async function deleteProduct(idOrName: string): Promise<{ success: boolea
       }
     });
 
-    if (matchingIndices.length === 0) return { success: false, mode: 'not_found' };
+    if (matchingIndices.length === 0) {
+      if (!db.deletedProductIds.includes(idOrName)) db.deletedProductIds.push(idOrName);
+      if (!db.deletedProductIds.includes(targetQuery)) db.deletedProductIds.push(targetQuery);
+      writeDB(db);
+      return { success: true, mode: 'deleted' };
+    }
 
-    let mode: 'deleted' | 'archived' = 'deleted';
     for (let i = matchingIndices.length - 1; i >= 0; i--) {
       const idx = matchingIndices[i];
       const targetProd = db.products[idx];
-      const hasOrders = orders.some(o => o.items && o.items.some(i => i.productId === targetProd.id));
 
-      if (hasOrders) {
-        targetProd.status = 'ARCHIVED';
-        targetProd.updatedAt = new Date().toISOString();
-        mode = 'archived';
-      } else {
-        if (!db.deletedProductIds.includes(targetProd.id)) {
-          db.deletedProductIds.push(targetProd.id);
-        }
-        const lowerId = targetProd.id.toLowerCase();
-        if (!db.deletedProductIds.includes(lowerId)) {
-          db.deletedProductIds.push(lowerId);
-        }
-        const slug = (targetProd.name || '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
-        if (slug && !db.deletedProductIds.includes(slug)) {
-          db.deletedProductIds.push(slug);
-        }
-        db.products.splice(idx, 1);
+      if (!db.deletedProductIds.includes(targetProd.id)) {
+        db.deletedProductIds.push(targetProd.id);
       }
+      const lowerId = targetProd.id.toLowerCase();
+      if (!db.deletedProductIds.includes(lowerId)) {
+        db.deletedProductIds.push(lowerId);
+      }
+      const slug = (targetProd.name || '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+      if (slug && !db.deletedProductIds.includes(slug)) {
+        db.deletedProductIds.push(slug);
+      }
+      db.products.splice(idx, 1);
     }
 
     writeDB(db);
-    return { success: true, mode };
+    return { success: true, mode: 'deleted' };
   }
 }
 
