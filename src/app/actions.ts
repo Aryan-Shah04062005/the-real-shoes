@@ -380,44 +380,53 @@ export async function restoreProductAction(productId: string) {
 
 export async function bulkProductAction(action: 'archive' | 'delete' | 'status' | 'stock' | 'flag', productIds: string[], payload?: any) {
   await requireAdmin();
-  if (!productIds || productIds.length === 0) return { success: false, error: 'No products selected.' };
+  if (!productIds || !Array.isArray(productIds) || productIds.length === 0) {
+    return { success: false, error: 'No products selected.' };
+  }
 
   let count = 0;
 
   for (const id of productIds) {
-    const product = await getProductById(id);
-    if (!product) continue;
+    if (!id) continue;
 
-    if (action === 'archive') {
-      await archiveProduct(id);
-      await addAuditLog('Admin', 'Bulk Archive', product.name, `ID: ${id}`);
-      count++;
-    } else if (action === 'delete') {
+    if (action === 'delete') {
       const res = await deleteProduct(id);
       if (res.success) {
-        await addAuditLog('Admin', 'Bulk Delete', product.name, `Mode: ${res.mode}`);
         count++;
       }
-    } else if (action === 'status' && payload?.status) {
-      product.status = payload.status;
-      await saveProduct(product);
-      await addAuditLog('Admin', 'Bulk Status Update', product.name, `New Status: ${payload.status}`);
-      count++;
-    } else if (action === 'stock' && payload?.stock !== undefined) {
-      product.stock = Math.max(0, payload.stock);
-      if (product.stock === 0) product.status = 'OUT_OF_STOCK';
-      await saveProduct(product);
-      await addAuditLog('Admin', 'Bulk Stock Update', product.name, `New Stock: ${product.stock}`);
-      count++;
-    } else if (action === 'flag' && payload) {
-      if (payload.isNewArrival !== undefined) product.isNewArrival = payload.isNewArrival;
-      if (payload.isBestSeller !== undefined) product.isBestSeller = payload.isBestSeller;
-      if (payload.isTrending !== undefined) product.isTrending = payload.isTrending;
-      if (payload.isFeatured !== undefined) product.isFeatured = payload.isFeatured;
-      await saveProduct(product);
-      await addAuditLog('Admin', 'Bulk Flag Update', product.name, `Flags updated`);
-      count++;
+    } else {
+      const product = await getProductById(id);
+      if (!product) continue;
+
+      if (action === 'archive') {
+        await archiveProduct(id);
+        await addAuditLog('Admin', 'Bulk Archive', product.name, `ID: ${id}`);
+        count++;
+      } else if (action === 'status' && payload?.status) {
+        product.status = payload.status;
+        await saveProduct(product);
+        await addAuditLog('Admin', 'Bulk Status Update', product.name, `New Status: ${payload.status}`);
+        count++;
+      } else if (action === 'stock' && payload?.stock !== undefined) {
+        product.stock = Math.max(0, payload.stock);
+        if (product.stock === 0) product.status = 'OUT_OF_STOCK';
+        await saveProduct(product);
+        await addAuditLog('Admin', 'Bulk Stock Update', product.name, `New Stock: ${product.stock}`);
+        count++;
+      } else if (action === 'flag' && payload) {
+        if (payload.isNewArrival !== undefined) product.isNewArrival = payload.isNewArrival;
+        if (payload.isBestSeller !== undefined) product.isBestSeller = payload.isBestSeller;
+        if (payload.isTrending !== undefined) product.isTrending = payload.isTrending;
+        if (payload.isFeatured !== undefined) product.isFeatured = payload.isFeatured;
+        await saveProduct(product);
+        await addAuditLog('Admin', 'Bulk Flag Update', product.name, `Flags updated`);
+        count++;
+      }
     }
+  }
+
+  if (count > 0) {
+    await addAuditLog('Admin', `Bulk ${action.toUpperCase()}`, `${count} products`, `IDs: ${productIds.join(', ')}`);
   }
 
   safeRevalidatePath('/', 'layout');

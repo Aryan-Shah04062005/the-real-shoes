@@ -659,6 +659,14 @@
   },
   "auditLogs": [
     {
+      "id": "log-1789115931115-fm43",
+      "admin": "Admin",
+      "action": "Bulk DELETE",
+      "target": "3 products",
+      "details": "IDs: sa-bulk-1-1789115931086, sa-bulk-2-1789115931086, sa-bulk-3-1789115931086",
+      "timestamp": "2026-09-11T08:38:51.115Z"
+    },
+    {
       "id": "log-1789051916137-76lj",
       "admin": "Admin",
       "action": "Bulk Delete",
@@ -787,7 +795,19 @@
     "test-del-1789115582880",
     "bulk-1-1789115582888",
     "bulk-2-1789115582888",
-    "bulk-3-1789115582888"
+    "bulk-3-1789115582888",
+    "test-del-1789115900266",
+    "bulk-1-1789115900273",
+    "bulk-2-1789115900273",
+    "bulk-3-1789115900273",
+    "test-active-1789115922830",
+    "test-draft-1789115922830",
+    "test-hidden-1789115922830",
+    "test-archived-1789115922830",
+    "test-outofstock-1789115922830",
+    "sa-bulk-1-1789115931086",
+    "sa-bulk-2-1789115931086",
+    "sa-bulk-3-1789115931086"
   ],
   "coupons": [
     {

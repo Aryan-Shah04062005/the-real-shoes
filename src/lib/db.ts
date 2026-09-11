@@ -242,10 +242,9 @@ export const readDB = (): DatabaseSchema => {
     rawProducts = initial.products || [];
   }
 
-  // Filter out any deleted or archived products by ID, lowercased ID, or name
-  const activeProducts = rawProducts.filter(p => {
+  // Filter out any deleted products by ID, lowercased ID, or name (retaining all status levels in DB table)
+  const nonDeletedProducts = rawProducts.filter(p => {
     if (!p || !p.id) return false;
-    if (p.status === 'ARCHIVED' || p.status === 'HIDDEN' || p.status === 'DRAFT') return false;
     const pIdLower = p.id.toLowerCase();
     const pNameLower = (p.name || '').toLowerCase().trim();
     return !deletedSet.has(p.id) && !deletedSet.has(pIdLower) && !deletedSet.has(pNameLower);
@@ -255,7 +254,7 @@ export const readDB = (): DatabaseSchema => {
 
   dbData = {
     ...baseData,
-    products: activeProducts,
+    products: nonDeletedProducts,
     orders: baseData.orders || initial.orders || [],
     customers: baseData.customers || initial.customers || [],
     websiteContent: baseData.websiteContent || initial.websiteContent,
@@ -448,7 +447,7 @@ export async function getProductsList(): Promise<Product[]> {
   const isMongo = await isMongoDBConnected();
   if (isMongo) {
     await seedMongoDBIfNeeded();
-    products = await ProductModel.find({ status: { $ne: 'ARCHIVED' } }).sort({ updatedAt: -1, createdAt: -1 }).lean() as unknown as Product[];
+    products = await ProductModel.find({ status: { $nin: ['ARCHIVED', 'HIDDEN', 'DRAFT'] } }).sort({ updatedAt: -1, createdAt: -1 }).lean() as unknown as Product[];
   } else {
     products = readDB().products;
     products = [...products].sort((a, b) => {
