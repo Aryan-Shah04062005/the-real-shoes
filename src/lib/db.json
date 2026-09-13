@@ -61,53 +61,6 @@
       "isSale": true
     },
     {
-      "id": "skechers-max-cushioning-elite-05",
-      "name": "Skechers Max Cushioning Elite",
-      "brand": "Skechers",
-      "category": "Casual",
-      "description": "All-day plush comfort with Skechers Max Cushioning Elite. ULTRA GO cushioning platform paired with Goga Mat insoles delivers an effortless stride.",
-      "price": 2799,
-      "originalPrice": 4299,
-      "discountPrice": 2799,
-      "discountPercentage": 34,
-      "availableSizes": [
-        6,
-        7,
-        8,
-        9,
-        10
-      ],
-      "availableColors": [
-        {
-          "name": "Silver Shadow",
-          "hex": "#c0c0c0",
-          "threeColor": "#c0c0c0"
-        }
-      ],
-      "material": "Air-Cooled Memory Foam",
-      "gender": "Unisex",
-      "stock": 16,
-      "sku": "TR-SKE-445",
-      "rating": 4.6,
-      "reviews": [],
-      "tags": [
-        "Skechers",
-        "Comfort"
-      ],
-      "images": [
-        "https://images.unsplash.com/photo-1560769629-975ec94e6a86?q=80&w=1000"
-      ],
-      "mainImage": "https://images.unsplash.com/photo-1560769629-975ec94e6a86?q=80&w=1000",
-      "isNewArrival": false,
-      "isBestSeller": false,
-      "isTrending": true,
-      "isFeatured": false,
-      "isSale": true,
-      "status": "ACTIVE",
-      "sourcePlatform": "THE_REAL",
-      "updatedAt": "2026-09-10T16:00:00.000Z"
-    },
-    {
       "id": "puma-nitro-power-surge-06",
       "name": "Puma Nitro Power Surge",
       "brand": "Puma",
@@ -439,7 +392,9 @@
     "asics-gel-nimbus-pro-03",
     "asics gel-nimbus pro",
     "the-real-genesis-carbon-stealth-04",
-    "the real genesis carbon stealth"
+    "the real genesis carbon stealth",
+    "skechers-max-cushioning-elite-05",
+    "skechers max cushioning elite"
   ],
   "coupons": [
     {
