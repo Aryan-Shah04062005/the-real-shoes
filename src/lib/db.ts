@@ -628,6 +628,67 @@ export async function deleteProduct(idOrName: string): Promise<{ success: boolea
   }
 }
 
+export async function deleteProductsBulk(productIds: string[]): Promise<{ success: boolean; count: number }> {
+  if (!productIds || !Array.isArray(productIds) || productIds.length === 0) {
+    return { success: true, count: 0 };
+  }
+  
+  const isMongo = await isMongoDBConnected();
+  const cleanIds = productIds.map(id => id.trim()).filter(Boolean);
+
+  if (isMongo) {
+    const lowerIds = cleanIds.map(id => id.toLowerCase());
+    const res = await ProductModel.deleteMany({
+      $or: [
+        { id: { $in: cleanIds } },
+        { id: { $in: lowerIds } }
+      ]
+    });
+    return { success: true, count: res.deletedCount || cleanIds.length };
+  } else {
+    const db = readDB();
+    if (!db.deletedProductIds) db.deletedProductIds = [];
+    const deletedIds = db.deletedProductIds;
+    const idSet = new Set<string>();
+
+    cleanIds.forEach(id => {
+      idSet.add(id);
+      idSet.add(id.toLowerCase());
+    });
+
+    let removedCount = 0;
+    const remainingProducts: Product[] = [];
+
+    db.products.forEach((p) => {
+      if (!p || !p.id) return;
+      const pIdLower = p.id.toLowerCase();
+      const pNameLower = (p.name || '').toLowerCase().trim();
+
+      if (idSet.has(p.id) || idSet.has(pIdLower) || idSet.has(pNameLower)) {
+        removedCount++;
+        if (!deletedIds.includes(p.id)) deletedIds.push(p.id);
+        if (!deletedIds.includes(pIdLower)) deletedIds.push(pIdLower);
+        if (pNameLower && !deletedIds.includes(pNameLower)) deletedIds.push(pNameLower);
+      } else {
+        remainingProducts.push(p);
+      }
+    });
+
+    // Ensure all target IDs are blacklisted in deletedProductIds
+    cleanIds.forEach(id => {
+      if (!deletedIds.includes(id)) deletedIds.push(id);
+      const lower = id.toLowerCase();
+      if (!deletedIds.includes(lower)) deletedIds.push(lower);
+    });
+
+    db.deletedProductIds = deletedIds;
+
+    db.products = remainingProducts;
+    writeDB(db);
+    return { success: true, count: Math.max(removedCount, cleanIds.length) };
+  }
+}
+
 export async function archiveProduct(id: string): Promise<boolean> {
   const isMongo = await isMongoDBConnected();
   if (isMongo) {

@@ -12,6 +12,7 @@ import {
   getProductById,
   saveProduct,
   deleteProduct,
+  deleteProductsBulk,
   archiveProduct,
   restoreProduct,
   checkDuplicateProduct,
@@ -386,15 +387,15 @@ export async function bulkProductAction(action: 'archive' | 'delete' | 'status' 
 
   let count = 0;
 
-  for (const id of productIds) {
-    if (!id) continue;
+  if (action === 'delete') {
+    const res = await deleteProductsBulk(productIds);
+    if (res.success) {
+      count = res.count;
+    }
+  } else {
+    for (const id of productIds) {
+      if (!id) continue;
 
-    if (action === 'delete') {
-      const res = await deleteProduct(id);
-      if (res.success) {
-        count++;
-      }
-    } else {
       const product = await getProductById(id);
       if (!product) continue;
 
