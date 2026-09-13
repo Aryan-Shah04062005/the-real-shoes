@@ -31,8 +31,21 @@ export default function ProductDetailsClient({ id, initialProduct, product: prod
       try {
         setLoading(true);
 
-        // Fetch fresh product data from API
-        const res = await fetch(`/api/products?t=${Date.now()}`, { cache: 'no-store' });
+        if (id) {
+          // Fetch product directly by ID from API
+          const directRes = await fetch(`/api/products?id=${encodeURIComponent(id)}&t=${Date.now()}`, { cache: 'no-store' });
+          if (directRes.ok) {
+            const directData = await directRes.json();
+            if (directData.success && directData.product) {
+              setProduct(directData.product);
+              setLoading(false);
+              return;
+            }
+          }
+        }
+
+        // Fallback: Fetch product list from API
+        const res = await fetch(`/api/products?all=true&t=${Date.now()}`, { cache: 'no-store' });
         if (res.ok) {
           const data = await res.json();
           const list: Product[] = Array.isArray(data) ? data : (data.products || (data.product ? [data.product] : []));

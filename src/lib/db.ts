@@ -245,12 +245,11 @@ export const readDB = (): DatabaseSchema => {
   const deletedSet = new Set<string>(authoritativeDeletedIds);
   const rawProducts = baseData.products || [];
 
-  // Filter out any deleted products by ID, lowercased ID, or name
+  // Filter out any deleted products by ID or lowercased ID (retaining all status levels in DB table)
   const nonDeletedProducts = rawProducts.filter(p => {
     if (!p || !p.id) return false;
     const pIdLower = p.id.toLowerCase();
-    const pNameLower = (p.name || '').toLowerCase().trim();
-    return !deletedSet.has(p.id) && !deletedSet.has(pIdLower) && !deletedSet.has(pNameLower);
+    return !deletedSet.has(p.id) && !deletedSet.has(pIdLower);
   });
 
   dbData = {
@@ -682,7 +681,6 @@ export async function deleteProductsBulk(productIds: string[]): Promise<{ succes
         removedCount++;
         if (!deletedIds.includes(p.id)) deletedIds.push(p.id);
         if (!deletedIds.includes(pIdLower)) deletedIds.push(pIdLower);
-        if (pNameLower && !deletedIds.includes(pNameLower)) deletedIds.push(pNameLower);
       } else {
         remainingProducts.push(p);
       }
