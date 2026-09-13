@@ -141,7 +141,16 @@ export default function DashboardClient({ initialDb }: DashboardClientProps) {
         if (res.ok) {
           const data = await res.json();
           if (data.success && Array.isArray(data.products)) {
-            setDb(prev => ({ ...prev, products: data.products }));
+            setDb(prev => {
+              const serverProductMap = new Map(data.products.map((p: Product) => [p.id, p]));
+              const mergedProducts = [...data.products];
+              prev.products.forEach(p => {
+                if (p && p.id && !serverProductMap.has(p.id) && (!p.status || p.status === 'ACTIVE' || p.status === 'OUT_OF_STOCK')) {
+                  mergedProducts.unshift(p);
+                }
+              });
+              return { ...prev, products: mergedProducts };
+            });
             fetchDbStatus();
           }
         }

@@ -216,41 +216,42 @@ export const readDB = (): DatabaseSchema => {
   } catch (e) {}
 
   const initial = getInitialData();
-
-  // Consolidate deleted IDs set across all storage locations
-  const deletedSet = new Set<string>([
-    ...(initial.deletedProductIds || []),
-    ...(primaryData?.deletedProductIds || []),
-    ...(tmpData?.deletedProductIds || []),
-    ...(inMemoryDbCache?.deletedProductIds || []),
-    ...diskDeletedIds
-  ]);
-
   const hasPrimary = !!(primaryData && Array.isArray(primaryData.products));
   const hasTmp = !!(tmpData && Array.isArray(tmpData.products));
 
-  let rawProducts: Product[] = [];
-
+  let baseData: DatabaseSchema;
   if (hasTmp && tmpMtime >= primaryMtime) {
-    // /tmp/db.json is newer or equal: it is the source of truth for file-based DB
-    rawProducts = tmpData!.products;
+    baseData = tmpData!;
   } else if (hasPrimary) {
-    // primary db.json is source of truth
-    rawProducts = primaryData!.products;
+    baseData = primaryData!;
   } else {
-    // Fallback to initial seed
-    rawProducts = initial.products || [];
+    baseData = initial;
   }
 
-  // Filter out any deleted products by ID, lowercased ID, or name (retaining all status levels in DB table)
+  // Use inMemoryDbCache if present and fresh
+  if (inMemoryDbCache && Array.isArray(inMemoryDbCache.products)) {
+    if (inMemoryDbCache.products.length >= (baseData.products ? baseData.products.length : 0)) {
+      baseData = inMemoryDbCache;
+    }
+  }
+
+  // Authoritative list of deleted IDs comes from the active base dataset, inMemoryDbCache, or disk backup
+  const authoritativeDeletedIds: string[] = Array.isArray(baseData.deletedProductIds)
+    ? baseData.deletedProductIds
+    : (Array.isArray(inMemoryDbCache?.deletedProductIds)
+        ? inMemoryDbCache!.deletedProductIds!
+        : diskDeletedIds);
+
+  const deletedSet = new Set<string>(authoritativeDeletedIds);
+  const rawProducts = baseData.products || [];
+
+  // Filter out any deleted products by ID, lowercased ID, or name
   const nonDeletedProducts = rawProducts.filter(p => {
     if (!p || !p.id) return false;
     const pIdLower = p.id.toLowerCase();
     const pNameLower = (p.name || '').toLowerCase().trim();
     return !deletedSet.has(p.id) && !deletedSet.has(pIdLower) && !deletedSet.has(pNameLower);
   });
-
-  const baseData = (tmpMtime > primaryMtime ? tmpData : primaryData) || primaryData || tmpData || initial;
 
   dbData = {
     ...baseData,
@@ -306,28 +307,32 @@ export const writeDB = (data: DatabaseSchema): boolean => {
   }
 
   // Automatically sync updated db.json to GitHub repository in background
-  syncDbToGitHub().catch((err) => console.warn('Background GitHub sync bypassed:', err));
+  if (!process.env.SKIP_GIT_SYNC) {
+    syncDbToGitHub().catch((err) => console.warn('Background GitHub sync bypassed:', err));
+  }
 
   return true;
 };
 
 export async function syncDbToGitHub(): Promise<boolean> {
+  if (process.env.SKIP_GIT_SYNC) return true;
+
   // 1. Local environment git commit & push
   try {
     const gitDir = path.join(process.cwd(), '.git');
     if (fs.existsSync(gitDir)) {
-      await execAsync(`git add "${PRIMARY_DB_PATH}"`, { timeout: 3000 });
+      await execAsync(`git add "${PRIMARY_DB_PATH}"`, { timeout: 2000 });
       try {
-        await execAsync(`git -c user.name="The Real Admin" -c user.email="admin@thereal.com" commit -m "Admin live update product catalog"`, { timeout: 3000 });
+        await execAsync(`git -c user.name="The Real Admin" -c user.email="admin@thereal.com" commit -m "Admin live update product catalog"`, { timeout: 2000 });
       } catch (commitErr) {
         // Safe to continue if no new file changes to commit
       }
-      await execAsync(`git push origin main`, { timeout: 4000 });
+      await execAsync(`git push origin main`, { timeout: 3000 });
       console.log('Successfully committed and pushed db.json live to GitHub repository!');
       return true;
     }
   } catch (err) {
-    console.warn('Local git commit/push bypassed or not supported:', err);
+    // Expected if offline or git push needs credentials
   }
 
   // 2. GitHub REST API commit (for Vercel serverless environment)
