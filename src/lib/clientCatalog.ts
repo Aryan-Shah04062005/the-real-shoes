@@ -1,46 +1,91 @@
 import { Product } from './db';
 
-const ADDED_KEY = 'the_real_shoes_added_products';
-const DELETED_KEY = 'the_real_shoes_deleted_product_ids';
+const RECENTLY_ADDED_KEY = 'the_real_recent_added_prods_v2';
 
 // Clear legacy localStorage cache keys so browser storage never overrides DB
 export function purgeLegacyClientCache(): void {
   if (typeof window === 'undefined') return;
   try {
-    localStorage.removeItem(ADDED_KEY);
-    localStorage.removeItem(DELETED_KEY);
+    localStorage.removeItem('the_real_shoes_added_products');
+    localStorage.removeItem('the_real_shoes_deleted_product_ids');
   } catch (e) {
     // Ignore storage errors
   }
 }
 
 export function getLocalAddedProducts(): Product[] {
-  return [];
-}
-
-export function getLocalDeletedProductIds(): string[] {
-  return [];
+  if (typeof window === 'undefined') return [];
+  try {
+    const raw = localStorage.getItem(RECENTLY_ADDED_KEY);
+    if (!raw) return [];
+    const list: Product[] = JSON.parse(raw);
+    return Array.isArray(list) ? list : [];
+  } catch (e) {
+    return [];
+  }
 }
 
 export function addLocalAddedProduct(product: Product): void {
-  // Database is single source of truth; no-op for local storage overrides
+  if (typeof window === 'undefined' || !product || !product.id) return;
+  try {
+    const list = getLocalAddedProducts();
+    const existingIdx = list.findIndex(p => p.id === product.id);
+    if (existingIdx > -1) {
+      list[existingIdx] = product;
+    } else {
+      list.unshift(product);
+    }
+    // Keep max 20 recent additions
+    localStorage.setItem(RECENTLY_ADDED_KEY, JSON.stringify(list.slice(0, 20)));
+  } catch (e) {}
 }
 
 export function removeLocalAddedProduct(productIdOrName: string): void {
-  // Database is single source of truth; no-op for local storage overrides
+  if (typeof window === 'undefined' || !productIdOrName) return;
+  try {
+    const list = getLocalAddedProducts();
+    const cleanTarget = productIdOrName.trim().toLowerCase();
+    const updated = list.filter(
+      p => p.id !== productIdOrName && p.id.toLowerCase() !== cleanTarget && (p.name || '').toLowerCase().trim() !== cleanTarget
+    );
+    localStorage.setItem(RECENTLY_ADDED_KEY, JSON.stringify(updated));
+  } catch (e) {}
 }
 
-export function getMergedClientProducts(fetchedProducts: Product[] = [], initialProducts: Product[] = []): Product[] {
-  // Purge any lingering stale localStorage cache on client execution
+export function getMergedClientProducts(
+  fetchedProducts: Product[] = [],
+  currentProducts: Product[] = [],
+  initialProducts: Product[] = []
+): Product[] {
   purgeLegacyClientCache();
 
   const mergedMap = new Map<string, Product>();
 
-  // Database is single source of truth: prefer fresh API fetched products, fallback to initial server products
-  const sourceList = (fetchedProducts && fetchedProducts.length > 0) ? fetchedProducts : (initialProducts || []);
-
-  (sourceList || []).forEach((p) => {
+  // 1. Initial products from SSR/server
+  (initialProducts || []).forEach((p) => {
     if (p && p.id && p.status !== 'ARCHIVED') {
+      mergedMap.set(p.id, p);
+    }
+  });
+
+  // 2. Fresh API fetched products (higher priority)
+  (fetchedProducts || []).forEach((p) => {
+    if (p && p.id && p.status !== 'ARCHIVED') {
+      mergedMap.set(p.id, p);
+    }
+  });
+
+  // 3. Current active products in React state (preserves newly created items across polling ticks)
+  (currentProducts || []).forEach((p) => {
+    if (p && p.id && !mergedMap.has(p.id) && (!p.status || p.status === 'ACTIVE' || p.status === 'OUT_OF_STOCK')) {
+      mergedMap.set(p.id, p);
+    }
+  });
+
+  // 4. Client recently added fallback (persists product across full browser refresh if serverless deployment is pending)
+  const localRecent = getLocalAddedProducts();
+  localRecent.forEach((p) => {
+    if (p && p.id && !mergedMap.has(p.id) && (!p.status || p.status === 'ACTIVE' || p.status === 'OUT_OF_STOCK')) {
       mergedMap.set(p.id, p);
     }
   });

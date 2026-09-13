@@ -35,7 +35,7 @@ export default function HomeClient({ initialProducts }: HomeClientProps) {
         if (res.ok) {
           const data = await res.json();
           if (data.success && Array.isArray(data.products)) {
-            setProductsList(data.products);
+            setProductsList(prev => getMergedClientProducts(data.products, prev, initialProducts));
           }
         }
       } catch (e) {
