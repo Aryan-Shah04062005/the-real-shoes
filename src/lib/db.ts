@@ -267,6 +267,15 @@ export const readDB = (): DatabaseSchema => {
 
 export const writeDB = (data: DatabaseSchema): boolean => {
   inMemoryDbCache = data;
+
+  // Sync in-memory defaultDbData object so static module imports in memory reflect deletion
+  if (defaultDbData) {
+    try {
+      (defaultDbData as any).products = data.products;
+      (defaultDbData as any).deletedProductIds = data.deletedProductIds;
+    } catch (e) {}
+  }
+
   let written = false;
 
   // Try writing to primary DB path (local development)
