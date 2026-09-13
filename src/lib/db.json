@@ -112,6 +112,887 @@
       "status": "ACTIVE",
       "sourcePlatform": "THE_REAL",
       "updatedAt": "2026-09-10T15:30:00.000Z"
+    },
+    {
+      "id": "puma-nitro-velocity-pro-run-amazon",
+      "name": "Puma Velocity Nitro 3 Running Shoes",
+      "brand": "Puma",
+      "category": "Running",
+      "description": "Engineered for high-mileage distance running. Features full-length NITRO FOAM cushioning for maximum responsiveness, breathable mono-mesh upper, and PUMAGRIP durable rubber outsole for all-surface traction.",
+      "price": 4499,
+      "originalPrice": 5999,
+      "discountPrice": 4499,
+      "discountPercentage": 25,
+      "availableSizes": [
+        7,
+        8,
+        9,
+        10,
+        11
+      ],
+      "availableColors": [
+        {
+          "name": "Electric Blue",
+          "hex": "#0055ff",
+          "threeColor": "#0055ff"
+        },
+        {
+          "name": "Puma Black",
+          "hex": "#111111",
+          "threeColor": "#111111"
+        }
+      ],
+      "material": "Engineered Mono-Mesh & NITRO Foam",
+      "gender": "Men",
+      "stock": 18,
+      "sizeStock": {
+        "7": 3,
+        "8": 5,
+        "9": 5,
+        "10": 3,
+        "11": 2
+      },
+      "sku": "TR-PUM-NITRO-449",
+      "rating": 4.8,
+      "reviews": [
+        {
+          "name": "Rahul V.",
+          "rating": 5,
+          "comment": "Phenomenal bounce and energy return! Best Puma running shoe so far.",
+          "date": "2026-08-12"
+        }
+      ],
+      "tags": [
+        "Imported",
+        "Puma",
+        "Running",
+        "Nitro",
+        "Amazon"
+      ],
+      "images": [
+        "https://images.unsplash.com/photo-1608231387042-66d1773070a5?w=1000&q=80",
+        "https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=1000&q=80"
+      ],
+      "mainImage": "https://images.unsplash.com/photo-1608231387042-66d1773070a5?w=1000&q=80",
+      "isNewArrival": true,
+      "isBestSeller": true,
+      "isTrending": true,
+      "isFeatured": true,
+      "isSale": true,
+      "status": "ACTIVE",
+      "sourcePlatform": "AMAZON",
+      "sourceUrl": "https://www.amazon.in/dp/B0CX1PUMA3",
+      "sourceProductId": "B0CX1PUMA3",
+      "sourcePrice": 4499,
+      "updatedAt": "2026-09-13T10:52:53.237Z"
+    },
+    {
+      "id": "reebok-floatride-energy-tech-flipkart",
+      "name": "Reebok Floatride Energy Tech Running Shoes",
+      "brand": "Reebok",
+      "category": "Running",
+      "description": "Designed for effortless speed and marathon pacing. Features lightweight Floatride Energy Foam midsole for ultralight impact absorption and adaptive flex-groove carbon rubber outsole.",
+      "price": 5299,
+      "originalPrice": 6999,
+      "discountPrice": 5299,
+      "discountPercentage": 24,
+      "availableSizes": [
+        7,
+        8,
+        9,
+        10,
+        11
+      ],
+      "availableColors": [
+        {
+          "name": "Vector Navy",
+          "hex": "#1d2a44",
+          "threeColor": "#1d2a44"
+        },
+        {
+          "name": "Pure White",
+          "hex": "#ffffff",
+          "threeColor": "#ffffff"
+        }
+      ],
+      "material": "Floatride Energy Foam & Jacquard Weave",
+      "gender": "Unisex",
+      "stock": 15,
+      "sizeStock": {
+        "7": 3,
+        "8": 4,
+        "9": 4,
+        "10": 2,
+        "11": 2
+      },
+      "sku": "TR-REB-FLOAT-529",
+      "rating": 4.7,
+      "reviews": [
+        {
+          "name": "Amit K.",
+          "rating": 5,
+          "comment": "Super lightweight and high cushioning for long distance training.",
+          "date": "2026-08-18"
+        }
+      ],
+      "tags": [
+        "Imported",
+        "Reebok",
+        "Running",
+        "Floatride",
+        "Flipkart"
+      ],
+      "images": [
+        "https://images.unsplash.com/photo-1595950653106-6c9ebd614d3a?w=1000&q=80",
+        "https://images.unsplash.com/photo-1584735935682-2f2b69dff9d2?w=1000&q=80"
+      ],
+      "mainImage": "https://images.unsplash.com/photo-1595950653106-6c9ebd614d3a?w=1000&q=80",
+      "isNewArrival": true,
+      "isBestSeller": false,
+      "isTrending": true,
+      "isFeatured": true,
+      "isSale": true,
+      "status": "ACTIVE",
+      "sourcePlatform": "FLIPKART",
+      "sourceUrl": "https://www.flipkart.com/reebok-floatride-energy/p/itm5d13reebok",
+      "sourceProductId": "itm5d13reebok",
+      "sourcePrice": 5299,
+      "updatedAt": "2026-09-13T10:52:53.238Z"
+    },
+    {
+      "id": "adidas-ultraboost-light-performance-amazon",
+      "name": "Adidas Ultraboost Light Performance Sneakers",
+      "brand": "Adidas",
+      "category": "Sneakers",
+      "description": "Experience epic energy return with 30% lighter Light BOOST material. Primeknit+ textile upper provides dynamic foot wrap while Continental Rubber outsole grips wet and dry surfaces effortlessly.",
+      "price": 7499,
+      "originalPrice": 9999,
+      "discountPrice": 7499,
+      "discountPercentage": 25,
+      "availableSizes": [
+        7,
+        8,
+        9,
+        10,
+        11,
+        12
+      ],
+      "availableColors": [
+        {
+          "name": "Core Black",
+          "hex": "#111827",
+          "threeColor": "#111827"
+        },
+        {
+          "name": "Cloud White",
+          "hex": "#f9fafb",
+          "threeColor": "#f9fafb"
+        }
+      ],
+      "material": "Primeknit+ & Light BOOST Foam",
+      "gender": "Men",
+      "stock": 22,
+      "sizeStock": {
+        "7": 4,
+        "8": 6,
+        "9": 6,
+        "10": 4,
+        "11": 2
+      },
+      "sku": "TR-ADI-ULTRA-749",
+      "rating": 4.9,
+      "reviews": [
+        {
+          "name": "Karan M.",
+          "rating": 5,
+          "comment": "Undisputed king of comfort and streetwear aesthetics!",
+          "date": "2026-08-20"
+        }
+      ],
+      "tags": [
+        "Imported",
+        "Adidas",
+        "Sneakers",
+        "Ultraboost",
+        "Amazon"
+      ],
+      "images": [
+        "https://images.unsplash.com/photo-1584735935682-2f2b69dff9d2?w=1000&q=80",
+        "https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=1000&q=80"
+      ],
+      "mainImage": "https://images.unsplash.com/photo-1584735935682-2f2b69dff9d2?w=1000&q=80",
+      "isNewArrival": true,
+      "isBestSeller": true,
+      "isTrending": true,
+      "isFeatured": true,
+      "isSale": true,
+      "status": "ACTIVE",
+      "sourcePlatform": "AMAZON",
+      "sourceUrl": "https://www.amazon.in/dp/B0CB1ADI99",
+      "sourceProductId": "B0CB1ADI99",
+      "sourcePrice": 7499,
+      "updatedAt": "2026-09-13T10:52:53.238Z"
+    },
+    {
+      "id": "nike-pegasus-40-zoom-air-flipkart",
+      "name": "Nike Pegasus 40 Zoom Air Running Shoes",
+      "brand": "Nike",
+      "category": "Running",
+      "description": "A responsive ride for every run. Dual Zoom Air units at forefoot and heel combined with Nike React foam deliver lightweight springy transition from heel-strike to toe-off.",
+      "price": 6899,
+      "originalPrice": 8999,
+      "discountPrice": 6899,
+      "discountPercentage": 23,
+      "availableSizes": [
+        7,
+        8,
+        9,
+        10,
+        11
+      ],
+      "availableColors": [
+        {
+          "name": "Royal Crimson",
+          "hex": "#dc2626",
+          "threeColor": "#dc2626"
+        },
+        {
+          "name": "Wolf Grey",
+          "hex": "#6b7280",
+          "threeColor": "#6b7280"
+        }
+      ],
+      "material": "Engineered Mesh & Nike React Foam",
+      "gender": "Unisex",
+      "stock": 20,
+      "sizeStock": {
+        "7": 4,
+        "8": 5,
+        "9": 5,
+        "10": 4,
+        "11": 2
+      },
+      "sku": "TR-NIK-PEG-689",
+      "rating": 4.9,
+      "reviews": [
+        {
+          "name": "Vikram S.",
+          "rating": 5,
+          "comment": "The gold standard for daily running and road marathons.",
+          "date": "2026-08-25"
+        }
+      ],
+      "tags": [
+        "Imported",
+        "Nike",
+        "Running",
+        "Pegasus",
+        "Flipkart"
+      ],
+      "images": [
+        "https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=1000&q=80",
+        "https://images.unsplash.com/photo-1600185365483-26d7a4cc7519?w=1000&q=80"
+      ],
+      "mainImage": "https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=1000&q=80",
+      "isNewArrival": true,
+      "isBestSeller": true,
+      "isTrending": true,
+      "isFeatured": true,
+      "isSale": true,
+      "status": "ACTIVE",
+      "sourcePlatform": "FLIPKART",
+      "sourceUrl": "https://www.flipkart.com/nike-pegasus-40/p/itm5d13nike",
+      "sourceProductId": "itm5d13nike",
+      "sourcePrice": 6899,
+      "updatedAt": "2026-09-13T10:52:53.238Z"
+    },
+    {
+      "id": "asics-gel-nimbus-25-cushioning-amazon",
+      "name": "Asics Gel-Nimbus 25 Cushioning Shoes",
+      "brand": "Asics",
+      "category": "Training",
+      "description": "Experience cloud-like softness underfoot. PureGEL technology combined with FF BLAST PLUS ECO cushioning delivers plush impact absorption and smooth heel-to-toe stride transitions.",
+      "price": 6499,
+      "originalPrice": 7999,
+      "discountPrice": 6499,
+      "discountPercentage": 19,
+      "availableSizes": [
+        7,
+        8,
+        9,
+        10,
+        11
+      ],
+      "availableColors": [
+        {
+          "name": "Deep Sea Blue",
+          "hex": "#0f172a",
+          "threeColor": "#0f172a"
+        },
+        {
+          "name": "Vivid Yellow",
+          "hex": "#eab308",
+          "threeColor": "#eab308"
+        }
+      ],
+      "material": "Knit Upper & PureGEL Cushioning",
+      "gender": "Men",
+      "stock": 14,
+      "sizeStock": {
+        "7": 2,
+        "8": 4,
+        "9": 4,
+        "10": 2,
+        "11": 2
+      },
+      "sku": "TR-ASI-NIMB-649",
+      "rating": 4.8,
+      "reviews": [
+        {
+          "name": "Siddharth P.",
+          "rating": 5,
+          "comment": "Unrivaled joint protection and ultra plush comfort.",
+          "date": "2026-08-28"
+        }
+      ],
+      "tags": [
+        "Imported",
+        "Asics",
+        "Training",
+        "Gel-Nimbus",
+        "Amazon"
+      ],
+      "images": [
+        "https://images.unsplash.com/photo-1560769629-975ec94e6a86?w=1000&q=80",
+        "https://images.unsplash.com/photo-1595950653106-6c9ebd614d3a?w=1000&q=80"
+      ],
+      "mainImage": "https://images.unsplash.com/photo-1560769629-975ec94e6a86?w=1000&q=80",
+      "isNewArrival": true,
+      "isBestSeller": false,
+      "isTrending": true,
+      "isFeatured": true,
+      "isSale": true,
+      "status": "ACTIVE",
+      "sourcePlatform": "AMAZON",
+      "sourceUrl": "https://www.amazon.in/dp/B0CA1ASICS",
+      "sourceProductId": "B0CA1ASICS",
+      "sourcePrice": 6499,
+      "updatedAt": "2026-09-13T10:52:53.238Z"
+    },
+    {
+      "id": "skechers-max-cushioning-premier-flipkart",
+      "name": "Skechers Max Cushioning Premier Trail",
+      "brand": "Skechers",
+      "category": "Trail",
+      "description": "Conquer outdoor terrains with maximum comfort. Features ULTRA GO cushioned platform, Air-Cooled Goga Mat breathable insole, and Goodyear Performance Rubber traction outsole.",
+      "price": 4899,
+      "originalPrice": 5999,
+      "discountPrice": 4899,
+      "discountPercentage": 18,
+      "availableSizes": [
+        7,
+        8,
+        9,
+        10,
+        11
+      ],
+      "availableColors": [
+        {
+          "name": "Charcoal Black",
+          "hex": "#374151",
+          "threeColor": "#374151"
+        },
+        {
+          "name": "Hunter Green",
+          "hex": "#15803d",
+          "threeColor": "#15803d"
+        }
+      ],
+      "material": "ULTRA GO Midsole & Goodyear Rubber",
+      "gender": "Men",
+      "stock": 16,
+      "sizeStock": {
+        "7": 3,
+        "8": 5,
+        "9": 5,
+        "10": 2,
+        "11": 1
+      },
+      "sku": "TR-SKE-MAX-489",
+      "rating": 4.7,
+      "reviews": [
+        {
+          "name": "Manish G.",
+          "rating": 5,
+          "comment": "Superb grip for trekking and day-long walking comfort.",
+          "date": "2026-09-01"
+        }
+      ],
+      "tags": [
+        "Imported",
+        "Skechers",
+        "Trail",
+        "Max Cushioning",
+        "Flipkart"
+      ],
+      "images": [
+        "https://images.unsplash.com/photo-1582588678413-dbf45f4823e9?w=1000&q=80",
+        "https://images.unsplash.com/photo-1608231387042-66d1773070a5?w=1000&q=80"
+      ],
+      "mainImage": "https://images.unsplash.com/photo-1582588678413-dbf45f4823e9?w=1000&q=80",
+      "isNewArrival": true,
+      "isBestSeller": false,
+      "isTrending": true,
+      "isFeatured": true,
+      "isSale": true,
+      "status": "ACTIVE",
+      "sourcePlatform": "FLIPKART",
+      "sourceUrl": "https://www.flipkart.com/skechers-max-cushioning/p/itm5d13skechers",
+      "sourceProductId": "itm5d13skechers",
+      "sourcePrice": 4899,
+      "updatedAt": "2026-09-13T10:52:53.238Z"
+    },
+    {
+      "id": "new-balance-574-core-heritage-amazon",
+      "name": "New Balance 574 Core Heritage Sneakers",
+      "brand": "New Balance",
+      "category": "Casual",
+      "description": "The iconic unpretentious classic. Crafted with premium suede and mesh upper, ENCAP midsole technology combining lightweight foam with durable polyurethane rim for all-day support.",
+      "price": 5999,
+      "originalPrice": 7499,
+      "discountPrice": 5999,
+      "discountPercentage": 20,
+      "availableSizes": [
+        7,
+        8,
+        9,
+        10,
+        11
+      ],
+      "availableColors": [
+        {
+          "name": "Navy Grey",
+          "hex": "#334155",
+          "threeColor": "#334155"
+        },
+        {
+          "name": "Castlerock Grey",
+          "hex": "#64748b",
+          "threeColor": "#64748b"
+        }
+      ],
+      "material": "Premium Suede, Mesh & ENCAP Midsole",
+      "gender": "Unisex",
+      "stock": 19,
+      "sizeStock": {
+        "7": 4,
+        "8": 5,
+        "9": 5,
+        "10": 3,
+        "11": 2
+      },
+      "sku": "TR-NB-574-599",
+      "rating": 4.8,
+      "reviews": [
+        {
+          "name": "Divya N.",
+          "rating": 5,
+          "comment": "Timeless vintage silhouette that pairs with literally any outfit.",
+          "date": "2026-09-03"
+        }
+      ],
+      "tags": [
+        "Imported",
+        "New Balance",
+        "Casual",
+        "574",
+        "Amazon"
+      ],
+      "images": [
+        "https://images.unsplash.com/photo-1539185441755-769473a23570?w=1000&q=80",
+        "https://images.unsplash.com/photo-1584735935682-2f2b69dff9d2?w=1000&q=80"
+      ],
+      "mainImage": "https://images.unsplash.com/photo-1539185441755-769473a23570?w=1000&q=80",
+      "isNewArrival": true,
+      "isBestSeller": true,
+      "isTrending": true,
+      "isFeatured": true,
+      "isSale": true,
+      "status": "ACTIVE",
+      "sourcePlatform": "AMAZON",
+      "sourceUrl": "https://www.amazon.in/dp/B0CB1NB574",
+      "sourceProductId": "B0CB1NB574",
+      "sourcePrice": 5999,
+      "updatedAt": "2026-09-13T10:52:53.238Z"
+    },
+    {
+      "id": "under-armour-charged-assert-10-flipkart",
+      "name": "Under Armour Charged Assert 10 Running Shoes",
+      "brand": "Under Armour",
+      "category": "Running",
+      "description": "Built to help anyone go faster. Charged Cushioning compression molded foam midsole provides exceptional durability and responsiveness. Durable leather overlays lock down your midfoot.",
+      "price": 4799,
+      "originalPrice": 5999,
+      "discountPrice": 4799,
+      "discountPercentage": 20,
+      "availableSizes": [
+        7,
+        8,
+        9,
+        10,
+        11
+      ],
+      "availableColors": [
+        {
+          "name": "Pitch Black",
+          "hex": "#0f172a",
+          "threeColor": "#0f172a"
+        },
+        {
+          "name": "Metallic Silver",
+          "hex": "#94a3b8",
+          "threeColor": "#94a3b8"
+        }
+      ],
+      "material": "Charged Cushioning & Synthetic Leather",
+      "gender": "Men",
+      "stock": 17,
+      "sizeStock": {
+        "7": 3,
+        "8": 5,
+        "9": 5,
+        "10": 3,
+        "11": 1
+      },
+      "sku": "TR-UA-CHARG-479",
+      "rating": 4.7,
+      "reviews": [
+        {
+          "name": "Rohan T.",
+          "rating": 5,
+          "comment": "Super sturdy structure and great heel counter support.",
+          "date": "2026-09-05"
+        }
+      ],
+      "tags": [
+        "Imported",
+        "Under Armour",
+        "Running",
+        "Charged",
+        "Flipkart"
+      ],
+      "images": [
+        "https://images.unsplash.com/photo-1600185365483-26d7a4cc7519?w=1000&q=80",
+        "https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=1000&q=80"
+      ],
+      "mainImage": "https://images.unsplash.com/photo-1600185365483-26d7a4cc7519?w=1000&q=80",
+      "isNewArrival": true,
+      "isBestSeller": false,
+      "isTrending": true,
+      "isFeatured": true,
+      "isSale": true,
+      "status": "ACTIVE",
+      "sourcePlatform": "FLIPKART",
+      "sourceUrl": "https://www.flipkart.com/under-armour-charged/p/itm5d13ua",
+      "sourceProductId": "itm5d13ua",
+      "sourcePrice": 4799,
+      "updatedAt": "2026-09-13T10:52:53.238Z"
+    },
+    {
+      "id": "converse-chuck-taylor-all-star-high-amazon",
+      "name": "Converse Chuck Taylor All Star High Top",
+      "brand": "Converse",
+      "category": "Casual",
+      "description": "The definitive high-top sneaker since 1917. Built with heavy-duty canvas upper, iconic ankle patch patch, vulcanized rubber midsole, and diamond pattern rubber tread.",
+      "price": 3999,
+      "originalPrice": 4999,
+      "discountPrice": 3999,
+      "discountPercentage": 20,
+      "availableSizes": [
+        6,
+        7,
+        8,
+        9,
+        10,
+        11
+      ],
+      "availableColors": [
+        {
+          "name": "Optic White",
+          "hex": "#ffffff",
+          "threeColor": "#ffffff"
+        },
+        {
+          "name": "Black Canvas",
+          "hex": "#111827",
+          "threeColor": "#111827"
+        }
+      ],
+      "material": "Heavy-Duty Canvas & Vulcanized Rubber",
+      "gender": "Unisex",
+      "stock": 25,
+      "sizeStock": {
+        "6": 3,
+        "7": 5,
+        "8": 6,
+        "9": 6,
+        "10": 3,
+        "11": 2
+      },
+      "sku": "TR-CON-CHUCK-399",
+      "rating": 4.9,
+      "reviews": [
+        {
+          "name": "Ananya S.",
+          "rating": 5,
+          "comment": "The ultimate staple shoe. Unbeatable retro charm.",
+          "date": "2026-09-07"
+        }
+      ],
+      "tags": [
+        "Imported",
+        "Converse",
+        "Casual",
+        "Chuck Taylor",
+        "Amazon"
+      ],
+      "images": [
+        "https://images.unsplash.com/photo-1607522370275-f14206abe5d3?w=1000&q=80",
+        "https://images.unsplash.com/photo-1525966222134-fcfa99b8ae77?w=1000&q=80"
+      ],
+      "mainImage": "https://images.unsplash.com/photo-1607522370275-f14206abe5d3?w=1000&q=80",
+      "isNewArrival": true,
+      "isBestSeller": true,
+      "isTrending": true,
+      "isFeatured": true,
+      "isSale": true,
+      "status": "ACTIVE",
+      "sourcePlatform": "AMAZON",
+      "sourceUrl": "https://www.amazon.in/dp/B0CB1CONV3",
+      "sourceProductId": "B0CB1CONV3",
+      "sourcePrice": 3999,
+      "updatedAt": "2026-09-13T10:52:53.238Z"
+    },
+    {
+      "id": "vans-old-skool-classic-skate-flipkart",
+      "name": "Vans Old Skool Classic Skate Shoes",
+      "brand": "Vans",
+      "category": "Casual",
+      "description": "The first to bear the iconic sidestripe. Low top lace-up featuring sturdy suede and canvas uppers, re-enforced toecaps, supportive padded collars, and signature rubber waffle outsoles.",
+      "price": 3499,
+      "originalPrice": 4499,
+      "discountPrice": 3499,
+      "discountPercentage": 22,
+      "availableSizes": [
+        6,
+        7,
+        8,
+        9,
+        10,
+        11
+      ],
+      "availableColors": [
+        {
+          "name": "Black White Stripe",
+          "hex": "#1e293b",
+          "threeColor": "#1e293b"
+        },
+        {
+          "name": "Racing Red",
+          "hex": "#b91c1c",
+          "threeColor": "#b91c1c"
+        }
+      ],
+      "material": "Suede, Canvas & Waffle Rubber",
+      "gender": "Unisex",
+      "stock": 21,
+      "sizeStock": {
+        "6": 3,
+        "7": 4,
+        "8": 5,
+        "9": 5,
+        "10": 2,
+        "11": 2
+      },
+      "sku": "TR-VAN-OLDSK-349",
+      "rating": 4.8,
+      "reviews": [
+        {
+          "name": "Kabir B.",
+          "rating": 5,
+          "comment": "Classic skate shoe durability and clean street look.",
+          "date": "2026-09-08"
+        }
+      ],
+      "tags": [
+        "Imported",
+        "Vans",
+        "Casual",
+        "Old Skool",
+        "Flipkart"
+      ],
+      "images": [
+        "https://images.unsplash.com/photo-1525966222134-fcfa99b8ae77?w=1000&q=80",
+        "https://images.unsplash.com/photo-1607522370275-f14206abe5d3?w=1000&q=80"
+      ],
+      "mainImage": "https://images.unsplash.com/photo-1525966222134-fcfa99b8ae77?w=1000&q=80",
+      "isNewArrival": true,
+      "isBestSeller": true,
+      "isTrending": true,
+      "isFeatured": true,
+      "isSale": true,
+      "status": "ACTIVE",
+      "sourcePlatform": "FLIPKART",
+      "sourceUrl": "https://www.flipkart.com/vans-old-skool/p/itm5d13vans",
+      "sourceProductId": "itm5d13vans",
+      "sourcePrice": 3499,
+      "updatedAt": "2026-09-13T10:52:53.238Z"
+    },
+    {
+      "id": "salomon-speedcross-6-trail-amazon",
+      "name": "Salomon Speedcross 6 Trail Running Shoes",
+      "brand": "Salomon",
+      "category": "Trail",
+      "description": "Legendary grip and precise foothold. Features updated Mud Contagrip outsole for deeper aggressive lugs, Sensifit upper construction, and Quicklace one-pull lacing system for rugged trail performance.",
+      "price": 7999,
+      "originalPrice": 9499,
+      "discountPrice": 7999,
+      "discountPercentage": 16,
+      "availableSizes": [
+        7,
+        8,
+        9,
+        10,
+        11
+      ],
+      "availableColors": [
+        {
+          "name": "Fiery Red Black",
+          "hex": "#991b1b",
+          "threeColor": "#991b1b"
+        },
+        {
+          "name": "Black Magnet",
+          "hex": "#0f172a",
+          "threeColor": "#0f172a"
+        }
+      ],
+      "material": "Ripstop Fabric & Mud Contagrip Rubber",
+      "gender": "Men",
+      "stock": 12,
+      "sizeStock": {
+        "7": 2,
+        "8": 3,
+        "9": 4,
+        "10": 2,
+        "11": 1
+      },
+      "sku": "TR-SAL-SPEED-799",
+      "rating": 4.9,
+      "reviews": [
+        {
+          "name": "Gaurav K.",
+          "rating": 5,
+          "comment": "Unrivaled grip on wet mud, loose dirt, and steep mountain trails.",
+          "date": "2026-09-09"
+        }
+      ],
+      "tags": [
+        "Imported",
+        "Salomon",
+        "Trail",
+        "Speedcross",
+        "Amazon"
+      ],
+      "images": [
+        "https://images.unsplash.com/photo-1560769629-975ec94e6a86?w=1000&q=80",
+        "https://images.unsplash.com/photo-1582588678413-dbf45f4823e9?w=1000&q=80"
+      ],
+      "mainImage": "https://images.unsplash.com/photo-1560769629-975ec94e6a86?w=1000&q=80",
+      "isNewArrival": true,
+      "isBestSeller": false,
+      "isTrending": true,
+      "isFeatured": true,
+      "isSale": true,
+      "status": "ACTIVE",
+      "sourcePlatform": "AMAZON",
+      "sourceUrl": "https://www.amazon.in/dp/B0CB1SALO6",
+      "sourceProductId": "B0CB1SALO6",
+      "sourcePrice": 7999,
+      "updatedAt": "2026-09-13T10:52:53.238Z"
+    },
+    {
+      "id": "fila-disruptor-ii-chunky-flipkart",
+      "name": "Fila Disruptor II Chunky Sneakers",
+      "brand": "Fila",
+      "category": "Sneakers",
+      "description": "The iconic 90s chunky retro trainer. Features premium synthetic leather upper, aggressive sawtooth rubber tread, padded collar and tongue, and embroidered brand logos.",
+      "price": 2899,
+      "originalPrice": 3799,
+      "discountPrice": 2899,
+      "discountPercentage": 23,
+      "availableSizes": [
+        6,
+        7,
+        8,
+        9,
+        10
+      ],
+      "availableColors": [
+        {
+          "name": "White Navy Red",
+          "hex": "#f8fafc",
+          "threeColor": "#f8fafc"
+        },
+        {
+          "name": "Triple Black",
+          "hex": "#0f172a",
+          "threeColor": "#0f172a"
+        }
+      ],
+      "material": "Synthetic Leather & Sawtooth Rubber",
+      "gender": "Unisex",
+      "stock": 18,
+      "sizeStock": {
+        "6": 3,
+        "7": 4,
+        "8": 5,
+        "9": 4,
+        "10": 2
+      },
+      "sku": "TR-FIL-DISR-289",
+      "rating": 4.6,
+      "reviews": [
+        {
+          "name": "Pooja R.",
+          "rating": 5,
+          "comment": "Chunky statement shoe with great cushioning for the price.",
+          "date": "2026-09-10"
+        }
+      ],
+      "tags": [
+        "Imported",
+        "Fila",
+        "Sneakers",
+        "Disruptor",
+        "Flipkart"
+      ],
+      "images": [
+        "https://images.unsplash.com/photo-1584735935682-2f2b69dff9d2?w=1000&q=80",
+        "https://images.unsplash.com/photo-1608231387042-66d1773070a5?w=1000&q=80"
+      ],
+      "mainImage": "https://images.unsplash.com/photo-1584735935682-2f2b69dff9d2?w=1000&q=80",
+      "isNewArrival": true,
+      "isBestSeller": false,
+      "isTrending": true,
+      "isFeatured": true,
+      "isSale": true,
+      "status": "ACTIVE",
+      "sourcePlatform": "FLIPKART",
+      "sourceUrl": "https://www.flipkart.com/fila-disruptor-2/p/itm5d13fila",
+      "sourceProductId": "itm5d13fila",
+      "sourcePrice": 2899,
+      "updatedAt": "2026-09-13T10:52:53.238Z"
     }
   ],
   "orders": [
